@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class LoginPage extends StatelessWidget {
+  const LoginPage({super.key});
 
   void login() {
     print("Go To Next Page");
