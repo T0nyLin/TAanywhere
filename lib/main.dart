@@ -23,40 +23,40 @@ class MyApp extends StatelessWidget {
                 const Text("Login"),
                 const Text("Please sign in to continue."),
                 const TextField(
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: "Email",
-                  )
-                ),
+                    decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: "Email",
+                )),
                 const TextField(
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: "Password",
-                  )
-                ),
+                    decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: "Password",
+                )),
                 Container(
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [Color.fromARGB(255, 193, 217, 220), Color.fromARGB(255, 1, 104, 107)],
+                      colors: [
+                        Color.fromARGB(255, 193, 217, 220),
+                        Color.fromARGB(255, 1, 104, 107)
+                      ],
                     ),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
+                    style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
                       shadowColor: Colors.transparent,
                       elevation: 3,
                       minimumSize: const Size(150, 60),
                     ),
-                    onPressed: login, 
+                    onPressed: login,
                     child: const Text(
                       "LOGIN",
-                      style: TextStyle(fontSize: 25),),
+                      style: TextStyle(fontSize: 25),
+                    ),
                   ),
-                )                
+                )
               ],
-            )
-        )
-    );
+            )));
   }
 }
