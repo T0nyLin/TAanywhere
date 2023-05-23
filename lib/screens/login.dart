@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ta_anywhere/screens/browse.dart';
 import 'package:ta_anywhere/screens/tabs.dart';
 
 class LoginPage extends StatelessWidget {
