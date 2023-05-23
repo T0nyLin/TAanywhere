@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:ta_anywhere/screens/login.dart';
+import 'package:camera/camera.dart';
 
-void main() {
+import 'package:ta_anywhere/screens/login.dart';
+import 'package:ta_anywhere/screens/camera.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  cameras = await availableCameras();
+  
   runApp(const App());
 }
 
