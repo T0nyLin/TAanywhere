@@ -10,9 +10,22 @@ class UploadScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.black,
         title: const Text('Upload Query'),
       ),
-      body: Image.file(File(imagePath)),
+      body: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: Stack(
+          children: [
+            SizedBox(
+              width:MediaQuery.of(context).size.width,
+               height: MediaQuery.of(context).size.height,
+               child: Image.file(File(imagePath)),
+            )
+          ],
+        ),
+      )
     );
   }
 }

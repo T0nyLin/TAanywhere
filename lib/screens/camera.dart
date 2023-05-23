@@ -32,6 +32,25 @@ class _CameraScreenState extends State<CameraScreen> {
     _cameraController.dispose();
   }
 
+  void takePhoto(BuildContext context) async {
+    try {
+      await cameraValue;
+
+      final image = await _cameraController.takePicture();
+      if (!mounted) return;
+
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => UploadScreen(
+            imagePath: image.path,
+          ),
+        ),
+      );
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,7 +82,7 @@ class _CameraScreenState extends State<CameraScreen> {
                       IconButton(
                         onPressed: () {},
                         icon: const Icon(
-                          Icons.camera_alt,
+                          Icons.flash_on_outlined,
                           color: Colors.white,
                           size: 30,
                         ),
@@ -102,23 +121,8 @@ class _CameraScreenState extends State<CameraScreen> {
                         ),
                       ),
                       IconButton(
-                        onPressed: () async {
-                          try {
-                            await cameraValue;
-
-                            final image = await _cameraController.takePicture();
-                            if (!mounted) return;
-
-                            await Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => UploadScreen(
-                                  imagePath: image.path,
-                                ),
-                              ),
-                            );
-                          } catch (e) {
-                            print(e);
-                          }
+                        onPressed: () {
+                          takePhoto(context);
                         },
                         icon: const Icon(
                           Icons.panorama_fish_eye,
@@ -129,7 +133,7 @@ class _CameraScreenState extends State<CameraScreen> {
                       IconButton(
                         onPressed: () {},
                         icon: const Icon(
-                          Icons.image_outlined,
+                          Icons.add_photo_alternate,
                           color: Colors.white,
                           size: 30,
                         ),
