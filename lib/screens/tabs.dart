@@ -43,11 +43,7 @@ class _TabsScreenState extends State<TabsScreen> {
       appBar: AppBar(
         title: Text(activePagetitle),
       ),
-      //body: activePage,
-      body: IndexedStack(
-        index: _selectedPageIndex,
-        children: [activePage],
-      ),
+      body: activePage,
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.black54,
         iconSize: 29,
