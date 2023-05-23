@@ -15,21 +15,6 @@ class TabsScreen extends StatefulWidget {
 class _TabsScreenState extends State<TabsScreen> {
   int _selectedPageIndex = 0;
 
-  // static const List<Widget> _pages = <Widget>[
-  //   Icon(
-  //     Icons.manage_search_outlined,
-  //   ),
-  //   Icon(
-  //     Icons.map,
-  //   ),
-  //   Icon(
-  //     Icons.add_box_rounded,
-  //   ),
-  //   Icon(
-  //     Icons.person_outline_outlined,
-  //   ),
-  // ];
-
   void _selectpage(int index) {
     setState(() {
       _selectedPageIndex = index;
