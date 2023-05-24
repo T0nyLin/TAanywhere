@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
-}
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
 
-class MyApp extends StatelessWidget {
   void login() {
     print("Go To Next Page");
   }
@@ -31,11 +29,11 @@ class MyApp extends StatelessWidget {
                     )),
                 const SizedBox(width: 100, height: 10),
                 const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                  "Please login to continue.",
-                  style: TextStyle(fontSize: 20),
-                )),
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Please login to continue.",
+                      style: TextStyle(fontSize: 20),
+                    )),
                 const SizedBox(width: 100, height: 50),
                 const TextField(
                     decoration: InputDecoration(
