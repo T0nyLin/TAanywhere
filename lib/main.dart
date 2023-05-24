@@ -14,8 +14,9 @@ Future<void> main() async {
 
 final colorScheme = ColorScheme.fromSeed(
   brightness: Brightness.dark,
-  seedColor: const Color.fromARGB(255, 49, 83, 139),
-  background: const Color.fromARGB(255, 49, 83, 139),
+  seedColor: Color.fromARGB(255, 255, 255, 255),
+  background: Color.fromARGB(255, 207, 252, 244),
+  primary: Colors.black,
 );
 
 final theme = ThemeData().copyWith(
