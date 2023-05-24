@@ -1,11 +1,21 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
+
 import 'package:ta_anywhere/screens/set_location.dart';
 
-class UploadScreen extends StatelessWidget {
-  const UploadScreen({super.key, required this.imagePath});
+class UploadScreen extends StatefulWidget {
+  const UploadScreen({super.key, required this.image});
 
-  final String imagePath;
+  final XFile image;
+
+  @override
+  State<UploadScreen> createState() => _UploadScreenState();
+}
+
+class _UploadScreenState extends State<UploadScreen> {
+  late File _selectedImage = File(widget.image.path);
 
   void selectlocation(BuildContext context) {
     Navigator.of(context).push(
@@ -14,6 +24,20 @@ class UploadScreen extends StatelessWidget {
       ),
     );
   }
+
+  void _cropImage(filePath) async {
+    CroppedFile? croppedImage = await ImageCropper()
+        .cropImage(sourcePath: filePath, maxHeight: 1080, maxWidth: 1080);
+
+    if (croppedImage != null) {
+      setState(() {
+        _selectedImage = File(croppedImage.path);
+      });
+    }
+  }
+
+  Widget buildFileImage() => Image.file(_selectedImage);
+  
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +60,7 @@ class UploadScreen extends StatelessWidget {
                   ),
                   width: 200,
                   height: 200,
-                  child: Image.file(File(imagePath)),
+                  child: buildFileImage(),
                 ),
                 Column(
                   children: [
@@ -53,11 +77,18 @@ class UploadScreen extends StatelessWidget {
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all(Colors.grey),
                       ),
-                      onPressed: () {},
+                      onPressed: () async {
+                        final picker = ImagePicker();
+                        final pickedFile =
+                            await picker.pickImage(source: ImageSource.gallery);
+                        if (pickedFile == null) return;
+
+                        _cropImage(pickedFile.path);
+                      },
                       child: const Text('Browse'),
                     ),
                   ],
-                )
+                ),
               ],
             ),
             const Padding(
@@ -138,7 +169,9 @@ class UploadScreen extends StatelessWidget {
                 backgroundColor: MaterialStateProperty.all(
                   const Color.fromARGB(255, 1, 104, 107),
                 ),
-                textStyle: MaterialStateProperty.all(TextStyle(fontSize: 30),),
+                textStyle: MaterialStateProperty.all(
+                  TextStyle(fontSize: 30),
+                ),
               ),
               onPressed: () {},
               child: const Text('Next'),

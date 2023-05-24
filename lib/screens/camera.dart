@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'dart:math';
 
 import 'package:ta_anywhere/screens/tabs.dart';
@@ -22,7 +23,7 @@ class _CameraScreenState extends State<CameraScreen> {
   bool flash = false;
   bool isCameraFront = true;
   double transform = 0;
-  File? imageFile;
+  XFile? imageFile;
 
   void selectlocation(BuildContext context) {
     Navigator.of(context).push(
@@ -35,31 +36,31 @@ class _CameraScreenState extends State<CameraScreen> {
   void getImage(BuildContext context) async {
     final XFile? pickedfile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
-
     if (pickedfile == null) return;
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => UploadScreen(image: pickedfile),
-      ),
-    );
+    _cropImage(pickedfile.path);
   }
 
   void takePhoto(BuildContext context) async {
-    try {
-      await cameraValue;
+    await cameraValue;
 
-      XFile image = await _cameraController.takePicture();
-      if (!mounted) return;
+    XFile image = await _cameraController.takePicture();
+    _cropImage(image.path);
+  }
+
+  void _cropImage(filePath) async {
+    CroppedFile? croppedImage = await ImageCropper()
+        .cropImage(sourcePath: filePath, maxHeight: 1080, maxWidth: 1080);
+
+    if (croppedImage != null) {
+      imageFile = XFile(croppedImage.path);
 
       await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => UploadScreen(
-            image: image,
+            image: imageFile!,
           ),
         ),
       );
-    } catch (e) {
-      print(e);
     }
   }
 
