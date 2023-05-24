@@ -1,8 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:math';
 
+import 'package:ta_anywhere/screens/tabs.dart';
 import 'package:ta_anywhere/screens/upload.dart';
 
 List<CameraDescription>? cameras;
@@ -16,8 +18,50 @@ class CameraScreen extends StatefulWidget {
 
 class _CameraScreenState extends State<CameraScreen> {
   late CameraController _cameraController;
-
   late Future<void> cameraValue;
+  bool flash = false;
+  bool isCameraFront = true;
+  double transform = 0;
+  File? imageFile;
+
+  void selectlocation(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const TabsScreen(),
+      ),
+    );
+  }
+
+  void getImage(BuildContext context) async {
+    final XFile? pickedfile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    if (pickedfile == null) return;
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => UploadScreen(image: pickedfile),
+      ),
+    );
+  }
+
+  void takePhoto(BuildContext context) async {
+    try {
+      await cameraValue;
+
+      XFile image = await _cameraController.takePicture();
+      if (!mounted) return;
+
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => UploadScreen(
+            image: image,
+          ),
+        ),
+      );
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   void initState() {
@@ -30,25 +74,6 @@ class _CameraScreenState extends State<CameraScreen> {
   void dispose() {
     super.dispose();
     _cameraController.dispose();
-  }
-
-  void takePhoto(BuildContext context) async {
-    try {
-      await cameraValue;
-
-      final image = await _cameraController.takePicture();
-      if (!mounted) return;
-
-      await Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => UploadScreen(
-            imagePath: image.path,
-          ),
-        ),
-      );
-    } catch (e) {
-      print(e);
-    }
   }
 
   @override
@@ -80,19 +105,40 @@ class _CameraScreenState extends State<CameraScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.flash_on_outlined,
+                        onPressed: () {
+                          setState(() {
+                            flash = !flash;
+                          });
+                          flash
+                              ? _cameraController.setFlashMode(FlashMode.torch)
+                              : _cameraController.setFlashMode(FlashMode.off);
+                        },
+                        icon: Icon(
+                          flash
+                              ? Icons.flash_on_outlined
+                              : Icons.flash_off_outlined,
                           color: Colors.white,
                           size: 30,
                         ),
                       ),
                       IconButton(
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.flip_camera_ios,
-                          color: Colors.white,
-                          size: 30,
+                        onPressed: () async {
+                          setState(() {
+                            isCameraFront = !isCameraFront;
+                            transform = transform + pi;
+                          });
+                          int cameraPos = isCameraFront ? 0 : 1;
+                          _cameraController = CameraController(
+                              cameras![cameraPos], ResolutionPreset.high);
+                          cameraValue = _cameraController.initialize();
+                        },
+                        icon: Transform.rotate(
+                          angle: transform,
+                          child: const Icon(
+                            Icons.flip_camera_ios,
+                            color: Colors.white,
+                            size: 30,
+                          ),
                         ),
                       ),
                     ],
@@ -113,7 +159,9 @@ class _CameraScreenState extends State<CameraScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          selectlocation(context);
+                        },
                         icon: const Icon(
                           Icons.cancel_outlined,
                           color: Colors.white,
@@ -131,7 +179,9 @@ class _CameraScreenState extends State<CameraScreen> {
                         ),
                       ),
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          getImage(context);
+                        },
                         icon: const Icon(
                           Icons.add_photo_alternate,
                           color: Colors.white,
