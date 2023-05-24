@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:ta_anywhere/screens/tabs.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
-  void login() {
-    print("Go To Next Page");
+  void login(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const TabsScreen(),
+      ),
+    );
   }
 
   @override
@@ -64,7 +69,9 @@ class LoginScreen extends StatelessWidget {
                       elevation: 3,
                       minimumSize: const Size(150, 60),
                     ),
-                    onPressed: login,
+                    onPressed: () {
+                      login(context);
+                    },
                     child: const Text(
                       "LOGIN",
                       style: TextStyle(fontSize: 25),
