@@ -176,7 +176,7 @@ class _UploadScreenState extends State<UploadScreen> {
                   const Color.fromARGB(255, 1, 104, 107),
                 ),
                 textStyle: MaterialStateProperty.all(
-                  TextStyle(fontSize: 30),
+                  const TextStyle(fontSize: 30),
                 ),
               ),
               onPressed: () {},

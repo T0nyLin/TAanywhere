@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:ta_anywhere/components/location_list_tile.dart';
+import 'package:ta_anywhere/components/network_utillity.dart';
 import 'package:ta_anywhere/constants.dart';
+import 'package:ta_anywhere/models/autocomplate_prediction.dart';
+import 'package:ta_anywhere/models/place_auto_complate_response.dart';
+import 'package:ta_anywhere/screens/upload.dart';
 
 class SetLocationScreen extends StatefulWidget {
   const SetLocationScreen({Key? key}) : super(key: key);
@@ -12,6 +16,30 @@ class SetLocationScreen extends StatefulWidget {
 }
 
 class _SetLocationScreenState extends State<SetLocationScreen> {
+  List<AutocompletePrediction> placePredictions = [];
+
+  void placeAutocomplete(String query) async {
+    Uri uri = Uri.https(
+      "maps.googleapis.com",
+      "maps/api/place/autocomplete/json", //unencoder path
+      {
+        "input": query,
+        "key": apiKey,
+      },
+    );
+    String? response = await NetworkUtility.fetchUrl(uri);
+
+    if (response != null) {
+      PlaceAutocompleteResponse result =
+          PlaceAutocompleteResponse.parseAutocompleteResult(response);
+      if (result.predictions != null) {
+        setState(() {
+          placePredictions = result.predictions!;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,27 +48,35 @@ class _SetLocationScreenState extends State<SetLocationScreen> {
           padding: const EdgeInsets.only(left: defaultPadding),
           child: CircleAvatar(
             backgroundColor: secondaryColor10LightTheme,
-            child: SvgPicture.asset(
-              "assets/icons/location.svg",
-              height: 16,
-              width: 16,
-              color: secondaryColor40LightTheme,
+            child: IconButton(
+              onPressed: () {},
+              icon: const Icon(
+                Icons.close,
+                color: Colors.black,
+              ),
             ),
           ),
         ),
         title: const Text(
-          "Set Delivery Location",
-          style: TextStyle(color: textColorLightTheme),
+          "Set Location",
         ),
         actions: [
-          CircleAvatar(
-            backgroundColor: secondaryColor10LightTheme,
-            child: IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.close, color: Colors.black),
+          Padding(
+            padding: const EdgeInsets.only(left: defaultPadding),
+            child: CircleAvatar(
+              backgroundColor: secondaryColor10LightTheme,
+              child: IconButton(
+                onPressed: () {},
+                icon: SvgPicture.asset(
+                  "assets/icons/location.svg",
+                  height: 16,
+                  width: 16,
+                  color: secondaryColor40LightTheme,
+                ),
+              ),
             ),
           ),
-          const SizedBox(width: defaultPadding)
+          const SizedBox(width: defaultPadding),
         ],
       ),
       body: Column(
@@ -49,7 +85,9 @@ class _SetLocationScreenState extends State<SetLocationScreen> {
             child: Padding(
               padding: const EdgeInsets.all(defaultPadding),
               child: TextFormField(
-                onChanged: (value) {},
+                onChanged: (value) {
+                  placeAutocomplete(value);
+                },
                 textInputAction: TextInputAction.search,
                 decoration: InputDecoration(
                   hintText: "Search your location",
@@ -94,9 +132,14 @@ class _SetLocationScreenState extends State<SetLocationScreen> {
             thickness: 4,
             color: secondaryColor5LightTheme,
           ),
-          LocationListTile(
-            press: () {},
-            location: "Banasree, Dhaka, Bangladesh",
+          Expanded(
+            child: ListView.builder(
+              itemCount: placePredictions.length,
+              itemBuilder: (context, index) => LocationListTile(
+                press: () {},
+                location: placePredictions[index].description!,
+              ),
+            ),
           ),
         ],
       ),
