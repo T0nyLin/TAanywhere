@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:ta_anywhere/screens/camera.dart';
 
 import 'package:ta_anywhere/screens/set_location.dart';
 
@@ -20,7 +21,7 @@ class _UploadScreenState extends State<UploadScreen> {
   void selectlocation(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => const SetLocation(),
+        builder: (context) => const SetLocationScreen(),
       ),
     );
   }
@@ -37,7 +38,6 @@ class _UploadScreenState extends State<UploadScreen> {
   }
 
   Widget buildFileImage() => Image.file(_selectedImage);
-  
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +69,13 @@ class _UploadScreenState extends State<UploadScreen> {
                         backgroundColor: MaterialStateProperty.all(
                             const Color.fromARGB(255, 30, 97, 33)),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const CameraScreen(),
+                          ),
+                        );
+                      },
                       child: const Text('Retake'),
                     ),
                     const Padding(padding: EdgeInsets.all(40)),
