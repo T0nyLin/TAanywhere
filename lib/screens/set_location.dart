@@ -49,7 +49,9 @@ class _SetLocationScreenState extends State<SetLocationScreen> {
           child: CircleAvatar(
             backgroundColor: secondaryColor10LightTheme,
             child: IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
               icon: const Icon(
                 Icons.close,
                 color: Colors.black,
@@ -66,7 +68,9 @@ class _SetLocationScreenState extends State<SetLocationScreen> {
             child: CircleAvatar(
               backgroundColor: secondaryColor10LightTheme,
               child: IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
                 icon: SvgPicture.asset(
                   "assets/icons/location.svg",
                   height: 16,
