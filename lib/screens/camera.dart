@@ -80,6 +80,8 @@ class _CameraScreenState extends State<CameraScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
+        fit: StackFit.expand,
+        alignment: Alignment.center,
         children: [
           FutureBuilder(
             future: cameraValue,
@@ -152,6 +154,8 @@ class _CameraScreenState extends State<CameraScreen> {
             child: Container(
               color: Colors.black,
               width: MediaQuery.of(context).size.width,
+              //height: MediaQuery.of(context).size.height,
+              padding: EdgeInsets.only(top: 5, bottom: 15),
               child: Column(
                 children: [
                   Row(
@@ -168,11 +172,11 @@ class _CameraScreenState extends State<CameraScreen> {
                           size: 30,
                         ),
                       ),
-                      IconButton(
-                        onPressed: () {
+                      InkWell(
+                        onTap: () {
                           takePhoto(context);
                         },
-                        icon: const Icon(
+                        child: const Icon(
                           Icons.panorama_fish_eye,
                           color: Colors.white,
                           size: 70,

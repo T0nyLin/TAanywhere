@@ -45,11 +45,7 @@ class _TabsScreenState extends State<TabsScreen> {
       ),
       body: activePage,
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.black54,
         iconSize: 29,
-        type: BottomNavigationBarType.shifting,
-        selectedItemColor: const Color.fromARGB(255, 44, 188, 152),
-        showSelectedLabels: false,
         onTap: _selectpage,
         currentIndex: _selectedPageIndex,
         items: const [
