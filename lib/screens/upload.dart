@@ -2,9 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:ta_anywhere/components/place_service.dart';
 import 'package:ta_anywhere/screens/camera.dart';
+import 'package:uuid/uuid.dart';
 
-import 'package:ta_anywhere/screens/set_location.dart';
+import 'package:ta_anywhere/widget/set_location.dart';
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key, required this.image});
@@ -17,14 +19,15 @@ class UploadScreen extends StatefulWidget {
 
 class _UploadScreenState extends State<UploadScreen> {
   late File _selectedImage = File(widget.image.path);
+  final _destinationController = TextEditingController();
 
-  void selectlocation(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const SetLocationScreen(),
-      ),
-    );
-  }
+  // void selectlocation(BuildContext context) {
+  //   Navigator.of(context).push(
+  //     MaterialPageRoute(
+  //       builder: (context) => SetLocation(),
+  //     ),
+  //   );
+  // }
 
   void _cropImage(filePath) async {
     CroppedFile? croppedImage = await ImageCropper()
@@ -40,10 +43,28 @@ class _UploadScreenState extends State<UploadScreen> {
   Widget buildFileImage() => Image.file(_selectedImage);
 
   @override
+  void dispose() {
+    _destinationController.dispose();
+    super.dispose();
+  }
+
+  void _search() async {
+    final sessionToken = const Uuid().v4();
+    final Suggestion? result = await showSearch(
+      context: context,
+      delegate: SetLocation(sessionToken),
+    );
+    if (result != null) {
+      setState(() {
+        _destinationController.text = result.description;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
         title: const Text('Upload Query'),
       ),
       body: Container(
@@ -55,12 +76,14 @@ class _UploadScreenState extends State<UploadScreen> {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    border: Border.all(
-                        width: 1, color: Theme.of(context).colorScheme.primary),
+                    border: Border.all(width: 1, color: Colors.black),
                   ),
                   width: 200,
                   height: 200,
-                  child: buildFileImage(),
+                  child: FittedBox(
+                    fit: BoxFit.fill,
+                    child: buildFileImage(),
+                  ),
                 ),
                 Column(
                   children: [
@@ -70,7 +93,7 @@ class _UploadScreenState extends State<UploadScreen> {
                             const Color.fromARGB(255, 30, 97, 33)),
                       ),
                       onPressed: () {
-                        Navigator.of(context).push(
+                        Navigator.of(context).pop(
                           MaterialPageRoute(
                             builder: (context) => const CameraScreen(),
                           ),
@@ -136,7 +159,9 @@ class _UploadScreenState extends State<UploadScreen> {
                 Container(
                   decoration: BoxDecoration(
                     border: Border.all(
-                        width: 1, color: Theme.of(context).colorScheme.primary),
+                      width: 1,
+                      color: Colors.black,
+                    ),
                     borderRadius: BorderRadius.circular(13),
                   ),
                   width: 100,
@@ -150,20 +175,26 @@ class _UploadScreenState extends State<UploadScreen> {
             ),
             Container(
               decoration: BoxDecoration(
-                border: Border.all(
-                  width: 1,
-                ),
-              ),
-              child: TextButton(
-                onPressed: () {
-                  selectlocation(context);
-                },
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Set Location'),
-                    Icon(Icons.arrow_right),
-                  ],
+                  border: Border.all(
+                    width: 1,
+                  ),
+                  borderRadius: BorderRadius.circular(5)),
+              child: TextField(
+                controller: _destinationController,
+                readOnly: true,
+                onTap: _search,
+                decoration: InputDecoration(
+                  icon: Container(
+                    margin: const EdgeInsets.only(left: 20),
+                    width: 10,
+                    height: 25,
+                    child: const Icon(
+                      Icons.place_outlined,
+                      color: Colors.black,
+                    ),
+                  ),
+                  hintText: "Set Location",
+                  border: InputBorder.none,
                 ),
               ),
             ),
