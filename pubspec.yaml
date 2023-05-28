@@ -44,6 +44,8 @@ dependencies:
   flutter_svg: ^2.0.6
   http: ^0.13.6
   uuid: ^3.0.7
+  firebase_core: ^2.13.0
+  firebase_auth: ^4.6.1
 
 dev_dependencies:
   flutter_test:

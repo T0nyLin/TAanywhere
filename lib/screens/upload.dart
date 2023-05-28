@@ -2,10 +2,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:ta_anywhere/components/place_service.dart';
-import 'package:ta_anywhere/screens/camera.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:ta_anywhere/components/place_service.dart';
+import 'package:ta_anywhere/screens/camera.dart';
 import 'package:ta_anywhere/widget/set_location.dart';
 
 class UploadScreen extends StatefulWidget {
@@ -195,6 +195,27 @@ class _UploadScreenState extends State<UploadScreen> {
                   ),
                   hintText: "Set Location",
                   border: InputBorder.none,
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 50),
+            ),
+            SizedBox(
+              width: double.infinity,
+              child: TextFormField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(13),
+                  ),
+                  prefixIcon: const Icon(
+                    Icons.notes,
+                    size: 30,
+                  ),
+                  labelText: 'Landmark',
+                  hintText: 'Please describe a distinct landmark so that your mentor can find you easily.',
+                  hintStyle: const TextStyle(fontSize: 14, color: Colors.white),
+                  labelStyle: const TextStyle(fontSize: 10),
                 ),
               ),
             ),
