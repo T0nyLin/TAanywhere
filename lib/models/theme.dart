@@ -5,7 +5,7 @@ import 'constants.dart';
 ThemeData lightTheme(BuildContext context) {
   return ThemeData(
     useMaterial3: true,
-    scaffoldBackgroundColor: Color.fromARGB(255, 171, 239, 232),
+    scaffoldBackgroundColor: Color.fromARGB(255, 165, 228, 234),
     primaryColor: Colors.black,
     textTheme: const TextTheme(
       labelLarge: lableTextStyle,
@@ -31,12 +31,17 @@ ThemeData lightTheme(BuildContext context) {
     // ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        backgroundColor: const Color.fromARGB(255, 128, 222, 234),
         textStyle: const TextStyle(
-          color: Color.fromARGB(255, 255, 255, 255),
           fontWeight: FontWeight.w600,
         ),
       ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: Colors.black,
+      )
     ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       type: BottomNavigationBarType.shifting,

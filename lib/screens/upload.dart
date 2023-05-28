@@ -185,7 +185,7 @@ class _UploadScreenState extends State<UploadScreen> {
                 onTap: _search,
                 decoration: InputDecoration(
                   icon: Container(
-                    margin: const EdgeInsets.only(left: 20),
+                    margin: const EdgeInsets.only(left: 10, right: 11),
                     width: 10,
                     height: 25,
                     child: const Icon(
@@ -199,7 +199,7 @@ class _UploadScreenState extends State<UploadScreen> {
               ),
             ),
             const Padding(
-              padding: EdgeInsets.symmetric(vertical: 50),
+              padding: EdgeInsets.symmetric(vertical: 20),
             ),
             SizedBox(
               width: double.infinity,
@@ -220,9 +220,9 @@ class _UploadScreenState extends State<UploadScreen> {
               ),
             ),
             const Padding(
-              padding: EdgeInsets.symmetric(vertical: 50),
+              padding: EdgeInsets.symmetric(vertical: 30),
             ),
-            ElevatedButton(
+            ElevatedButton.icon(
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(
                   const Color.fromARGB(255, 1, 104, 107),
@@ -232,7 +232,8 @@ class _UploadScreenState extends State<UploadScreen> {
                 ),
               ),
               onPressed: () {},
-              child: const Text('Next'),
+              icon: const Icon(Icons.arrow_circle_right_outlined),
+              label: const Text('Next'),
             ),
           ],
         ),

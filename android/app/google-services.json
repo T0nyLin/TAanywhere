@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "146720725000",
+    "project_id": "taanywhere",
+    "storage_bucket": "taanywhere.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:146720725000:android:613fb763f52f651a1499bd",
+        "android_client_info": {
+          "package_name": "com.example.ta_anywhere"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyYdqKCGH30sb_1mN-9NcgoWcZvFEVsLc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

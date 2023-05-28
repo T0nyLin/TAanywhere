@@ -35,7 +35,7 @@ class _TabsScreenState extends State<TabsScreen> {
       activePagetitle = 'Camera';
     }
     if (_selectedPageIndex == 3) {
-      activePage = const ProfileScreen();
+      activePage = ProfileScreen();
       activePagetitle = 'My Profile';
     }
 

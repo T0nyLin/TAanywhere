@@ -1,14 +1,87 @@
+// login_register_part.dart
+// The third input statement follows the tutorial,
+// please adjust to fit out project.
+
 import 'package:flutter/material.dart';
-import 'package:ta_anywhere/screens/tabs.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+import 'package:ta_anywhere/components/auth.dart';
 
-  void login(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const TabsScreen(),
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({Key? key}) : super(key: key);
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  String? errorMessage = '';
+  bool isLogin = true;
+
+  final TextEditingController _controllerEmail = TextEditingController();
+  final TextEditingController _controllerPassword = TextEditingController();
+
+  Future<void> signInWithEmailAndPassword() async {
+    try {
+      await Auth().signInWithEmailAndPassword(
+        email: _controllerEmail.text,
+        password: _controllerPassword.text,
+      );
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        errorMessage = e.message;
+      });
+    }
+  }
+
+  Future<void> createUserWithEmailAndPassword() async {
+    try {
+      await Auth().createUserWithEmailAndPassword(
+        email: _controllerEmail.text,
+        password: _controllerPassword.text,
+      );
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        errorMessage = e.message;
+      });
+    }
+  }
+
+  Widget _entryField(
+    String title,
+    TextEditingController controller,
+  ) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: title,
+        border: const OutlineInputBorder(),
+        hintText: title == 'Email' ? 'Email' : 'Password',
       ),
+    );
+  }
+
+  Widget _errorMessage() {
+    return Text(errorMessage == '' ? '' : 'Humm ? $errorMessage');
+  }
+
+  Widget _submitButton() {
+    return ElevatedButton.icon(
+      onPressed:
+          isLogin ? signInWithEmailAndPassword : createUserWithEmailAndPassword,
+      icon: const Icon(Icons.arrow_circle_right_outlined),
+      label: Text(isLogin ? 'Login' : 'Register'),
+    );
+  }
+
+  Widget _loginOrRegisterButton() {
+    return TextButton(
+      onPressed: () {
+        setState(() {
+          isLogin = !isLogin;
+        });
+      },
+      child: Text(isLogin ? 'Register Instead' : 'Login Instead'),
     );
   }
 
@@ -24,60 +97,23 @@ class LoginScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Login",
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                )),
-            const SizedBox(width: 100, height: 10),
-            const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Please login to continue.",
-                  style: TextStyle(fontSize: 20),
-                )),
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Please login to continue.",
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
             const SizedBox(width: 100, height: 50),
-            const TextField(
-                decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: "Email",
-            )),
+            _entryField('Email', _controllerEmail),
             const SizedBox(width: 100, height: 15),
-            const TextField(
-                decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: "Password",
-            )),
+            _entryField('Password', _controllerPassword),
+            _errorMessage(),
             const SizedBox(width: 100, height: 15),
-            Container(
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [
-                    Color.fromARGB(255, 193, 217, 220),
-                    Color.fromARGB(255, 1, 104, 107)
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
-                  elevation: 3,
-                  minimumSize: const Size(150, 60),
-                ),
-                onPressed: () {
-                  login(context);
-                },
-                child: const Text(
-                  "LOGIN",
-                  style: TextStyle(fontSize: 25),
-                ),
-              ),
-            )
+            _submitButton(),
+            _loginOrRegisterButton(),
           ],
         ),
       ),
-     );
+    );
   }
 }

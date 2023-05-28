@@ -3,7 +3,7 @@ import 'package:flutter_svg/svg.dart';
 
 import 'package:ta_anywhere/components/place_service.dart';
 
-import '../constants.dart';
+import '../models/constants.dart';
 
 class SetLocation extends SearchDelegate<Suggestion> {
   final String sessionToken;
