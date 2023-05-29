@@ -8,7 +8,7 @@
 	<string>Pick Query Image.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Take your Query Image.</string>
-	<key>NSMicrophoneusageDescription</key>
+	<key>NSMicrophoneUsageDescription</key>
 	<string>Take your Query Image.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
