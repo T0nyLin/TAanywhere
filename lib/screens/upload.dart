@@ -20,9 +20,10 @@ class UploadScreen extends StatefulWidget {
 
 class _UploadScreenState extends State<UploadScreen> {
   late File _selectedImage = File(widget.image.path);
-  String query = "";
+  final _queryController = TextEditingController();
   String codes = "";
   final _destinationController = TextEditingController();
+  final _landmarkController = TextEditingController();
 
   void _cropImage(filePath) async {
     CroppedFile? croppedImage = await ImageCropper()
@@ -40,6 +41,7 @@ class _UploadScreenState extends State<UploadScreen> {
   @override
   void dispose() {
     _destinationController.dispose();
+    _queryController.dispose();
     super.dispose();
   }
 
@@ -121,6 +123,7 @@ class _UploadScreenState extends State<UploadScreen> {
                 padding: EdgeInsets.symmetric(vertical: 20),
               ),
               TextFormField(
+                controller: _queryController,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'What is your query?',
@@ -232,6 +235,7 @@ class _UploadScreenState extends State<UploadScreen> {
               SizedBox(
                 width: double.infinity,
                 child: TextFormField(
+                  controller: _landmarkController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(13),
