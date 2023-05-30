@@ -22,9 +22,9 @@ class PlaceApiProvider {
   final String sessionToken;
 
   Future<List<Suggestion>> fetchSuggestions(String input) async {
-    final String request =
+    final request =
         'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&types=address&language=en&components=country:Sg&key=AIzaSyC7EFshsiUoJdt-lItecOX5Wpm4mGo2dCo&sessiontoken=$sessionToken';
-    final Uri url = Uri.parse(request);
+    final url = Uri.parse(request);
     final response = await http.post(url);
 
     if (response.statusCode == 200) {
