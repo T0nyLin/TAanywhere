@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:ta_anywhere/screens/confirmUpload.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
@@ -45,7 +46,7 @@ class _UploadScreenState extends State<UploadScreen> {
     super.dispose();
   }
 
-  void _search() async {
+  void _search(BuildContext context) async {
     final sessionToken = const Uuid().v4();
     final Suggestion? result = await showSearch(
       context: context,
@@ -58,9 +59,21 @@ class _UploadScreenState extends State<UploadScreen> {
     }
   }
 
-  void _saveQuery() {
-    _formKey.currentState!.validate();
-    _formKey.currentState!.save();
+  void _saveQuery(BuildContext context) {
+    if(_formKey.currentState!.validate()){
+      _formKey.currentState!.save();
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ConfirmUploadScreen(
+          image: _selectedImage,
+          query: _queryInput,
+          modcode: _modController.text.toString(),
+          location: _destinationController.text,
+          landmark: _landmarkInput,
+        ),
+      ),
+    );
+    }
     
   }
 
@@ -205,6 +218,7 @@ class _UploadScreenState extends State<UploadScreen> {
                         },
                         validator: (value) {
                           if (value == null ||
+                              value.isEmpty ||
                               value.trim().length <= 1 ||
                               value.trim().length > 10) {
                             return 'Invalid Code';
@@ -244,7 +258,9 @@ class _UploadScreenState extends State<UploadScreen> {
                   child: TextFormField(
                     controller: _destinationController,
                     readOnly: true,
-                    onTap: _search,
+                    onTap: () {
+                      _search(context);
+                    },
                     decoration: InputDecoration(
                       icon: Container(
                         margin: const EdgeInsets.only(left: 10, right: 11),
@@ -316,7 +332,9 @@ class _UploadScreenState extends State<UploadScreen> {
                       const TextStyle(fontSize: 30),
                     ),
                   ),
-                  onPressed: _saveQuery,
+                  onPressed: () {
+                    _saveQuery(context);
+                  },
                   icon: const Icon(Icons.arrow_circle_right_outlined),
                   label: const Text('Next'),
                 ),
