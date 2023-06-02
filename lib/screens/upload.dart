@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:js_interop';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -60,21 +61,21 @@ class _UploadScreenState extends State<UploadScreen> {
   }
 
   void _saveQuery(BuildContext context) {
-    if(_formKey.currentState!.validate()){
+    if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => ConfirmUploadScreen(
-          image: _selectedImage,
-          query: _queryInput,
-          modcode: _modController.text.toString(),
-          location: _destinationController.text,
-          landmark: _landmarkInput,
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => ConfirmUploadScreen(
+            image: _selectedImage,
+            query: _queryInput,
+            modcode: _modController.text.toString(),
+            location: _destinationController.text,
+            landmark: _landmarkInput,
+          ),
         ),
-      ),
-    );
+      );
     }
-    
+    FocusScope.of(context).unfocus(); //close keyboard
   }
 
   @override
