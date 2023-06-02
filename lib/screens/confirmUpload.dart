@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import 'package:ta_anywhere/components/auth.dart';
 
 class ConfirmUploadScreen extends StatelessWidget {
-  const ConfirmUploadScreen({
+  ConfirmUploadScreen({
     super.key,
     required this.image,
     required this.query,
@@ -16,14 +21,46 @@ class ConfirmUploadScreen extends StatelessWidget {
   final modcode;
   final location;
   final landmark;
+  String cost = '';
+  String level = '';
+
+  final User? user = Auth().currentUser!;
+  bool isUploading = false;
 
   Widget buildFileImage() => Image.file(image);
 
+  void uploadQuery() async {
+    isUploading = true;
+    final storageRef = FirebaseStorage.instance
+        .ref()
+        .child('query_images ')
+        .child('${user!.uid}.jpg');
+
+    await storageRef.putFile(image);
+    final imageUrl = await storageRef.getDownloadURL();
+
+    await FirebaseFirestore.instance
+        .collection('user queries')
+        .add({
+      'mentee': user!.email,
+      'image_url': imageUrl,
+      'query': query,
+      'module Code': modcode,
+      'cost': cost,
+      'level': level,
+      'location': location,
+      'landmark': landmark,
+      'uploadedTime': Timestamp.now(),
+    });
+
+    isUploading = false;
+  }
+
   @override
   Widget build(BuildContext context) {
-    String modNum = modcode.toString().replaceAll(RegExp(r"\D"), '');
-    String cost = '';
-    String level = '';
+    String modNum = modcode
+        .toString()
+        .replaceAll(RegExp(r"\D"), ''); //remove letters from module code
 
     if (modNum[0] == '1') {
       cost = '\$4';
@@ -37,7 +74,7 @@ class ConfirmUploadScreen extends StatelessWidget {
     } else if (modNum[0] == '4') {
       cost = '\$7';
       level = '4000';
-    } else {
+    } else if (modNum[0] == '5') {
       cost = '\$8';
       level = '5000';
     }
@@ -87,11 +124,13 @@ class ConfirmUploadScreen extends StatelessWidget {
                 label: Text(landmark),
               ),
             ),
-            ElevatedButton.icon(
-              onPressed: () {},
-              icon: const Icon(Icons.domain_verification_sharp),
-              label: const Text('Confirm Upload'),
-            ),
+            if (isUploading) const CircularProgressIndicator(),
+            if (!isUploading)
+              ElevatedButton.icon(
+                onPressed: uploadQuery,
+                icon: const Icon(Icons.domain_verification_sharp),
+                label: const Text('Confirm Upload'),
+              ),
           ],
         ),
       ),
