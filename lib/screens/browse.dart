@@ -68,72 +68,72 @@ class _BrowseScreenState extends State<BrowseScreen> {
           );
         }
 
-        return CustomScrollView(
-          slivers: [
-            const SliverAppBar(
-              pinned: true,
-              backgroundColor: Color.fromARGB(255, 41, 128, 99),
-              floating: true,
-              flexibleSpace: FlexibleSpaceBar(
-                title:
-                    TextField(decoration: InputDecoration(labelText: 'Search')),
+        return Scaffold(
+          body: CustomScrollView(
+            slivers: <Widget>[
+              const SliverAppBar(
+                pinned: true,
+                floating: true,
+                expandedHeight: 80,
+                flexibleSpace: FlexibleSpaceBar(
+                  title:
+                      TextField(decoration: InputDecoration(labelText: 'Search')),
+                ),
               ),
-            ),
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                childCount: items.length,
-                (BuildContext context, int index) {
-                  Timestamp uploadtime = items[index]['uploadedTime'];
-                  print(uploadtime.seconds);
-                  final DateTime dateConvert =
-                  DateTime.fromMillisecondsSinceEpoch(uploadtime.seconds * 1000);
-                  DateTime now = DateTime.now();
-                  var format = DateFormat('hh:mm');
-                  var diff = now.difference(dateConvert);
-                  var posted = diff.inMinutes.toString();
-
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ListTile(
-                      leading: SizedBox(
-                        width: 50,
-                        height: 50,
-                        child: Image(
-                          image: NetworkImage(
-                            items[index]['image_url'],
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  childCount: items.length,
+                  (BuildContext context, int index) {
+                    Timestamp uploadtime = items[index]['uploadedTime'];
+                    final DateTime dateConvert =
+                    DateTime.fromMillisecondsSinceEpoch(uploadtime.seconds * 1000);
+                    DateTime now = DateTime.now();
+                    var diff = now.difference(dateConvert);
+                    var posted = diff.inMinutes.toString();
+        
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ListTile(
+                        leading: SizedBox(
+                          width: 50,
+                          height: 50,
+                          child: Image(
+                            image: NetworkImage(
+                              items[index]['image_url'],
+                            ),
+                            fit: BoxFit.fill,
                           ),
-                          fit: BoxFit.fill,
                         ),
+                        title: Text(items[index]['query']),
+                        subtitle: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(items[index]['module Code']),
+                                Text(items[index]['cost']),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(items[index]['mentee']),
+                                Text('$posted min'),
+                              ],
+                            ),
+                          ],
+                        ),
+                        trailing: const Icon(Icons.arrow_right),
                       ),
-                      title: Text(items[index]['query']),
-                      subtitle: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(items[index]['module Code']),
-                              Text(items[index]['cost']),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(items[index]['mentee']),
-                              Text('$posted min'),
-                            ],
-                          ),
-                        ],
-                      ),
-                      trailing: const Icon(Icons.arrow_right),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       },
     );

@@ -40,9 +40,9 @@ class _TabsScreenState extends State<TabsScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(activePagetitle),
-      ),
+      // appBar: AppBar(
+      //   title: Text(activePagetitle),
+      // ),
       body: activePage,
       bottomNavigationBar: BottomNavigationBar(
         iconSize: 29,
