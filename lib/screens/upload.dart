@@ -1,9 +1,8 @@
 import 'dart:io';
-import 'dart:js_interop';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:ta_anywhere/screens/confirmUpload.dart';
+import 'package:ta_anywhere/screens/confirm_upload.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
