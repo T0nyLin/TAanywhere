@@ -24,19 +24,19 @@ class _TabsScreenState extends State<TabsScreen> {
   @override
   Widget build(BuildContext context) {
     Widget activePage = const BrowseScreen();
-    var activePagetitle = 'Browse';
+    //var activePagetitle = 'Browse';
 
     if (_selectedPageIndex == 1) {
       activePage = const MapScreen();
-      activePagetitle = 'Map';
+      //activePagetitle = 'Map';
     }
     if (_selectedPageIndex == 2) {
       activePage = const CameraScreen();
-      activePagetitle = 'Camera';
+      //activePagetitle = 'Camera';
     }
     if (_selectedPageIndex == 3) {
       activePage = ProfileScreen();
-      activePagetitle = 'My Profile';
+      //activePagetitle = 'My Profile';
     }
 
     return Scaffold(

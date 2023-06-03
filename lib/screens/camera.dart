@@ -4,7 +4,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'dart:math';
 
-import 'package:ta_anywhere/screens/tabs.dart';
 import 'package:ta_anywhere/screens/upload.dart';
 
 List<CameraDescription>? cameras;
