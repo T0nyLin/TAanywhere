@@ -4,11 +4,18 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
    <application
         android:label="ta_anywhere"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+
+        <meta-data 
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyC7EFshsiUoJdt-lItecOX5Wpm4mGo2dCo"/>
+
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
