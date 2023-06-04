@@ -52,17 +52,14 @@ dependencies:
   # firebase
   firebase_core: ^2.13.0
   firebase_auth: ^4.6.1
-<<<<<<< HEAD
-  camera_avfoundation: ^0.9.13+2
-  flutter_typeahead: ^4.6.0
+
   google_maps_flutter: ^2.2.8
   geolocator: ^9.0.2
-=======
+
   firebase_storage: ^11.2.2
   cloud_firestore: ^4.8.0
   loading_animation_widget: ^1.2.0+4
   intl: ^0.18.1
->>>>>>> 4540e18a68ad4e7815a9df69ed418d66597f337e
 
 dev_dependencies:
   flutter_test:
