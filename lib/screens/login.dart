@@ -52,6 +52,9 @@ class _LoginScreenState extends State<LoginScreen> {
     TextEditingController controller,
   ) {
     return TextField(
+      keyboardType: title == 'Email' ? TextInputType.emailAddress : TextInputType.text,
+      obscureText: title == 'Email' ? false : true,
+      obscuringCharacter: '*',
       controller: controller,
       decoration: InputDecoration(
         labelText: title,

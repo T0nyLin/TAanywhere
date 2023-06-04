@@ -4,7 +4,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'dart:math';
 
-import 'package:ta_anywhere/screens/tabs.dart';
 import 'package:ta_anywhere/screens/upload.dart';
 
 List<CameraDescription>? cameras;
@@ -23,14 +22,6 @@ class _CameraScreenState extends State<CameraScreen> {
   bool isCameraFront = true;
   double transform = 0;
   XFile? imageFile;
-
-  void selectlocation(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const TabsScreen(),
-      ),
-    );
-  }
 
   void getImage(BuildContext context) async {
     final XFile? pickedfile =
@@ -79,6 +70,33 @@ class _CameraScreenState extends State<CameraScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            IconButton(
+              onPressed: () async {
+                setState(() {
+                  isCameraFront = !isCameraFront;
+                  transform = transform + pi;
+                });
+                int cameraPos = isCameraFront ? 0 : 1;
+                _cameraController =
+                    CameraController(cameras![cameraPos], ResolutionPreset.high);
+                cameraValue = _cameraController.initialize();
+              },
+              icon: Transform.rotate(
+                angle: transform,
+                child: const Icon(
+                  Icons.flip_camera_ios,
+                  color: Colors.black,
+                  size: 30,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
       body: Stack(
         fit: StackFit.expand,
         alignment: Alignment.center,
@@ -95,16 +113,37 @@ class _CameraScreenState extends State<CameraScreen> {
               }
             },
           ),
+          // Positioned(
+          //   top: 0.0,
+          //   height: 90,
+          //   child: Container(
+          //     color: Colors.black,
+          //     width: MediaQuery.of(context).size.width,
+          //     child: Column(
+          //       children: [
+          //         Padding(
+          //           padding: const EdgeInsets.only(top: 40),
+          //           child: Row(
+          //             mainAxisSize: MainAxisSize.max,
+          //             mainAxisAlignment: MainAxisAlignment.end,
+          //             children: [],
+          //           ),
+          //         ),
+          //       ],
+          //     ),
+          //   ),
+          // ),
           Positioned(
-            top: 0.0,
+            bottom: 0.0,
             child: Container(
               color: Colors.black,
               width: MediaQuery.of(context).size.width,
+              padding: const EdgeInsets.only(top: 5, bottom: 15),
               child: Column(
                 children: [
                   Row(
                     mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       IconButton(
                         onPressed: () {
@@ -119,55 +158,6 @@ class _CameraScreenState extends State<CameraScreen> {
                           flash
                               ? Icons.flash_on_outlined
                               : Icons.flash_off_outlined,
-                          color: Colors.white,
-                          size: 30,
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () async {
-                          setState(() {
-                            isCameraFront = !isCameraFront;
-                            transform = transform + pi;
-                          });
-                          int cameraPos = isCameraFront ? 0 : 1;
-                          _cameraController = CameraController(
-                              cameras![cameraPos], ResolutionPreset.high);
-                          cameraValue = _cameraController.initialize();
-                        },
-                        icon: Transform.rotate(
-                          angle: transform,
-                          child: const Icon(
-                            Icons.flip_camera_ios,
-                            color: Colors.white,
-                            size: 30,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 0.0,
-            child: Container(
-              color: Colors.black,
-              width: MediaQuery.of(context).size.width,
-              //height: MediaQuery.of(context).size.height,
-              padding: EdgeInsets.only(top: 5, bottom: 15),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          selectlocation(context);
-                        },
-                        icon: const Icon(
-                          Icons.cancel_outlined,
                           color: Colors.white,
                           size: 30,
                         ),
