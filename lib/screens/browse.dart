@@ -86,10 +86,9 @@ class _BrowseScreenState extends State<BrowseScreen> {
               prefixIcon: const Icon(Icons.search_rounded),
               suffixIcon: IconButton(
                 onPressed: () {
-                  setState(() {
-                    searchController.clear();
-                    code = "";
-                  });
+                  FocusScope.of(context).unfocus();
+                  searchController.clear();
+                  code = "";
                 },
                 icon: const Icon(Icons.close_rounded),
               )),
