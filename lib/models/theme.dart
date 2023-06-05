@@ -5,7 +5,7 @@ import 'constants.dart';
 ThemeData lightTheme(BuildContext context) {
   return ThemeData(
     useMaterial3: true,
-    scaffoldBackgroundColor: Color.fromARGB(255, 165, 228, 234),
+    scaffoldBackgroundColor: const Color.fromARGB(255, 165, 228, 234),
     primaryColor: Colors.black,
     textTheme: const TextTheme(
       labelLarge: lableTextStyle,
@@ -44,9 +44,11 @@ ThemeData lightTheme(BuildContext context) {
       )
     ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      type: BottomNavigationBarType.shifting,
-      selectedItemColor: Color.fromARGB(255, 6, 88, 105),
+      type: BottomNavigationBarType.fixed,
+      selectedItemColor: Color.fromARGB(255, 47, 125, 180),
+      unselectedItemColor: Color.fromARGB(255, 48, 97, 104),
       showSelectedLabels: false,
+      showUnselectedLabels: false,
     ),
     canvasColor: const Color.fromARGB(255, 128, 222, 234),
     iconTheme: const IconThemeData(color: textColorLightTheme),
