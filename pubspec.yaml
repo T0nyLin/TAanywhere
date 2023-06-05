@@ -57,10 +57,11 @@ dependencies:
   loading_animation_widget: ^1.2.0+4
   intl: ^0.18.1
 
+
   #googlemaps
   google_maps_flutter: ^2.2.8
   geolocator: ^9.0.2
-
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
