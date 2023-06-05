@@ -45,15 +45,17 @@ class ConfirmUploadScreen extends StatelessWidget {
     } else if (modNum[0] == '2') {
       cost = '\$5';
       level = '2000';
-    } else if (modNum[0] == '3') {
+    } else {
       cost = '\$6';
-      level = '3000';
-    } else if (modNum[0] == '4') {
-      cost = '\$7';
-      level = '4000';
-    } else if (modNum[0] == '5') {
-      cost = '\$8';
-      level = '5000';
+      if (modNum[0] == '3') {
+        level = '3000';
+      } else if (modNum[0] == '4') {
+        level = '4000';
+      } else if (modNum[0] == '5') {
+        level = '5000';
+      } else if (modNum[0] == '6') {
+        level = '6000';
+      }
     }
     void uploadQuery() async {
       isUploading = true;
@@ -64,8 +66,6 @@ class ConfirmUploadScreen extends StatelessWidget {
 
       await storageRef.putFile(image);
       final imageUrl = await storageRef.getDownloadURL();
-
-      
 
       await FirebaseFirestore.instance.collection('user queries').add({
         'mentee': user!.email,
