@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -15,7 +16,11 @@ Future<void> main() async {
   //firebase auth
   await Firebase.initializeApp();
 
-  runApp(const MyApp());
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]).then((fn){
+    runApp(const MyApp());
+  });
 }
 
 class MyApp extends StatelessWidget {
