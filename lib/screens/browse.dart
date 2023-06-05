@@ -11,130 +11,188 @@ class BrowseScreen extends StatefulWidget {
 
 class _BrowseScreenState extends State<BrowseScreen> {
   var queries = FirebaseFirestore.instance.collection('user queries');
-  List<Map<String, dynamic>> items = [];
-  bool isLoaded = false;
+  List<Map<String, dynamic>> allqueries = [];
+  List<Map<String, dynamic>> _foundqueries = [];
+  TextEditingController searchController = TextEditingController();
+  String code = "";
 
-  _displayQuery() async {
-    Future.delayed(const Duration(seconds: 2));
+  // @override
+  // void initState() {
+  //   super.initState();
+  // }
 
-    List<Map<String, dynamic>> tempList = [];
-    var query = await queries.get();
-
-    query.docs.forEach((element) {
-      tempList.add(element.data());
-    });
-
-    setState(() {
-      items = tempList;
-      isLoaded = true;
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _displayQuery();
-  }
+  // void displose() {
+  //   searchController.dispose();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection('user queries')
-          .orderBy('uploadedTime', descending: true)
-          .snapshots(),
-      builder: (ctx, queriesSnapshots) {
-        if (queriesSnapshots.connectionState == ConnectionState.waiting) {
-          return Center(
-            child:
-                LoadingAnimationWidget.waveDots(color: Colors.black, size: 100),
-          );
-        }
-        // if (isLoaded) {
-        //   return Center(
-        //     child:
-        //         LoadingAnimationWidget.waveDots(color: Colors.black, size: 100),
-        //   );
-        // }
-        if (!queriesSnapshots.hasData || queriesSnapshots.data!.docs.isEmpty) {
-          return const Center(
-            child: Text('No queries posted.'),
-          );
-        }
-        if (queriesSnapshots.hasError) {
-          return const Center(
-            child: Text('Something went wrong...'),
-          );
-        }
-
-        return Scaffold(
-          body: CustomScrollView(
+    return Scaffold(
+      appBar: AppBar(
+        title: TextField(
+          decoration: const InputDecoration(
+              hintText: 'Search Module Code',
+              prefixIcon: Icon(Icons.search_rounded),
+              suffixIcon: Icon(Icons.close_rounded)),
+          onChanged: (val) {
+            setState(() {
+              code = val;
+            });
+          },
+        ),
+      ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('user queries')
+            .orderBy('uploadedTime', descending: true)
+            .snapshots(),
+        builder: (ctx, queriesSnapshots) {
+          if (queriesSnapshots.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: LoadingAnimationWidget.waveDots(
+                  color: Colors.black, size: 100),
+            );
+          }
+          if (!queriesSnapshots.hasData ||
+              queriesSnapshots.data!.docs.isEmpty) {
+            return const Center(
+              child: Text('No queries posted.'),
+            );
+          }
+          if (queriesSnapshots.hasError) {
+            return const Center(
+              child: Text('Something went wrong...'),
+            );
+          }
+          return CustomScrollView(
             slivers: <Widget>[
-              const SliverAppBar(
-                pinned: true,
-                floating: true,
-                expandedHeight: 80,
-                flexibleSpace: FlexibleSpaceBar(
-                  title:
-                      TextField(decoration: InputDecoration(labelText: 'Search')),
-                ),
-              ),
               SliverList(
                 delegate: SliverChildBuilderDelegate(
-                  childCount: items.length,
+                  childCount: queriesSnapshots.data!.docs.length,
                   (BuildContext context, int index) {
-                    Timestamp uploadtime = items[index]['uploadedTime'];
+                    var data = queriesSnapshots.data!.docs[index].data()
+                        as Map<String, dynamic>;
+
+                    Timestamp uploadtime = data['uploadedTime'];
                     final DateTime dateConvert =
-                    DateTime.fromMillisecondsSinceEpoch(uploadtime.seconds * 1000);
+                        DateTime.fromMillisecondsSinceEpoch(
+                            uploadtime.seconds * 1000);
                     DateTime now = DateTime.now();
                     var diff = now.difference(dateConvert);
                     var posted = diff.inMinutes.toString();
-        
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ListTile(
-                        leading: SizedBox(
-                          width: 50,
-                          height: 50,
-                          child: Image(
-                            image: NetworkImage(
-                              items[index]['image_url'],
+
+                    if (code.trim().isEmpty) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: GestureDetector(
+                          onTap: () {
+                            // setState(() {
+                            //   searchController.text =
+                            //       data[index]['module Code'];
+                            // });
+                          },
+                          child: ListTile(
+                            leading: SizedBox(
+                              width: 50,
+                              height: 50,
+                              child: Image(
+                                image: NetworkImage(
+                                  data['image_url'],
+                                ),
+                                fit: BoxFit.fill,
+                              ),
                             ),
-                            fit: BoxFit.fill,
+                            title: Text(data['query']),
+                            subtitle: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(data['module Code']),
+                                    Text(data['cost']),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(data['mentee']),
+                                    Text('$posted min'),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            trailing: const Icon(Icons.arrow_right),
                           ),
                         ),
-                        title: Text(items[index]['query']),
-                        subtitle: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      );
+                    }
+                    if (data['module Code']
+                        .toString()
+                        .toLowerCase()
+                        .contains(code.toLowerCase())) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: GestureDetector(
+                          onTap: () {
+                            // setState(() {
+                            //   searchController.text =
+                            //       _foundqueries[index]['module Code'];
+                            // });
+                          },
+                          child: ListTile(
+                            leading: SizedBox(
+                              width: 50,
+                              height: 50,
+                              child: Image(
+                                image: NetworkImage(
+                                  data['image_url'],
+                                ),
+                                fit: BoxFit.fill,
+                              ),
+                            ),
+                            title: Text(data['query']),
+                            subtitle: Column(
                               children: [
-                                Text(items[index]['module Code']),
-                                Text(items[index]['cost']),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(data['module Code']),
+                                    Text(data['cost']),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(data['mentee']),
+                                    Text('$posted min'),
+                                  ],
+                                ),
                               ],
                             ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(items[index]['mentee']),
-                                Text('$posted min'),
-                              ],
-                            ),
-                          ],
+                            trailing: const Icon(Icons.arrow_right),
+                          ),
                         ),
-                        trailing: const Icon(Icons.arrow_right),
-                      ),
-                    );
+                      );
+                    }
+                    return Container();
                   },
                 ),
               ),
             ],
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
