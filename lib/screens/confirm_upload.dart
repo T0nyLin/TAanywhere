@@ -8,8 +8,8 @@ import 'package:intl/intl.dart';
 import 'package:ta_anywhere/components/auth.dart';
 import 'package:ta_anywhere/screens/search_mentor.dart';
 
-class ConfirmUploadScreen extends StatelessWidget {
-  ConfirmUploadScreen({
+class ConfirmUploadScreen extends StatefulWidget {
+  const ConfirmUploadScreen({
     super.key,
     required this.image,
     required this.query,
@@ -24,13 +24,18 @@ class ConfirmUploadScreen extends StatelessWidget {
   final location;
   final landmark;
 
+  @override
+  State<ConfirmUploadScreen> createState() => _ConfirmUploadScreenState();
+}
+
+class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
   final User? user = Auth().currentUser!;
 
-  Widget buildFileImage() => Image.file(image);
+  Widget buildFileImage() => Image.file(widget.image);
 
   @override
   Widget build(BuildContext context) {
-    String modNum = modcode
+    String modNum = widget.modcode
         .toString()
         .replaceAll(RegExp(r"\D"), ''); //remove letters from module code
 
@@ -64,19 +69,20 @@ class ConfirmUploadScreen extends StatelessWidget {
           .child('query_images ')
           .child('$formatDate.jpg');
 
-      await storageRef.putFile(image);
+      await storageRef.putFile(widget.image);
       final imageUrl = await storageRef.getDownloadURL();
 
       await FirebaseFirestore.instance.collection('user queries').add({
         'mentee': user!.email,
         'image_url': imageUrl,
-        'query': query,
-        'module Code': modcode,
+        'query': widget.query,
+        'module Code': widget.modcode,
         'cost': cost,
         'level': level,
-        'location': location,
-        'landmark': landmark,
+        'location': widget.location,
+        'landmark': widget.landmark,
         'uploadedTime': DateTime.now(),
+        'lifetime': DateTime.now(),
       });
 
       isUploading = false;
@@ -105,13 +111,13 @@ class ConfirmUploadScreen extends StatelessWidget {
             TextField(
               enabled: false,
               decoration: InputDecoration(
-                label: Text(query),
+                label: Text(widget.query),
               ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Text('Module Code: $modcode'),
+                Text('Module Code: ${widget.modcode}'),
                 Text('Cost: $cost'),
                 Text('Level: $level'),
               ],
@@ -119,13 +125,13 @@ class ConfirmUploadScreen extends StatelessWidget {
             TextField(
               enabled: false,
               decoration: InputDecoration(
-                label: Text(location),
+                label: Text(widget.location),
               ),
             ),
             TextField(
               enabled: false,
               decoration: InputDecoration(
-                label: Text(landmark),
+                label: Text(widget.landmark),
               ),
             ),
             if (isUploading) const CircularProgressIndicator(),
@@ -142,6 +148,10 @@ class ConfirmUploadScreen extends StatelessWidget {
                 icon: const Icon(Icons.file_upload_outlined),
                 label: const Text('Confirm Upload'),
               ),
+            const Text(
+              'Note: Uploaded Queries will be removed from Browse after 60min.',
+              maxLines: 2,
+            ),
           ],
         ),
       ),
