@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 
-
 class BrowseScreen extends StatefulWidget {
   const BrowseScreen({super.key});
 
@@ -12,7 +11,7 @@ class BrowseScreen extends StatefulWidget {
 }
 
 class _BrowseScreenState extends State<BrowseScreen> {
-  var queries = FirebaseFirestore.instance.collection('user queries');
+  final queries = FirebaseFirestore.instance.collection('user queries');
   TextEditingController searchController = TextEditingController();
   String code = "";
 
@@ -21,63 +20,78 @@ class _BrowseScreenState extends State<BrowseScreen> {
     super.dispose();
   }
 
-  Widget _search(Map<String, dynamic> data, String posted) {
+  _uploadtimeconversion(Map<String, dynamic> data) {
+    Timestamp uploadtime = data['uploadedTime'];
+    final DateTime dateConvert =
+        DateTime.fromMillisecondsSinceEpoch(uploadtime.seconds * 1000);
+    DateTime now = DateTime.now();
+    var diff = now.difference(dateConvert);
+    var posted = diff.inMinutes;
+
+    return posted;
+  }
+
+  _lifetimeconversion(Map<String, dynamic> data) {
+    Timestamp firstuploadtime = data['lifetime'];
+    final DateTime dateConvert =
+        DateTime.fromMillisecondsSinceEpoch(firstuploadtime.seconds * 1000);
+    DateTime now = DateTime.now();
+    var diff = now.difference(dateConvert);
+    var lifetime = diff.inMinutes;
+
+    return lifetime;
+  }
+
+  Widget _search(Map<String, dynamic> data, int posted) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: GestureDetector(
-        onTap: () {
-          // setState(() {
-          //   searchController.text =
-          //       data[index]['module Code'];
-          // });
-        },
-        child: ListTile(
-          leading: SizedBox(
-            width: 50,
-            height: 50,
-            child: GestureDetector(
-              onTap: () {
-                showImageViewer(
-                  context,
-                  Image.network(
-                    data['image_url'],
-                  ).image,
-                  swipeDismissible: true,
-                  doubleTapZoomable: true,
-                );
-              },
-              child: Image(
-                image: NetworkImage(
+      child: ListTile(
+        onTap: () {},
+        leading: SizedBox(
+          width: 50,
+          height: 50,
+          child: GestureDetector(
+            onTap: () {
+              showImageViewer(
+                context,
+                Image.network(
                   data['image_url'],
-                ),
-                fit: BoxFit.cover,
+                ).image,
+                swipeDismissible: true,
+                doubleTapZoomable: true,
+              );
+            },
+            child: Image(
+              image: NetworkImage(
+                data['image_url'],
               ),
+              fit: BoxFit.cover,
             ),
           ),
-          title: Text(data['query']),
-          subtitle: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(data['module Code']),
-                  Text(data['cost']),
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(data['mentee']),
-                  Text('$posted min'),
-                ],
-              ),
-            ],
-          ),
-          trailing: const Icon(Icons.arrow_right),
         ),
+        title: Text(data['query']),
+        subtitle: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(data['module Code']),
+                Text(data['cost']),
+              ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(data['mentee']),
+                Text('$posted min'),
+              ],
+            ),
+          ],
+        ),
+        trailing: const Icon(Icons.arrow_right),
       ),
     );
   }
@@ -139,14 +153,20 @@ class _BrowseScreenState extends State<BrowseScreen> {
                   (BuildContext context, int index) {
                     var data = queriesSnapshots.data!.docs[index].data()
                         as Map<String, dynamic>;
-
-                    Timestamp uploadtime = data['uploadedTime'];
-                    final DateTime dateConvert =
-                        DateTime.fromMillisecondsSinceEpoch(
-                            uploadtime.seconds * 1000);
-                    DateTime now = DateTime.now();
-                    var diff = now.difference(dateConvert);
-                    var posted = diff.inMinutes.toString();
+                    //auto brings older posts to the top
+                    var posted = _uploadtimeconversion(data);
+                    if (posted >= 10) {
+                      queries
+                          .doc(queriesSnapshots.data!.docs[index].id.toString())
+                          .update({'uploadedTime': DateTime.now()});
+                    }
+                    //auto purge after 60min
+                    var lifetime = _lifetimeconversion(data);
+                    if (lifetime >= 60) {
+                      queries
+                          .doc(queriesSnapshots.data!.docs[index].id.toString())
+                          .delete();
+                    }
 
                     if (code.trim().isEmpty) {
                       return _search(data, posted);
