@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:easy_image_viewer/easy_image_viewer.dart';
+
 
 class BrowseScreen extends StatefulWidget {
   const BrowseScreen({super.key});
@@ -11,20 +13,13 @@ class BrowseScreen extends StatefulWidget {
 
 class _BrowseScreenState extends State<BrowseScreen> {
   var queries = FirebaseFirestore.instance.collection('user queries');
-  List<Map<String, dynamic>> allqueries = [];
-  List<Map<String, dynamic>> _foundqueries = [];
   TextEditingController searchController = TextEditingController();
   String code = "";
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  // }
-
-  // void displose() {
-  //   searchController.dispose();
-  //   super.dispose();
-  // }
+  void displose() {
+    searchController.dispose();
+    super.dispose();
+  }
 
   Widget _search(Map<String, dynamic> data, String posted) {
     return Padding(
@@ -40,11 +35,23 @@ class _BrowseScreenState extends State<BrowseScreen> {
           leading: SizedBox(
             width: 50,
             height: 50,
-            child: Image(
-              image: NetworkImage(
-                data['image_url'],
+            child: GestureDetector(
+              onTap: () {
+                showImageViewer(
+                  context,
+                  Image.network(
+                    data['image_url'],
+                  ).image,
+                  swipeDismissible: true,
+                  doubleTapZoomable: true,
+                );
+              },
+              child: Image(
+                image: NetworkImage(
+                  data['image_url'],
+                ),
+                fit: BoxFit.cover,
               ),
-              fit: BoxFit.fill,
             ),
           ),
           title: Text(data['query']),
@@ -123,6 +130,8 @@ class _BrowseScreenState extends State<BrowseScreen> {
             );
           }
           return CustomScrollView(
+            scrollDirection: Axis.vertical,
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             slivers: <Widget>[
               SliverList(
                 delegate: SliverChildBuilderDelegate(

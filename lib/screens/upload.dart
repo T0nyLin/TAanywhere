@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:ta_anywhere/screens/confirm_upload.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 
 import 'package:ta_anywhere/components/place_service.dart';
 import 'package:ta_anywhere/widget/set_location.dart';
@@ -37,7 +38,25 @@ class _UploadScreenState extends State<UploadScreen> {
     }
   }
 
-  Widget buildFileImage() => Image.file(_selectedImage);
+  Widget _buildFileImage() {
+    return GestureDetector(
+      onTap: () {
+        showImageViewer(
+          context,
+          Image.file(
+            _selectedImage,
+            fit: BoxFit.cover,
+          ).image,
+          swipeDismissible: true,
+          doubleTapZoomable: true,
+        );
+      },
+      child: Image.file(
+        _selectedImage,
+        fit: BoxFit.cover,
+      ),
+    );
+  }
 
   @override
   void dispose() {
@@ -99,11 +118,8 @@ class _UploadScreenState extends State<UploadScreen> {
                       ),
                       width: 200,
                       height: 200,
-                      child: FittedBox(
-                        fit: BoxFit.fill,
-                        child: buildFileImage(),
+                      child: _buildFileImage(),
                       ),
-                    ),
                     Column(
                       children: [
                         ElevatedButton(

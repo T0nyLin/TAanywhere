@@ -42,11 +42,12 @@ dependencies:
   uuid: ^3.0.7
   flutter_typeahead: ^4.6.0
 
-  #camera
+  #camera/image
   camera: ^0.10.5+1
   image_picker: ^0.8.7+5
   image_cropper: ^4.0.1
   camera_avfoundation: ^0.9.13+2
+  easy_image_viewer: ^1.2.0
 
   # firebase
   firebase_core: ^2.13.0
@@ -59,6 +60,7 @@ dependencies:
   #googlemaps
   google_maps_flutter: ^2.2.8
   geolocator: ^9.0.2
+  
   
 dev_dependencies:
   flutter_test:
