@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 
+import 'package:ta_anywhere/screens/queryinfo.dart';
+
 class BrowseScreen extends StatefulWidget {
   const BrowseScreen({super.key});
 
@@ -46,7 +48,6 @@ class _BrowseScreenState extends State<BrowseScreen> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ListTile(
-        onTap: () {},
         leading: SizedBox(
           width: 50,
           height: 50,
@@ -92,6 +93,13 @@ class _BrowseScreenState extends State<BrowseScreen> {
           ],
         ),
         trailing: const Icon(Icons.arrow_right),
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => QueryInfoScreen(data: data),
+            ),
+          );
+        },
       ),
     );
   }
