@@ -111,27 +111,27 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
             TextField(
               enabled: false,
               decoration: InputDecoration(
-                label: Text(widget.query),
+                label: Text(widget.query, style: Theme.of(context).primaryTextTheme.bodySmall,),
               ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Text('Module Code: ${widget.modcode}'),
-                Text('Cost: $cost'),
-                Text('Level: $level'),
+                Text('Module Code: ${widget.modcode}', style: Theme.of(context).primaryTextTheme.bodySmall,),
+                Text('Cost: $cost', style: Theme.of(context).primaryTextTheme.bodySmall,),
+                Text('Level: $level', style: Theme.of(context).primaryTextTheme.bodySmall,),
               ],
             ),
             TextField(
               enabled: false,
               decoration: InputDecoration(
-                label: Text(widget.location),
+                label: Text(widget.location, style: Theme.of(context).primaryTextTheme.bodySmall,),
               ),
             ),
             TextField(
               enabled: false,
               decoration: InputDecoration(
-                label: Text(widget.landmark),
+                label: Text(widget.landmark, style: Theme.of(context).primaryTextTheme.bodySmall,),
               ),
             ),
             if (isUploading) const CircularProgressIndicator(),

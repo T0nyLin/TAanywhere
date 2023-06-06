@@ -31,6 +31,7 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
       body: Container(
         padding: const EdgeInsets.all(15),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             GestureDetector(
               onTap: () {
@@ -62,36 +63,56 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
                     fontSize: 20),
               ),
             ),
+            TextButton.icon(
+              icon: const Icon(Icons.location_on_rounded),
+              label: Text(
+                widget.data['location'],
+                style: Theme.of(context).primaryTextTheme.bodySmall,
+                maxLines: 2,
+              ),
+              onPressed: () {},
+            ),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Module Code: ${widget.data['module Code']}'),
-                    Text('Mentee: ${widget.data['mentee']}'),
-                    Text('Cost: ${widget.data['cost']}'),
-                    Text('Level: ${widget.data['level']}'),
+                    Text(
+                      'Module Code: ${widget.data['module Code']}',
+                      style: Theme.of(context).primaryTextTheme.bodySmall,
+                    ),
+                    Text(
+                      'Mentee: ${widget.data['mentee']}',
+                      style: Theme.of(context).primaryTextTheme.bodySmall,
+                    ),
+                    Text(
+                      'Cost: ${widget.data['cost']}',
+                      style: Theme.of(context).primaryTextTheme.bodySmall,
+                    ),
+                    Text(
+                      'Level: ${widget.data['level']}',
+                      style: Theme.of(context).primaryTextTheme.bodySmall,
+                    ),
                   ],
                 ),
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Posted: $posted min ago'),
-                    SizedBox(
-                      child: Column(
-                        children: [
-                          TextButton.icon(
-                            icon: const Icon(Icons.location_on_rounded),
-                            label: Text(widget.data['location']),
-                            onPressed: () {},
-                          ),
-                          Text(widget.data['landmark']),
-                        ],
-                      ),
+                    Text(
+                      'Landmark: ${widget.data['landmark']}',
+                      style: Theme.of(context).primaryTextTheme.bodySmall,
                     ),
-                    
+                    Text(
+                      'Posted: $posted min ago',
+                      style: Theme.of(context).primaryTextTheme.bodySmall,
+                    ),
                   ],
                 ),
               ],
             ),
+            const SizedBox(height: 100,),
             ElevatedButton.icon(
               onPressed: () {
                 // Navigator.of(context).push(

@@ -103,6 +103,7 @@ class _UploadScreenState extends State<UploadScreen> {
         title: const Text('Upload Query'),
       ),
       body: SingleChildScrollView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         child: Form(
           key: _formKey,
           child: Container(
@@ -212,10 +213,10 @@ class _UploadScreenState extends State<UploadScreen> {
                             title: Text(modcode.modCode),
                           );
                         },
-                        noItemsFoundBuilder: (context) => const Center(
+                        noItemsFoundBuilder: (context) => Center(
                           child: Text(
                             'Module not found.',
-                            style: TextStyle(fontSize: 12),
+                            style: Theme.of(context).primaryTextTheme.bodySmall,
                           ),
                         ),
                         onSuggestionSelected: (ModuleCode? suggestion) {

@@ -142,8 +142,8 @@ class _BrowseScreenState extends State<BrowseScreen> {
           }
           if (!queriesSnapshots.hasData ||
               queriesSnapshots.data!.docs.isEmpty) {
-            return const Center(
-              child: Text('No queries posted.'),
+            return Center(
+              child: Text('No queries posted.', style: Theme.of(context).primaryTextTheme.bodySmall,),
             );
           }
           if (queriesSnapshots.hasError) {

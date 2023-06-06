@@ -18,7 +18,6 @@ ThemeData lightTheme(BuildContext context) {
       backgroundColor: Color.fromARGB(255, 128, 222, 234),
       elevation: 0,
       systemOverlayStyle: SystemUiOverlayStyle.dark,
-      toolbarTextStyle: TextStyle(color: textColorLightTheme),
     ),
     // inputDecorationTheme: const InputDecorationTheme(
     //   contentPadding: EdgeInsets.symmetric(horizontal: defaultPadding),
@@ -38,17 +37,21 @@ ThemeData lightTheme(BuildContext context) {
         ),
       ),
     ),
+    primaryTextTheme: const TextTheme(
+      bodySmall: TextStyle(fontSize: 15, color: Colors.black)
+    ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
         foregroundColor: Colors.black,
+        textStyle: const TextStyle(fontSize: 12)
       )
     ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       type: BottomNavigationBarType.fixed,
-      selectedItemColor: Color.fromARGB(255, 47, 125, 180),
-      unselectedItemColor: Color.fromARGB(255, 48, 97, 104),
       showSelectedLabels: false,
       showUnselectedLabels: false,
+      selectedIconTheme: IconThemeData(color: Color.fromARGB(255, 198, 248, 244), size: 35),
+      unselectedIconTheme: IconThemeData(color: Color.fromARGB(255, 48, 97, 104), size: 25),
     ),
     canvasColor: const Color.fromARGB(255, 128, 222, 234),
     iconTheme: const IconThemeData(color: textColorLightTheme),
