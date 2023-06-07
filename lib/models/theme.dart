@@ -38,7 +38,9 @@ ThemeData lightTheme(BuildContext context) {
       ),
     ),
     primaryTextTheme: const TextTheme(
-      bodySmall: TextStyle(fontSize: 15, color: Colors.black)
+      bodySmall: TextStyle(fontSize: 10, color: Colors.black),
+      bodyMedium: TextStyle(fontSize: 13, color: Colors.black),
+      bodyLarge: TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold),
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(

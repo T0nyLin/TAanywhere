@@ -22,15 +22,37 @@ class _BrowseScreenState extends State<BrowseScreen> {
     super.dispose();
   }
 
+  void _showModalBottomSheet(BuildContext context, Map<String, dynamic> data) {
+    showModalBottomSheet(
+      backgroundColor: const Color.fromARGB(255, 165, 228, 234),
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+        top: Radius.circular(30),
+      )),
+      builder: (context) => DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.7,
+        maxChildSize: 0.8,
+        minChildSize: 0.45,
+        builder: (context, scrollController) => SingleChildScrollView(
+          controller: scrollController,
+          child: QueryInfoScreen(data: data),
+        ),
+      ),
+    );
+  }
+
   _uploadtimeconversion(Map<String, dynamic> data) {
-    Timestamp uploadtime = data['uploadedTime'];
+    Timestamp lifetime = data['uploadedTime'];
     final DateTime dateConvert =
-        DateTime.fromMillisecondsSinceEpoch(uploadtime.seconds * 1000);
+        DateTime.fromMillisecondsSinceEpoch(lifetime.seconds * 1000);
     DateTime now = DateTime.now();
     var diff = now.difference(dateConvert);
-    var posted = diff.inMinutes;
+    var upload = diff.inMinutes;
 
-    return posted;
+    return upload;
   }
 
   _lifetimeconversion(Map<String, dynamic> data) {
@@ -70,14 +92,14 @@ class _BrowseScreenState extends State<BrowseScreen> {
             ),
           ),
         ),
-        title: Text(data['query']),
+        title: Text(data['query'], style: Theme.of(context).primaryTextTheme.bodyLarge,overflow: TextOverflow.ellipsis,),
         subtitle: Column(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(data['module Code']),
-                Text(data['cost']),
+                Text(data['module Code'], style: Theme.of(context).primaryTextTheme.bodyMedium,),
+                Text('Cost: ${data['cost']}', style: Theme.of(context).primaryTextTheme.bodyMedium,),
               ],
             ),
             const SizedBox(
@@ -86,20 +108,14 @@ class _BrowseScreenState extends State<BrowseScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(data['mentee']),
-                Text('$posted min'),
+                Text(data['mentee'], style: Theme.of(context).primaryTextTheme.bodySmall,),
+                Text('Posted: $posted min ago', style: Theme.of(context).primaryTextTheme.bodySmall,),
               ],
             ),
           ],
         ),
         trailing: const Icon(Icons.arrow_right),
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => QueryInfoScreen(data: data),
-            ),
-          );
-        },
+        onTap: () => _showModalBottomSheet(context, data),
       ),
     );
   }
@@ -111,6 +127,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
         title: TextField(
           controller: searchController,
           decoration: InputDecoration(
+            hintStyle: Theme.of(context).primaryTextTheme.bodyMedium,
               hintText: 'Search Module Code',
               prefixIcon: const Icon(Icons.search_rounded),
               suffixIcon: IconButton(
@@ -143,7 +160,10 @@ class _BrowseScreenState extends State<BrowseScreen> {
           if (!queriesSnapshots.hasData ||
               queriesSnapshots.data!.docs.isEmpty) {
             return Center(
-              child: Text('No queries posted.', style: Theme.of(context).primaryTextTheme.bodySmall,),
+              child: Text(
+                'No queries posted.',
+                style: Theme.of(context).primaryTextTheme.bodyMedium,
+              ),
             );
           }
           if (queriesSnapshots.hasError) {
@@ -152,7 +172,6 @@ class _BrowseScreenState extends State<BrowseScreen> {
             );
           }
           return CustomScrollView(
-            scrollDirection: Axis.vertical,
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             slivers: <Widget>[
               SliverList(
@@ -177,13 +196,13 @@ class _BrowseScreenState extends State<BrowseScreen> {
                     }
 
                     if (code.trim().isEmpty) {
-                      return _search(data, posted);
+                      return _search(data, lifetime);
                     }
                     if (data['module Code']
                         .toString()
                         .toLowerCase()
                         .contains(code.toLowerCase())) {
-                      return _search(data, posted);
+                      return _search(data, lifetime);
                     }
                     return Container();
                   },
