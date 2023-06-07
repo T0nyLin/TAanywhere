@@ -103,7 +103,6 @@ class _UploadScreenState extends State<UploadScreen> {
         title: const Text('Upload Query'),
       ),
       body: SingleChildScrollView(
-        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         child: Form(
           key: _formKey,
           child: Container(
