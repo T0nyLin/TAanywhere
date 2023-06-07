@@ -74,6 +74,7 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
 
       await FirebaseFirestore.instance.collection('user queries').add({
         'mentee': user!.email,
+        'uid': user!.uid,
         'image_url': imageUrl,
         'query': widget.query,
         'module Code': widget.modcode,
