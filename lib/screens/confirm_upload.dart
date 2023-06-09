@@ -48,23 +48,25 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
     String formatDate = DateFormat('ddMMyyHHmmss').format(DateTime.now());
 
     if (modNum[0] == '1') {
-      cost = '\$4';
       level = '1000';
+      cost = '\$4';
     } else if (modNum[0] == '2') {
-      cost = '\$5';
       level = '2000';
-    } else {
+      cost = '\$4';
+    } else if (modNum[0] == '3') {
+      level = '3000';
+      cost = '\$5';
+    } else if (modNum[0] == '4') {
+      level = '4000';
+      cost = '\$5';
+    } else if (modNum[0] == '5') {
+      level = '5000';
       cost = '\$6';
-      if (modNum[0] == '3') {
-        level = '3000';
-      } else if (modNum[0] == '4') {
-        level = '4000';
-      } else if (modNum[0] == '5') {
-        level = '5000';
-      } else if (modNum[0] == '6') {
-        level = '6000';
-      }
-    }
+    } else if (modNum[0] == '6') {
+      level = '6000';
+      cost = '\$6';
+    } 
+
     void uploadQuery() async {
       isUploading = true;
       final storageRef = FirebaseStorage.instance
