@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:ta_anywhere/screens/queryinfo.dart';
 
@@ -24,6 +26,8 @@ class _BrowseScreenState extends State<BrowseScreen> {
 
   void _showModalBottomSheet(BuildContext context, Map<String, dynamic> data) {
     showModalBottomSheet(
+      isDismissible: true,
+      showDragHandle: true,
       backgroundColor: const Color.fromARGB(255, 165, 228, 234),
       context: context,
       isScrollControlled: true,
@@ -66,6 +70,10 @@ class _BrowseScreenState extends State<BrowseScreen> {
     return lifetime;
   }
 
+  Future<void> _refreshBrowse() async {
+    return await Future.delayed(const Duration(seconds: 1));
+  }
+
   Widget _search(Map<String, dynamic> data, int posted) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -77,29 +85,35 @@ class _BrowseScreenState extends State<BrowseScreen> {
             onTap: () {
               showImageViewer(
                 context,
-                Image.network(
-                  data['image_url'],
-                ).image,
+                CachedNetworkImageProvider(data['image_url']),
                 swipeDismissible: true,
                 doubleTapZoomable: true,
               );
             },
             child: Image(
-              image: NetworkImage(
-                data['image_url'],
-              ),
+              image: CachedNetworkImageProvider(data['image_url']),
               fit: BoxFit.cover,
             ),
           ),
         ),
-        title: Text(data['query'], style: Theme.of(context).primaryTextTheme.bodyLarge,overflow: TextOverflow.ellipsis,),
+        title: Text(
+          data['query'],
+          style: Theme.of(context).primaryTextTheme.bodyLarge,
+          overflow: TextOverflow.ellipsis,
+        ),
         subtitle: Column(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(data['module Code'], style: Theme.of(context).primaryTextTheme.bodyMedium,),
-                Text('Cost: ${data['cost']}', style: Theme.of(context).primaryTextTheme.bodyMedium,),
+                Text(
+                  data['module Code'],
+                  style: Theme.of(context).primaryTextTheme.bodyMedium,
+                ),
+                Text(
+                  'Cost: ${data['cost']}',
+                  style: Theme.of(context).primaryTextTheme.bodyMedium,
+                ),
               ],
             ),
             const SizedBox(
@@ -108,8 +122,14 @@ class _BrowseScreenState extends State<BrowseScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(data['mentee'], style: Theme.of(context).primaryTextTheme.bodySmall,),
-                Text('Posted: $posted min ago', style: Theme.of(context).primaryTextTheme.bodySmall,),
+                Text(
+                  data['mentee'],
+                  style: Theme.of(context).primaryTextTheme.bodySmall,
+                ),
+                Text(
+                  'Posted: $posted min ago',
+                  style: Theme.of(context).primaryTextTheme.bodySmall,
+                ),
               ],
             ),
           ],
@@ -127,7 +147,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
         title: TextField(
           controller: searchController,
           decoration: InputDecoration(
-            hintStyle: Theme.of(context).primaryTextTheme.bodyMedium,
+              hintStyle: Theme.of(context).primaryTextTheme.bodyMedium,
               hintText: 'Search Module Code',
               prefixIcon: const Icon(Icons.search_rounded),
               suffixIcon: IconButton(
@@ -171,44 +191,55 @@ class _BrowseScreenState extends State<BrowseScreen> {
               child: Text('Something went wrong...'),
             );
           }
-          return CustomScrollView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            slivers: <Widget>[
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  childCount: queriesSnapshots.data!.docs.length,
-                  (BuildContext context, int index) {
-                    var data = queriesSnapshots.data!.docs[index].data()
-                        as Map<String, dynamic>;
-                    //auto brings older posts to the top
-                    var posted = _uploadtimeconversion(data);
-                    if (posted >= 10) {
-                      queries
-                          .doc(queriesSnapshots.data!.docs[index].id.toString())
-                          .update({'uploadedTime': DateTime.now()});
-                    }
-                    //auto purge after 60min
-                    var lifetime = _lifetimeconversion(data);
-                    if (lifetime >= 60) {
-                      queries
-                          .doc(queriesSnapshots.data!.docs[index].id.toString())
-                          .delete();
-                    }
+          return LiquidPullToRefresh(
+            springAnimationDurationInMilliseconds: 20,
+            showChildOpacityTransition: false,
+            animSpeedFactor: 2,
+            height: 50,
+            backgroundColor: const Color.fromARGB(255, 48, 97, 104),
+            color: const Color.fromARGB(255, 128, 222, 234),
+            onRefresh: _refreshBrowse,
+            child: CustomScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              slivers: <Widget>[
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    childCount: queriesSnapshots.data!.docs.length,
+                    (BuildContext context, int index) {
+                      var data = queriesSnapshots.data!.docs[index].data()
+                          as Map<String, dynamic>;
+                      //auto brings older posts to the top
+                      var posted = _uploadtimeconversion(data);
+                      if (posted >= 10) {
+                        queries
+                            .doc(queriesSnapshots.data!.docs[index].id
+                                .toString())
+                            .update({'uploadedTime': DateTime.now()});
+                      }
+                      //auto purge after 60min
+                      var lifetime = _lifetimeconversion(data);
+                      if (lifetime >= 60) {
+                        queries
+                            .doc(queriesSnapshots.data!.docs[index].id
+                                .toString())
+                            .delete();
+                      }
 
-                    if (code.trim().isEmpty) {
-                      return _search(data, lifetime);
-                    }
-                    if (data['module Code']
-                        .toString()
-                        .toLowerCase()
-                        .contains(code.toLowerCase())) {
-                      return _search(data, lifetime);
-                    }
-                    return Container();
-                  },
+                      if (code.trim().isEmpty) {
+                        return _search(data, lifetime);
+                      }
+                      if (data['module Code']
+                          .toString()
+                          .toLowerCase()
+                          .contains(code.toLowerCase())) {
+                        return _search(data, lifetime);
+                      }
+                      return Container();
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         },
       ),
