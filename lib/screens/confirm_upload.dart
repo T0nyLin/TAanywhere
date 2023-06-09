@@ -19,10 +19,10 @@ class ConfirmUploadScreen extends StatefulWidget {
   });
 
   final File image;
-  final query;
-  final modcode;
-  final location;
-  final landmark;
+  final String query;
+  final String modcode;
+  final String location;
+  final String landmark;
 
   @override
   State<ConfirmUploadScreen> createState() => _ConfirmUploadScreenState();
@@ -31,7 +31,10 @@ class ConfirmUploadScreen extends StatefulWidget {
 class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
   final User? user = Auth().currentUser!;
 
-  Widget buildFileImage() => Image.file(widget.image);
+  Widget buildFileImage() => Image.file(
+        widget.image,
+        fit: BoxFit.cover,
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -101,39 +104,43 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
               ),
               width: double.infinity,
               height: 200,
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: buildFileImage(),
-              ),
+              child: buildFileImage(),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  widget.query,
+                  style: Theme.of(context).primaryTextTheme.bodyLarge,
+                ),
+                Text(
+                  'Module Code: ${widget.modcode}',
+                  style: Theme.of(context).primaryTextTheme.bodyMedium,
+                ),
+                Text(
+                  'Cost: $cost',
+                  style: Theme.of(context).primaryTextTheme.bodyMedium,
+                ),
+                Text(
+                  'Level: $level',
+                  style: Theme.of(context).primaryTextTheme.bodyMedium,
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Text(widget.location,
+                style: const TextStyle(color: Colors.black, fontSize: 19)),
+            Text(
+              widget.landmark,
+              style: Theme.of(context).primaryTextTheme.bodyMedium,
             ),
             const SizedBox(
               height: 30,
-            ),
-            TextField(
-              enabled: false,
-              decoration: InputDecoration(
-                label: Text(widget.query, style: Theme.of(context).primaryTextTheme.bodySmall,),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Text('Module Code: ${widget.modcode}', style: Theme.of(context).primaryTextTheme.bodySmall,),
-                Text('Cost: $cost', style: Theme.of(context).primaryTextTheme.bodySmall,),
-                Text('Level: $level', style: Theme.of(context).primaryTextTheme.bodySmall,),
-              ],
-            ),
-            TextField(
-              enabled: false,
-              decoration: InputDecoration(
-                label: Text(widget.location, style: Theme.of(context).primaryTextTheme.bodySmall,),
-              ),
-            ),
-            TextField(
-              enabled: false,
-              decoration: InputDecoration(
-                label: Text(widget.landmark, style: Theme.of(context).primaryTextTheme.bodySmall,),
-              ),
             ),
             if (isUploading) const CircularProgressIndicator(),
             if (!isUploading)
