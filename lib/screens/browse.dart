@@ -5,7 +5,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-import 'package:ta_anywhere/screens/queryinfo.dart';
+import 'package:ta_anywhere/widget/queryinfo.dart';
 
 class BrowseScreen extends StatefulWidget {
   const BrowseScreen({super.key});

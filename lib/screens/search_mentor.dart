@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:ta_anywhere/screens/tabs.dart';
+import 'package:ta_anywhere/widget/tabs.dart';
 
 class SearchMentorScreen extends StatelessWidget {
   const SearchMentorScreen({super.key});
