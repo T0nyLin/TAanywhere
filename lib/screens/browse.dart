@@ -90,9 +90,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
                 doubleTapZoomable: true,
               );
             },
-            child: Image(
-              image: CachedNetworkImageProvider(data['image_url']),
-              fit: BoxFit.cover,
+            child: CachedNetworkImage(imageUrl: data['image_url'], fit: BoxFit.cover,
             ),
           ),
         ),

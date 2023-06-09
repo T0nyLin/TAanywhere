@@ -47,8 +47,8 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
               ),
               width: double.infinity,
               height: 300,
-              child: Image(
-                image: CachedNetworkImageProvider(widget.data['image_url']),
+              child: CachedNetworkImage(
+                imageUrl: widget.data['image_url'],
                 fit: BoxFit.cover,
               ),
             ),
