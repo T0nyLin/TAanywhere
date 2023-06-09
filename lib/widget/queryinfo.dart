@@ -48,9 +48,12 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
               width: double.infinity,
               height: 300,
               child: CachedNetworkImage(
-                imageUrl: widget.data['image_url'],
-                fit: BoxFit.cover,
-              ),
+              imageUrl: widget.data['image_url'].toString(),
+              fit: BoxFit.cover,
+              placeholder: (context, url) => const CircularProgressIndicator(color: Color.fromARGB(255, 48, 97, 104),),
+              errorWidget: (context, url, error) => const Icon(Icons.error),
+              height: 50,
+            ),
             ),
           ),
           Center(
