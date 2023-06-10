@@ -14,6 +14,15 @@ ThemeData lightTheme(BuildContext context) {
       bodyMedium: TextStyle(color: secondaryColor40LightTheme),
     ),
     appBarTheme: const AppBarTheme(
+      iconTheme: IconThemeData(
+        color: Color.fromARGB(255, 48, 97, 104),
+        shadows: <Shadow>[
+          Shadow(
+            color: Color.fromARGB(255, 39, 68, 72),
+            blurRadius: 2.0,
+          ),
+        ],
+      ),
       centerTitle: false,
       backgroundColor: Color.fromARGB(255, 128, 222, 234),
       elevation: 0,
@@ -40,20 +49,21 @@ ThemeData lightTheme(BuildContext context) {
     primaryTextTheme: const TextTheme(
       bodySmall: TextStyle(fontSize: 10, color: Colors.black),
       bodyMedium: TextStyle(fontSize: 13, color: Colors.black),
-      bodyLarge: TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold),
+      bodyLarge: TextStyle(
+          fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold),
     ),
     textButtonTheme: TextButtonThemeData(
-      style: TextButton.styleFrom(
-        foregroundColor: Colors.black,
-        textStyle: const TextStyle(fontSize: 12)
-      )
-    ),
+        style: TextButton.styleFrom(
+            foregroundColor: Colors.black,
+            textStyle: const TextStyle(fontSize: 12))),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       type: BottomNavigationBarType.fixed,
       showSelectedLabels: false,
       showUnselectedLabels: false,
-      selectedIconTheme: IconThemeData(color: Color.fromARGB(255, 198, 248, 244), size: 35),
-      unselectedIconTheme: IconThemeData(color: Color.fromARGB(255, 48, 97, 104), size: 25),
+      selectedIconTheme:
+          IconThemeData(color: Color.fromARGB(255, 198, 248, 244), size: 35),
+      unselectedIconTheme:
+          IconThemeData(color: Color.fromARGB(255, 48, 97, 104), size: 25),
     ),
     canvasColor: const Color.fromARGB(255, 128, 222, 234),
     iconTheme: const IconThemeData(color: textColorLightTheme),

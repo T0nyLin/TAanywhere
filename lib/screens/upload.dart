@@ -243,23 +243,23 @@ class _UploadScreenState extends State<UploadScreen> {
                         },
                       ),
                     ),
-                    // const Text('  ......................  '),
-                    // Container(
-                    //   decoration: BoxDecoration(
-                    //     border: Border.all(
-                    //       width: 1,
-                    //       color: Colors.black,
-                    //     ),
-                    //     borderRadius: BorderRadius.circular(13),
-                    //   ),
-                    //   width: 100,
-                    //   height: 55,
-                    //   child: Center(
-                    //     child: Center(
-                    //       child: Text(_modController.text),
-                    //     ),
-                    //   ),
-                    // ),
+                    const Text('  ......................  '),
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          width: 1,
+                          color: Colors.black,
+                        ),
+                        borderRadius: BorderRadius.circular(13),
+                      ),
+                      width: 100,
+                      height: 55,
+                      child: Center(
+                        child: Center(
+                          child: Text(_modController.text == "" ? "Code" : _modController.text),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(

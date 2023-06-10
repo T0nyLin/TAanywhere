@@ -93,7 +93,9 @@ class _BrowseScreenState extends State<BrowseScreen> {
             child: CachedNetworkImage(
               imageUrl: data['image_url'].toString(),
               fit: BoxFit.cover,
-              placeholder: (context, url) => const CircularProgressIndicator(color: Color.fromARGB(255, 48, 97, 104),),
+              progressIndicatorBuilder: (context, url, progress) =>
+                  const CircularProgressIndicator(
+                      color: Color.fromARGB(255, 48, 97, 104)),
               errorWidget: (context, url, error) => const Icon(Icons.error),
               height: 50,
             ),
@@ -147,6 +149,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        
         title: TextField(
           controller: searchController,
           decoration: InputDecoration(
@@ -168,41 +171,41 @@ class _BrowseScreenState extends State<BrowseScreen> {
           },
         ),
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('user queries')
-            .orderBy('uploadedTime', descending: true)
-            .snapshots(),
-        builder: (ctx, queriesSnapshots) {
-          if (queriesSnapshots.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: LoadingAnimationWidget.waveDots(
-                  color: Colors.black, size: 100),
-            );
-          }
-          if (!queriesSnapshots.hasData ||
-              queriesSnapshots.data!.docs.isEmpty) {
-            return Center(
-              child: Text(
-                'No queries posted.',
-                style: Theme.of(context).primaryTextTheme.bodyMedium,
-              ),
-            );
-          }
-          if (queriesSnapshots.hasError) {
-            return const Center(
-              child: Text('Something went wrong...'),
-            );
-          }
-          return LiquidPullToRefresh(
-            springAnimationDurationInMilliseconds: 20,
-            showChildOpacityTransition: false,
-            animSpeedFactor: 2,
-            height: 50,
-            backgroundColor: const Color.fromARGB(255, 48, 97, 104),
-            color: const Color.fromARGB(255, 128, 222, 234),
-            onRefresh: _refreshBrowse,
-            child: CustomScrollView(
+      body: LiquidPullToRefresh(
+        springAnimationDurationInMilliseconds: 20,
+        showChildOpacityTransition: false,
+        animSpeedFactor: 2,
+        height: 50,
+        backgroundColor: const Color.fromARGB(255, 48, 97, 104),
+        color: const Color.fromARGB(255, 128, 222, 234),
+        onRefresh: _refreshBrowse,
+        child: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('user queries')
+              .orderBy('uploadedTime', descending: true)
+              .snapshots(),
+          builder: (ctx, queriesSnapshots) {
+            if (queriesSnapshots.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: LoadingAnimationWidget.waveDots(
+                    color: Colors.black, size: 100),
+              );
+            }
+            if (!queriesSnapshots.hasData ||
+                queriesSnapshots.data!.docs.isEmpty) {
+              return Center(
+                child: Text(
+                  'No queries posted.',
+                  style: Theme.of(context).primaryTextTheme.bodyMedium,
+                ),
+              );
+            }
+            if (queriesSnapshots.hasError) {
+              return const Center(
+                child: Text('Something went wrong...'),
+              );
+            }
+            return CustomScrollView(
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               slivers: <Widget>[
                 SliverList(
@@ -242,9 +245,9 @@ class _BrowseScreenState extends State<BrowseScreen> {
                   ),
                 ),
               ],
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

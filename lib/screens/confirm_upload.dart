@@ -29,7 +29,7 @@ class ConfirmUploadScreen extends StatefulWidget {
 }
 
 class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
-  final User? user = Auth().currentUser!;
+  final User user = Auth().currentUser!;
 
   Widget buildFileImage() => Image.file(
         widget.image,
@@ -65,21 +65,24 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
     } else if (modNum[0] == '6') {
       level = '6000';
       cost = '\$6';
-    } 
+    }
 
     void uploadQuery() async {
       isUploading = true;
       final storageRef = FirebaseStorage.instance
           .ref()
           .child('query_images ')
-          .child('$formatDate.jpg');
+          .child('${user.uid}$formatDate.jpg');
 
       await storageRef.putFile(widget.image);
       final imageUrl = await storageRef.getDownloadURL();
 
-      await FirebaseFirestore.instance.collection('user queries').add({
-        'mentee': user!.email,
-        'uid': user!.uid,
+      await FirebaseFirestore.instance
+          .collection('user queries')
+          .doc(user.uid)
+          .set({
+        'mentee': user.email,
+        'uid': user.uid,
         'image_url': imageUrl,
         'query': widget.query,
         'module Code': widget.modcode,
@@ -144,7 +147,14 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
             const SizedBox(
               height: 30,
             ),
-            if (isUploading) const CircularProgressIndicator(),
+            if (isUploading)
+              const Center(
+                child: SizedBox(
+                  height: 40,
+                  width: 40,
+                  child: CircularProgressIndicator(),
+                ),
+              ),
             if (!isUploading)
               ElevatedButton.icon(
                 onPressed: () {
