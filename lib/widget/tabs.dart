@@ -23,7 +23,7 @@ class _TabsScreenState extends State<TabsScreen> {
 
   final List<Widget> _screens = [
     const BrowseScreen(),
-    const MapScreen(),
+    const MainMapScreen(),
     const CameraScreen(),
     ProfileScreen(),
   ];

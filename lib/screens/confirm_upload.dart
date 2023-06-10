@@ -16,6 +16,8 @@ class ConfirmUploadScreen extends StatefulWidget {
     required this.modcode,
     required this.location,
     required this.landmark,
+    required this.x,
+    required this.y,
   });
 
   final File image;
@@ -23,6 +25,8 @@ class ConfirmUploadScreen extends StatefulWidget {
   final String modcode;
   final String location;
   final String landmark;
+  final double x;
+  final double y;
 
   @override
   State<ConfirmUploadScreen> createState() => _ConfirmUploadScreenState();
@@ -89,6 +93,8 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
         'cost': cost,
         'level': level,
         'location': widget.location,
+        'x-coordinate': widget.x,
+        'y-coordinate': widget.y,
         'landmark': widget.landmark,
         'uploadedTime': DateTime.now(),
         'lifetime': DateTime.now(),
@@ -152,7 +158,9 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
                 child: SizedBox(
                   height: 40,
                   width: 40,
-                  child: CircularProgressIndicator(),
+                  child: CircularProgressIndicator(
+                    color: Color.fromARGB(255, 48, 97, 104),
+                  ),
                 ),
               ),
             if (!isUploading)

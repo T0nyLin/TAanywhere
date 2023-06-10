@@ -61,9 +61,9 @@ ThemeData lightTheme(BuildContext context) {
       showSelectedLabels: false,
       showUnselectedLabels: false,
       selectedIconTheme:
-          IconThemeData(color: Color.fromARGB(255, 198, 248, 244), size: 35),
+          IconThemeData(color: Color.fromARGB(255, 48, 97, 104), size: 35),
       unselectedIconTheme:
-          IconThemeData(color: Color.fromARGB(255, 48, 97, 104), size: 25),
+          IconThemeData(color: Color.fromARGB(255, 198, 248, 244), size: 25),
     ),
     canvasColor: const Color.fromARGB(255, 128, 222, 234),
     iconTheme: const IconThemeData(color: textColorLightTheme),
