@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
@@ -23,7 +22,6 @@ class PickLocation extends StatefulWidget {
 class _PickLocationState extends State<PickLocation> {
   PlaceLocation? _pickedLocation;
   var _isGettingLocation = false;
-  PlaceLocation? _selectedLocation;
 
   String get locationImage {
     if (_pickedLocation == null) {
