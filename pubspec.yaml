@@ -36,7 +36,6 @@ dependencies:
   cupertino_icons: ^1.0.2
   path_provider: ^2.0.15
   path: ^1.8.3
-  location: ^4.4.0
   flutter_svg: ^2.0.6
   http: ^0.13.6
   uuid: ^3.0.7
@@ -62,6 +61,7 @@ dependencies:
   #googlemaps
   google_maps_flutter: ^2.2.8
   geolocator: ^9.0.2
+  location: ^4.4.0
 
 
   

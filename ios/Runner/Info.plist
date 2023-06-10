@@ -4,7 +4,7 @@
 <dict>
 	<key>NSCameraUsageDescription</key>
 	<string>$(PRODUCT_NAME) Take picture of your Query.</string>
-	<key>NSLocationInUseUsageDescription</key>
+	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Your current location</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Take your Query Image.</string>
