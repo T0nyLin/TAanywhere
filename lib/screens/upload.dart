@@ -2,14 +2,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:ta_anywhere/screens/confirm_upload.dart';
-import 'package:uuid/uuid.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 
-import 'package:ta_anywhere/components/place_service.dart';
-import 'package:ta_anywhere/widget/set_location.dart';
 import 'package:ta_anywhere/components/modulecode.dart';
+import 'package:ta_anywhere/screens/confirm_upload.dart';
+import 'package:ta_anywhere/widget/picklocation.dart';
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key, required this.image});
@@ -26,6 +24,8 @@ class _UploadScreenState extends State<UploadScreen> {
   final _modController = TextEditingController();
   final _destinationController = TextEditingController();
   var _landmarkInput = '';
+  double x = 0.0;
+  double y = 0.0;
 
   void _cropImage(filePath) async {
     CroppedFile? croppedImage = await ImageCropper()
@@ -65,19 +65,6 @@ class _UploadScreenState extends State<UploadScreen> {
     super.dispose();
   }
 
-  void _search(BuildContext context) async {
-    final sessionToken = const Uuid().v4();
-    final Suggestion? result = await showSearch(
-      context: context,
-      delegate: SetLocation(sessionToken),
-    );
-    if (result != null) {
-      setState(() {
-        _destinationController.text = result.description;
-      });
-    }
-  }
-
   void _saveQuery(BuildContext context) {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
@@ -89,6 +76,8 @@ class _UploadScreenState extends State<UploadScreen> {
             modcode: _modController.text.toString(),
             location: _destinationController.text,
             landmark: _landmarkInput,
+            x: x,
+            y: y,
           ),
         ),
       );
@@ -119,7 +108,7 @@ class _UploadScreenState extends State<UploadScreen> {
                       width: 200,
                       height: 200,
                       child: _buildFileImage(),
-                      ),
+                    ),
                     Column(
                       children: [
                         ElevatedButton(
@@ -161,7 +150,7 @@ class _UploadScreenState extends State<UploadScreen> {
                     border: OutlineInputBorder(),
                     labelText: 'What is your query?',
                     hintText: 'Describe your situation...',
-                    counterText: "",
+                    counterText: '',
                   ),
                   validator: (value) {
                     if (value == null ||
@@ -202,7 +191,7 @@ class _UploadScreenState extends State<UploadScreen> {
                             hintStyle: const TextStyle(
                                 fontSize: 13, color: Colors.grey),
                             labelStyle: const TextStyle(fontSize: 9),
-                            counterText: "",
+                            counterText: '',
                           ),
                         ),
                         suggestionsCallback: getModCodes,
@@ -243,23 +232,25 @@ class _UploadScreenState extends State<UploadScreen> {
                         },
                       ),
                     ),
-                    // const Text('  ......................  '),
-                    // Container(
-                    //   decoration: BoxDecoration(
-                    //     border: Border.all(
-                    //       width: 1,
-                    //       color: Colors.black,
-                    //     ),
-                    //     borderRadius: BorderRadius.circular(13),
-                    //   ),
-                    //   width: 100,
-                    //   height: 55,
-                    //   child: Center(
-                    //     child: Center(
-                    //       child: Text(_modController.text),
-                    //     ),
-                    //   ),
-                    // ),
+                    const Text('  ......................  '),
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          width: 1,
+                          color: Colors.black,
+                        ),
+                        borderRadius: BorderRadius.circular(13),
+                      ),
+                      width: 100,
+                      height: 55,
+                      child: Center(
+                        child: Center(
+                          child: Text(_modController.text == ''
+                              ? 'Code'
+                              : _modController.text),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(
@@ -272,10 +263,23 @@ class _UploadScreenState extends State<UploadScreen> {
                       ),
                       borderRadius: BorderRadius.circular(5)),
                   child: TextFormField(
+                    maxLines: 2,
+                    style: Theme.of(context).primaryTextTheme.bodyMedium,
                     controller: _destinationController,
                     readOnly: true,
                     onTap: () {
-                      _search(context);
+                      //_search(context);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              PickLocation(onSelectLocation: (location) {
+                            _destinationController.text =
+                                location.address.toString();
+                            x = location.longitude;
+                            y = location.latitude;
+                          }),
+                        ),
+                      );
                     },
                     decoration: InputDecoration(
                       icon: Container(
@@ -287,7 +291,7 @@ class _UploadScreenState extends State<UploadScreen> {
                           color: Colors.black,
                         ),
                       ),
-                      hintText: "Set Location",
+                      hintText: 'Set Location',
                       border: InputBorder.none,
                     ),
                     validator: (value) {
@@ -304,6 +308,7 @@ class _UploadScreenState extends State<UploadScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: TextFormField(
+                    maxLines: 2,
                     maxLength: 200,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
@@ -318,9 +323,8 @@ class _UploadScreenState extends State<UploadScreen> {
                           'Please describe a distinct landmark so that your mentor can find you easily.',
                       hintStyle:
                           const TextStyle(fontSize: 13, color: Colors.grey),
-                      hintMaxLines: 2,
                       labelStyle: const TextStyle(fontSize: 10),
-                      counterText: "",
+                      counterText: '',
                     ),
                     validator: (value) {
                       if (value == null ||

@@ -16,22 +16,29 @@ class ConfirmUploadScreen extends StatefulWidget {
     required this.modcode,
     required this.location,
     required this.landmark,
+    required this.x,
+    required this.y,
   });
 
   final File image;
-  final query;
-  final modcode;
-  final location;
-  final landmark;
+  final String query;
+  final String modcode;
+  final String location;
+  final String landmark;
+  final double x;
+  final double y;
 
   @override
   State<ConfirmUploadScreen> createState() => _ConfirmUploadScreenState();
 }
 
 class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
-  final User? user = Auth().currentUser!;
+  final User user = Auth().currentUser!;
 
-  Widget buildFileImage() => Image.file(widget.image);
+  Widget buildFileImage() => Image.file(
+        widget.image,
+        fit: BoxFit.cover,
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -45,42 +52,49 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
     String formatDate = DateFormat('ddMMyyHHmmss').format(DateTime.now());
 
     if (modNum[0] == '1') {
-      cost = '\$4';
       level = '1000';
+      cost = '\$4';
     } else if (modNum[0] == '2') {
-      cost = '\$5';
       level = '2000';
-    } else {
+      cost = '\$4';
+    } else if (modNum[0] == '3') {
+      level = '3000';
+      cost = '\$5';
+    } else if (modNum[0] == '4') {
+      level = '4000';
+      cost = '\$5';
+    } else if (modNum[0] == '5') {
+      level = '5000';
       cost = '\$6';
-      if (modNum[0] == '3') {
-        level = '3000';
-      } else if (modNum[0] == '4') {
-        level = '4000';
-      } else if (modNum[0] == '5') {
-        level = '5000';
-      } else if (modNum[0] == '6') {
-        level = '6000';
-      }
+    } else if (modNum[0] == '6') {
+      level = '6000';
+      cost = '\$6';
     }
+
     void uploadQuery() async {
       isUploading = true;
       final storageRef = FirebaseStorage.instance
           .ref()
-          .child('query_images ')
-          .child('$formatDate.jpg');
+          .child('query_images')
+          .child('${user.uid}$formatDate.jpg');
 
       await storageRef.putFile(widget.image);
       final imageUrl = await storageRef.getDownloadURL();
 
-      await FirebaseFirestore.instance.collection('user queries').add({
-        'mentee': user!.email,
-        'uid': user!.uid,
+      await FirebaseFirestore.instance
+          .collection('user queries')
+          .doc(user.uid)
+          .set({
+        'mentee': user.email,
+        'uid': user.uid,
         'image_url': imageUrl,
         'query': widget.query,
         'module Code': widget.modcode,
         'cost': cost,
         'level': level,
         'location': widget.location,
+        'x-coordinate': widget.x,
+        'y-coordinate': widget.y,
         'landmark': widget.landmark,
         'uploadedTime': DateTime.now(),
         'lifetime': DateTime.now(),
@@ -101,41 +115,53 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
               ),
               width: double.infinity,
               height: 200,
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: buildFileImage(),
-              ),
+              child: buildFileImage(),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  widget.query,
+                  style: Theme.of(context).primaryTextTheme.bodyLarge,
+                ),
+                Text(
+                  'Module Code: ${widget.modcode}',
+                  style: Theme.of(context).primaryTextTheme.bodyMedium,
+                ),
+                Text(
+                  'Cost: $cost',
+                  style: Theme.of(context).primaryTextTheme.bodyMedium,
+                ),
+                Text(
+                  'Level: $level',
+                  style: Theme.of(context).primaryTextTheme.bodyMedium,
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Text(widget.location,
+                style: const TextStyle(color: Colors.black, fontSize: 19)),
+            Text('Landmark: ${widget.landmark}',
+              style: Theme.of(context).primaryTextTheme.bodyMedium,
             ),
             const SizedBox(
               height: 30,
             ),
-            TextField(
-              enabled: false,
-              decoration: InputDecoration(
-                label: Text(widget.query, style: Theme.of(context).primaryTextTheme.bodySmall,),
+            if (isUploading)
+              const Center(
+                child: SizedBox(
+                  height: 40,
+                  width: 40,
+                  child: CircularProgressIndicator(
+                    color: Color.fromARGB(255, 48, 97, 104),
+                  ),
+                ),
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Text('Module Code: ${widget.modcode}', style: Theme.of(context).primaryTextTheme.bodySmall,),
-                Text('Cost: $cost', style: Theme.of(context).primaryTextTheme.bodySmall,),
-                Text('Level: $level', style: Theme.of(context).primaryTextTheme.bodySmall,),
-              ],
-            ),
-            TextField(
-              enabled: false,
-              decoration: InputDecoration(
-                label: Text(widget.location, style: Theme.of(context).primaryTextTheme.bodySmall,),
-              ),
-            ),
-            TextField(
-              enabled: false,
-              decoration: InputDecoration(
-                label: Text(widget.landmark, style: Theme.of(context).primaryTextTheme.bodySmall,),
-              ),
-            ),
-            if (isUploading) const CircularProgressIndicator(),
             if (!isUploading)
               ElevatedButton.icon(
                 onPressed: () {

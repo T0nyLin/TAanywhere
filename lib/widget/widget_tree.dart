@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../components/auth.dart';
 import 'package:ta_anywhere/screens/login.dart';
-import 'package:ta_anywhere/screens/tabs.dart';
+import 'package:ta_anywhere/widget/tabs.dart';
 
 class WidgetTree extends StatefulWidget {
   const WidgetTree({super.key});

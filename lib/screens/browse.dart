@@ -1,9 +1,13 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
-import 'package:ta_anywhere/screens/queryinfo.dart';
+import 'package:ta_anywhere/widget/queryinfo.dart';
 
 class BrowseScreen extends StatefulWidget {
   const BrowseScreen({super.key});
@@ -14,6 +18,7 @@ class BrowseScreen extends StatefulWidget {
 
 class _BrowseScreenState extends State<BrowseScreen> {
   final queries = FirebaseFirestore.instance.collection('user queries');
+  final storageRef = FirebaseStorage.instance.ref();
   TextEditingController searchController = TextEditingController();
   String code = "";
 
@@ -24,6 +29,8 @@ class _BrowseScreenState extends State<BrowseScreen> {
 
   void _showModalBottomSheet(BuildContext context, Map<String, dynamic> data) {
     showModalBottomSheet(
+      isDismissible: true,
+      showDragHandle: true,
       backgroundColor: const Color.fromARGB(255, 165, 228, 234),
       context: context,
       isScrollControlled: true,
@@ -66,6 +73,18 @@ class _BrowseScreenState extends State<BrowseScreen> {
     return lifetime;
   }
 
+  _deleteImages(Map<String, dynamic> data) async {
+    String formatDate = DateFormat('ddMMyyHHmmss').format(data['lifetime']);
+    final queryImageRef =
+        storageRef.child('query_images/${data['uid']}$formatDate');
+
+    await queryImageRef.delete();
+  }
+
+  Future<void> _refreshBrowse() async {
+    return await Future.delayed(const Duration(seconds: 1));
+  }
+
   Widget _search(Map<String, dynamic> data, int posted) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -77,29 +96,40 @@ class _BrowseScreenState extends State<BrowseScreen> {
             onTap: () {
               showImageViewer(
                 context,
-                Image.network(
-                  data['image_url'],
-                ).image,
+                CachedNetworkImageProvider(data['image_url']),
                 swipeDismissible: true,
                 doubleTapZoomable: true,
               );
             },
-            child: Image(
-              image: NetworkImage(
-                data['image_url'],
-              ),
+            child: CachedNetworkImage(
+              imageUrl: data['image_url'].toString(),
               fit: BoxFit.cover,
+              progressIndicatorBuilder: (context, url, progress) =>
+                  const CircularProgressIndicator(
+                      color: Color.fromARGB(255, 48, 97, 104)),
+              errorWidget: (context, url, error) => const Icon(Icons.error),
+              height: 50,
             ),
           ),
         ),
-        title: Text(data['query'], style: Theme.of(context).primaryTextTheme.bodyLarge,overflow: TextOverflow.ellipsis,),
+        title: Text(
+          data['query'],
+          style: Theme.of(context).primaryTextTheme.bodyLarge,
+          overflow: TextOverflow.ellipsis,
+        ),
         subtitle: Column(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(data['module Code'], style: Theme.of(context).primaryTextTheme.bodyMedium,),
-                Text('Cost: ${data['cost']}', style: Theme.of(context).primaryTextTheme.bodyMedium,),
+                Text(
+                  data['module Code'],
+                  style: Theme.of(context).primaryTextTheme.bodyMedium,
+                ),
+                Text(
+                  'Cost: ${data['cost']}',
+                  style: Theme.of(context).primaryTextTheme.bodyMedium,
+                ),
               ],
             ),
             const SizedBox(
@@ -108,8 +138,14 @@ class _BrowseScreenState extends State<BrowseScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(data['mentee'], style: Theme.of(context).primaryTextTheme.bodySmall,),
-                Text('Posted: $posted min ago', style: Theme.of(context).primaryTextTheme.bodySmall,),
+                Text(
+                  data['mentee'],
+                  style: Theme.of(context).primaryTextTheme.bodySmall,
+                ),
+                Text(
+                  'Posted: $posted min ago',
+                  style: Theme.of(context).primaryTextTheme.bodySmall,
+                ),
               ],
             ),
           ],
@@ -127,7 +163,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
         title: TextField(
           controller: searchController,
           decoration: InputDecoration(
-            hintStyle: Theme.of(context).primaryTextTheme.bodyMedium,
+              hintStyle: Theme.of(context).primaryTextTheme.bodyMedium,
               hintText: 'Search Module Code',
               prefixIcon: const Icon(Icons.search_rounded),
               suffixIcon: IconButton(
@@ -145,72 +181,84 @@ class _BrowseScreenState extends State<BrowseScreen> {
           },
         ),
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('user queries')
-            .orderBy('uploadedTime', descending: true)
-            .snapshots(),
-        builder: (ctx, queriesSnapshots) {
-          if (queriesSnapshots.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: LoadingAnimationWidget.waveDots(
-                  color: Colors.black, size: 100),
-            );
-          }
-          if (!queriesSnapshots.hasData ||
-              queriesSnapshots.data!.docs.isEmpty) {
-            return Center(
-              child: Text(
-                'No queries posted.',
-                style: Theme.of(context).primaryTextTheme.bodyMedium,
-              ),
-            );
-          }
-          if (queriesSnapshots.hasError) {
-            return const Center(
-              child: Text('Something went wrong...'),
-            );
-          }
-          return CustomScrollView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            slivers: <Widget>[
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  childCount: queriesSnapshots.data!.docs.length,
-                  (BuildContext context, int index) {
-                    var data = queriesSnapshots.data!.docs[index].data()
-                        as Map<String, dynamic>;
-                    //auto brings older posts to the top
-                    var posted = _uploadtimeconversion(data);
-                    if (posted >= 10) {
-                      queries
-                          .doc(queriesSnapshots.data!.docs[index].id.toString())
-                          .update({'uploadedTime': DateTime.now()});
-                    }
-                    //auto purge after 60min
-                    var lifetime = _lifetimeconversion(data);
-                    if (lifetime >= 60) {
-                      queries
-                          .doc(queriesSnapshots.data!.docs[index].id.toString())
-                          .delete();
-                    }
-
-                    if (code.trim().isEmpty) {
-                      return _search(data, lifetime);
-                    }
-                    if (data['module Code']
-                        .toString()
-                        .toLowerCase()
-                        .contains(code.toLowerCase())) {
-                      return _search(data, lifetime);
-                    }
-                    return Container();
-                  },
+      body: LiquidPullToRefresh(
+        springAnimationDurationInMilliseconds: 20,
+        showChildOpacityTransition: false,
+        animSpeedFactor: 2,
+        height: 50,
+        backgroundColor: const Color.fromARGB(255, 48, 97, 104),
+        color: const Color.fromARGB(255, 128, 222, 234),
+        onRefresh: _refreshBrowse,
+        child: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('user queries')
+              .orderBy('uploadedTime', descending: true)
+              .snapshots(),
+          builder: (ctx, queriesSnapshots) {
+            if (queriesSnapshots.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: LoadingAnimationWidget.waveDots(
+                    color: Colors.black, size: 100),
+              );
+            }
+            if (!queriesSnapshots.hasData ||
+                queriesSnapshots.data!.docs.isEmpty) {
+              return Center(
+                child: Text(
+                  'No queries posted.',
+                  style: Theme.of(context).primaryTextTheme.bodyMedium,
                 ),
-              ),
-            ],
-          );
-        },
+              );
+            }
+            if (queriesSnapshots.hasError) {
+              return const Center(
+                child: Text('Something went wrong...'),
+              );
+            }
+            return CustomScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              slivers: <Widget>[
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    childCount: queriesSnapshots.data!.docs.length,
+                    (BuildContext context, int index) {
+                      var data = queriesSnapshots.data!.docs[index].data()
+                          as Map<String, dynamic>;
+                      //auto brings older posts to the top
+                      var posted = _uploadtimeconversion(data);
+                      if (posted >= 10) {
+                        queries
+                            .doc(queriesSnapshots.data!.docs[index].id
+                                .toString())
+                            .update({'uploadedTime': DateTime.now()});
+                      }
+                      //auto purge after 60min
+                      var lifetime = _lifetimeconversion(data);
+                      if (lifetime >= 60) {
+                        queries
+                            .doc(queriesSnapshots.data!.docs[index].id
+                                .toString())
+                            .delete();
+                        _deleteImages(data); //del image in FirebaseStorage too
+                      }
+
+                      if (code.trim().isEmpty) {
+                        return _search(data, lifetime);
+                      }
+                      if (data['module Code']
+                          .toString()
+                          .toLowerCase()
+                          .contains(code.toLowerCase())) {
+                        return _search(data, lifetime);
+                      }
+                      return Container();
+                    },
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

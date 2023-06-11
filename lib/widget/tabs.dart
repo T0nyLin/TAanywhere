@@ -21,29 +21,17 @@ class _TabsScreenState extends State<TabsScreen> {
     });
   }
 
+  final List<Widget> _screens = [
+    const BrowseScreen(),
+    const MainMapScreen(),
+    const CameraScreen(),
+    ProfileScreen(),
+  ];
+
   @override
   Widget build(BuildContext context) {
-    Widget activePage = const BrowseScreen();
-    //var activePagetitle = 'Browse';
-
-    if (_selectedPageIndex == 1) {
-      activePage = const MapScreen();
-      //activePagetitle = 'Map';
-    }
-    if (_selectedPageIndex == 2) {
-      activePage = const CameraScreen();
-      //activePagetitle = 'Camera';
-    }
-    if (_selectedPageIndex == 3) {
-      activePage = ProfileScreen();
-      //activePagetitle = 'My Profile';
-    }
-
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text(activePagetitle),
-      // ),
-      body: activePage,
+      body: _screens[_selectedPageIndex],
       bottomNavigationBar: BottomNavigationBar(
         iconSize: 29,
         onTap: _selectpage,
