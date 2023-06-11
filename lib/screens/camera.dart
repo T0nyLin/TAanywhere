@@ -81,7 +81,9 @@ class _CameraScreenState extends State<CameraScreen> {
                 return CameraPreview(_cameraController);
               } else {
                 return const Center(
-                  child: CircularProgressIndicator(),
+                  child: CircularProgressIndicator(
+                    color: Color.fromARGB(255, 48, 97, 104),
+                  ),
                 );
               }
             },

@@ -9,11 +9,3 @@ class PlaceLocation {
   final double longitude;
   final String address;
 }
-
-class Place {
-  Place({
-    required this.location,
-  });
-
-  final PlaceLocation location;
-}
