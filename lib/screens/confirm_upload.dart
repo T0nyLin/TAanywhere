@@ -75,7 +75,7 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
       isUploading = true;
       final storageRef = FirebaseStorage.instance
           .ref()
-          .child('query_images ')
+          .child('query_images')
           .child('${user.uid}$formatDate.jpg');
 
       await storageRef.putFile(widget.image);
@@ -146,8 +146,7 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
             ),
             Text(widget.location,
                 style: const TextStyle(color: Colors.black, fontSize: 19)),
-            Text(
-              widget.landmark,
+            Text('Landmark: ${widget.landmark}',
               style: Theme.of(context).primaryTextTheme.bodyMedium,
             ),
             const SizedBox(

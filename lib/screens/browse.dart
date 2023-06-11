@@ -1,5 +1,7 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
@@ -16,6 +18,7 @@ class BrowseScreen extends StatefulWidget {
 
 class _BrowseScreenState extends State<BrowseScreen> {
   final queries = FirebaseFirestore.instance.collection('user queries');
+  final storageRef = FirebaseStorage.instance.ref();
   TextEditingController searchController = TextEditingController();
   String code = "";
 
@@ -68,6 +71,14 @@ class _BrowseScreenState extends State<BrowseScreen> {
     var lifetime = diff.inMinutes;
 
     return lifetime;
+  }
+
+  _deleteImages(Map<String, dynamic> data) async {
+    String formatDate = DateFormat('ddMMyyHHmmss').format(data['lifetime']);
+    final queryImageRef =
+        storageRef.child('query_images/${data['uid']}$formatDate');
+
+    await queryImageRef.delete();
   }
 
   Future<void> _refreshBrowse() async {
@@ -149,7 +160,6 @@ class _BrowseScreenState extends State<BrowseScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        
         title: TextField(
           controller: searchController,
           decoration: InputDecoration(
@@ -229,6 +239,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
                             .doc(queriesSnapshots.data!.docs[index].id
                                 .toString())
                             .delete();
+                        _deleteImages(data); //del image in FirebaseStorage too
                       }
 
                       if (code.trim().isEmpty) {

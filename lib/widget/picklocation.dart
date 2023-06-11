@@ -145,6 +145,8 @@ class _PickLocationState extends State<PickLocation> {
               ),
               child: previewContent,
             ),
+            if (_pickedLocation != null)
+              Text(_pickedLocation!.address),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [

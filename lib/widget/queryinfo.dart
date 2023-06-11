@@ -24,6 +24,82 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
     return lifetime;
   }
 
+  String get locationImage {
+    final lat = widget.data['y'];
+    final lng = widget.data['x'];
+    return 'https://maps.googleapis.com/maps/api/staticmap?center=$lat,$lng&zoom=17&size=600x300&maptype=roadmap&markers=color:red%7C$lat,$lng&key=AIzaSyC7EFshsiUoJdt-lItecOX5Wpm4mGo2dCo';
+  }
+
+  void _previewMap() {
+    // Widget previewContent = Image.network(
+    //   locationImage,
+    //   fit: BoxFit.cover,
+    //   width: double.infinity,
+    //   height: double.infinity,
+    // );
+    Widget previewContent = Column(
+      children: [
+        CachedNetworkImage(
+          imageUrl: locationImage,
+          fit: BoxFit.cover,
+          height: 180,
+        ),
+      ],
+    );
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Center(
+            child: Text(
+              widget.data['mentee'],
+              style: Theme.of(context).primaryTextTheme.bodyLarge,
+            ),
+          ),
+          // content: Padding(
+          //   padding: const EdgeInsets.all(8.0),
+          //   child: Container(
+          //     height: 250,
+          //     width: 300,
+          //     alignment: Alignment.center,
+          //     child: previewContent,
+          //   ),
+          content: SizedBox(
+              height: 220,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  previewContent,
+                  Text(
+                    widget.data['location'],
+                    style: Theme.of(context).primaryTextTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
+          // Column(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   children: [
+
+          //     Text(
+          //       widget.data['location'],
+          //     ),
+          //   ],
+          // ),
+
+          actions: [
+            MaterialButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Done'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var posted = _lifetimeconversion(widget.data);
@@ -48,14 +124,14 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
               width: double.infinity,
               height: 300,
               child: CachedNetworkImage(
-              imageUrl: widget.data['image_url'].toString(),
-              fit: BoxFit.cover,
-              progressIndicatorBuilder: (context, url, progress) =>
-                  const CircularProgressIndicator(
-                      color: Color.fromARGB(255, 48, 97, 104)),
-              errorWidget: (context, url, error) => const Icon(Icons.error),
-              height: 50,
-            ),
+                imageUrl: widget.data['image_url'].toString(),
+                fit: BoxFit.cover,
+                progressIndicatorBuilder: (context, url, progress) =>
+                    const CircularProgressIndicator(
+                        color: Color.fromARGB(255, 48, 97, 104)),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+                height: 50,
+              ),
             ),
           ),
           Center(
@@ -72,7 +148,7 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
               style: Theme.of(context).primaryTextTheme.bodyMedium,
               maxLines: 2,
             ),
-            onPressed: () {},
+            onPressed: _previewMap,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
