@@ -41,7 +41,9 @@ dependencies:
   uuid: ^3.0.7
   flutter_typeahead: ^4.6.0
   liquid_pull_to_refresh: ^3.0.1
-  cached_network_image: ^3.2.3
+  loading_animation_widget: ^1.2.0+4
+  intl: ^0.18.1
+  flutter_local_notifications: ^14.1.1
 
   #camera/image
   camera: ^0.10.5+1
@@ -49,14 +51,14 @@ dependencies:
   image_cropper: ^4.0.1
   camera_avfoundation: ^0.9.13+2
   easy_image_viewer: ^1.2.0
+  cached_network_image: ^3.2.3
 
   # firebase
   firebase_core: ^2.13.0
   firebase_auth: ^4.6.1
   firebase_storage: ^11.2.2
   cloud_firestore: ^4.8.0
-  loading_animation_widget: ^1.2.0+4
-  intl: ^0.18.1
+  firebase_messaging: ^14.6.2
 
   #googlemaps
   google_maps_flutter: ^2.2.8

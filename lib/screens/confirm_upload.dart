@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -34,6 +35,13 @@ class ConfirmUploadScreen extends StatefulWidget {
 
 class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
   final User user = Auth().currentUser!;
+  String cost = '';
+  String level = '';
+  bool isUploading = false;
+  DateTime timenow = DateTime.now();
+  String formatDate = DateFormat('ddMMyyHHmmss').format(DateTime.now());
+
+  String? myToken = '';
 
   Widget buildFileImage() => Image.file(
         widget.image,
@@ -41,15 +49,59 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
       );
 
   @override
+  void initState() {
+    super.initState();
+    getToken();
+  }
+
+
+
+  void getToken() async {
+    await FirebaseMessaging.instance.getToken().then((token) {
+      setState(() {
+        myToken = token;
+      });
+    });
+  }
+
+  void uploadQuery() async {
+    isUploading = true;
+    final storageRef = FirebaseStorage.instance
+        .ref()
+        .child('query_images')
+        .child('${user.uid}$formatDate.jpg');
+
+    await storageRef.putFile(widget.image);
+    final imageUrl = await storageRef.getDownloadURL();
+
+    await FirebaseFirestore.instance
+        .collection('user queries')
+        .doc(user.uid)
+        .set({
+      'mentee': user.email,
+      'uid': user.uid,
+      'token': myToken,
+      'image_url': imageUrl,
+      'query': widget.query,
+      'module Code': widget.modcode,
+      'cost': cost,
+      'level': level,
+      'location': widget.location,
+      'x-coordinate': widget.x,
+      'y-coordinate': widget.y,
+      'landmark': widget.landmark,
+      'uploadedTime': timenow,
+      'lifetime': timenow,
+    });
+
+    isUploading = false;
+  }
+
+  @override
   Widget build(BuildContext context) {
     String modNum = widget.modcode
         .toString()
         .replaceAll(RegExp(r"\D"), ''); //remove letters from module code
-
-    String cost = '';
-    String level = '';
-    bool isUploading = false;
-    String formatDate = DateFormat('ddMMyyHHmmss').format(DateTime.now());
 
     if (modNum[0] == '1') {
       level = '1000';
@@ -69,38 +121,6 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
     } else if (modNum[0] == '6') {
       level = '6000';
       cost = '\$6';
-    }
-
-    void uploadQuery() async {
-      isUploading = true;
-      final storageRef = FirebaseStorage.instance
-          .ref()
-          .child('query_images')
-          .child('${user.uid}$formatDate.jpg');
-
-      await storageRef.putFile(widget.image);
-      final imageUrl = await storageRef.getDownloadURL();
-
-      await FirebaseFirestore.instance
-          .collection('user queries')
-          .doc(user.uid)
-          .set({
-        'mentee': user.email,
-        'uid': user.uid,
-        'image_url': imageUrl,
-        'query': widget.query,
-        'module Code': widget.modcode,
-        'cost': cost,
-        'level': level,
-        'location': widget.location,
-        'x-coordinate': widget.x,
-        'y-coordinate': widget.y,
-        'landmark': widget.landmark,
-        'uploadedTime': DateTime.now(),
-        'lifetime': DateTime.now(),
-      });
-
-      isUploading = false;
     }
 
     return Scaffold(
@@ -146,7 +166,8 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
             ),
             Text(widget.location,
                 style: const TextStyle(color: Colors.black, fontSize: 19)),
-            Text('Landmark: ${widget.landmark}',
+            Text(
+              'Landmark: ${widget.landmark}',
               style: Theme.of(context).primaryTextTheme.bodyMedium,
             ),
             const SizedBox(

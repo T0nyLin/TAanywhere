@@ -1,7 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:http/http.dart' as http;
 
 class QueryInfoScreen extends StatefulWidget {
   const QueryInfoScreen({super.key, required this.data});
@@ -31,18 +35,15 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
   }
 
   void _previewMap() {
-    // Widget previewContent = Image.network(
-    //   locationImage,
-    //   fit: BoxFit.cover,
-    //   width: double.infinity,
-    //   height: double.infinity,
-    // );
     Widget previewContent = Column(
       children: [
         CachedNetworkImage(
           imageUrl: locationImage,
           fit: BoxFit.cover,
           height: 180,
+          progressIndicatorBuilder: (context, url, progress) =>
+              const CircularProgressIndicator(
+                  color: Color.fromARGB(255, 48, 97, 104)),
         ),
       ],
     );
@@ -56,37 +57,19 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
               style: Theme.of(context).primaryTextTheme.bodyLarge,
             ),
           ),
-          // content: Padding(
-          //   padding: const EdgeInsets.all(8.0),
-          //   child: Container(
-          //     height: 250,
-          //     width: 300,
-          //     alignment: Alignment.center,
-          //     child: previewContent,
-          //   ),
           content: SizedBox(
-              height: 220,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  previewContent,
-                  Text(
-                    widget.data['location'],
-                    style: Theme.of(context).primaryTextTheme.bodySmall,
-                  ),
-                ],
-              ),
+            height: 220,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                previewContent,
+                Text(
+                  widget.data['location'],
+                  style: Theme.of(context).primaryTextTheme.bodySmall,
+                ),
+              ],
             ),
-          // Column(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   children: [
-
-          //     Text(
-          //       widget.data['location'],
-          //     ),
-          //   ],
-          // ),
-
+          ),
           actions: [
             MaterialButton(
               onPressed: () {
@@ -98,6 +81,40 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
         );
       },
     );
+  }
+
+  void sendPushMessage(String token, String title, String body) async {
+    try {
+      await http.post(
+        Uri.parse('https//fcm.googleapis.com/fcm/send'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization':
+              'key=AAAAIik8mAg:APA91bHxWYYQtiqIqpDYr_xQ1qX6CXYwcTjtyxABYFR6XMVoGO9XdWh1cAm9DrSIrJzFBAEAlaYPzhzj3GjeO08o6F15h27XqmDUVz8M3RQFaCrjbJmVpkkpRU1HcakGAshXbPrpiH6j'
+        },
+        body: jsonEncode(
+          <String, dynamic>{
+            'priority': 'high',
+            'data': <String, dynamic>{
+              'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+              'status': 'done',
+              'title': title,
+              'body': body,
+            },
+            "notification": <String, dynamic>{
+              "title": title,
+              "body": body,
+              "android_channel_id": "ta_anywhere"
+            },
+            "to": token,
+          },
+        ),
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        print('error push notification');
+      }
+    }
   }
 
   @override
@@ -226,11 +243,14 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
           ),
           ElevatedButton.icon(
             onPressed: () {
-              // Navigator.of(context).push(
-              //   MaterialPageRoute(
-              //     builder: (context) => const SearchMentorScreen(),
-              //   ),
-              // );
+              String token = widget.data['token'];
+              String title = 'Congrats, ${widget.data['mentee']}!';
+              String body = 'You have found a mentor!';
+              sendPushMessage(
+                token,
+                title,
+                body,
+              );
             },
             icon: const Icon(Icons.assignment_turned_in_rounded),
             label: const Text('Accept to help?'),

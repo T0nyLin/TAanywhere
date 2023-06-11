@@ -1,7 +1,6 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
@@ -74,11 +73,20 @@ class _BrowseScreenState extends State<BrowseScreen> {
   }
 
   _deleteImages(Map<String, dynamic> data) async {
-    String formatDate = DateFormat('ddMMyyHHmmss').format(data['lifetime']);
-    final queryImageRef =
-        storageRef.child('query_images/${data['uid']}$formatDate');
-
-    await queryImageRef.delete();
+    String fileName = data['image_url'].toString().replaceAll("%2F", "*");
+    fileName = fileName.replaceAll("?", "*");
+    fileName = fileName.split("*")[1];
+    Reference storageReferance = FirebaseStorage.instance.ref();
+    try {
+      await storageReferance
+          .child('query_images')
+          .child(fileName)
+          .delete()
+          .then(
+              (_) => debugPrint('Successfully deleted $fileName storage item'));
+    } catch (e) {
+      debugPrint('$e');
+    }
   }
 
   Future<void> _refreshBrowse() async {
@@ -224,7 +232,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
                     (BuildContext context, int index) {
                       var data = queriesSnapshots.data!.docs[index].data()
                           as Map<String, dynamic>;
-                      //auto brings older posts to the top
+
                       var posted = _uploadtimeconversion(data);
                       if (posted >= 10) {
                         queries
