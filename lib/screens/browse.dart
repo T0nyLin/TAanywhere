@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -5,6 +6,8 @@ import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:overlay_support/overlay_support.dart';
+import 'package:ta_anywhere/models/pushNotification.dart';
 
 import 'package:ta_anywhere/widget/queryinfo.dart';
 
@@ -15,16 +18,33 @@ class BrowseScreen extends StatefulWidget {
   State<BrowseScreen> createState() => _BrowseScreenState();
 }
 
+Future _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  print("Handling a background message: ${message.messageId}");
+}
+
 class _BrowseScreenState extends State<BrowseScreen> {
+  PushNotification? _notificationInfo;
+  OverlayEntry? entry;
+  Offset offset = const Offset(20, 60);
+
+  @override
+  void initState() {
+    checkForInitialMessage();
+    requestPermission();
+    super.initState();
+  }
+
+  void displose() {
+    _showNoti();
+    searchController.dispose();
+
+    super.dispose();
+  }
+
   final queries = FirebaseFirestore.instance.collection('user queries');
   final storageRef = FirebaseStorage.instance.ref();
   TextEditingController searchController = TextEditingController();
   String code = "";
-
-  void displose() {
-    searchController.dispose();
-    super.dispose();
-  }
 
   void _showModalBottomSheet(BuildContext context, Map<String, dynamic> data) {
     showModalBottomSheet(
@@ -164,6 +184,53 @@ class _BrowseScreenState extends State<BrowseScreen> {
     );
   }
 
+  void _showNoti() {
+    entry = OverlayEntry(
+      builder: (context) => Positioned(
+        left: offset.dx,
+        top: offset.dy,
+        child: GestureDetector(
+          onPanUpdate: (details) {
+            offset += details.delta;
+            entry!.markNeedsBuild();
+          },
+          child: IconButton(
+            iconSize: 40,
+            color: const Color.fromARGB(255, 194, 68, 51),
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Center(
+                        child: Text(
+                          _notificationInfo!.title!,
+                          style: Theme.of(context).primaryTextTheme.bodyLarge,
+                        ),
+                      ),
+                      content: Text(_notificationInfo!.body!),
+                      actions: [
+                        MaterialButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Go'),
+                        ),
+                      ],
+                    );
+                  });
+              entry?.remove();
+              entry = null;
+            },
+            icon: const Icon(Icons.notifications_active_sharp),
+          ),
+        ),
+      ),
+    );
+    final overlay = Overlay.of(context);
+    overlay.insert(entry!);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -269,5 +336,123 @@ class _BrowseScreenState extends State<BrowseScreen> {
         ),
       ),
     );
+  }
+
+  checkForInitialMessage() async {
+    RemoteMessage? initialMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
+
+    if (initialMessage != null) {
+      PushNotification notification = PushNotification(
+        title: initialMessage.notification?.title,
+        body: initialMessage.notification?.body,
+      );
+      setState(() {
+        _notificationInfo = notification;
+      });
+    }
+  }
+
+  void requestPermission() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      FirebaseMessaging.onMessage.listen(
+        (RemoteMessage message) {
+          PushNotification notification = PushNotification(
+            title: message.notification?.title,
+            body: message.notification?.body,
+          );
+          if (mounted) {
+            setState(() {
+              _notificationInfo = notification;
+            });
+          }
+
+          if (_notificationInfo != null) {
+            showOverlay(
+              duration: const Duration(minutes: 5),
+              (context, progress) => AlertDialog(
+                title: Center(
+                  child: Text(
+                    notification.title!,
+                    style: Theme.of(context).primaryTextTheme.bodyLarge,
+                  ),
+                ),
+                content: Text(notification.body!),
+                actions: [
+                  MaterialButton(
+                    onPressed: () {
+                      _showNoti();
+                      OverlaySupportEntry? dismissButton =
+                          OverlaySupportEntry.of(context);
+                      if (dismissButton != null) {
+                        dismissButton.dismiss();
+                      }
+                    },
+                    child: const Text('Dismiss'),
+                  ),
+                  MaterialButton(
+                    onPressed: () {},
+                    child: const Text('Go'),
+                  ),
+                ],
+              ),
+            );
+          }
+        },
+      );
+      FirebaseMessaging.onMessageOpenedApp.listen(
+        (RemoteMessage message) {
+          PushNotification notification = PushNotification(
+            title: message.notification?.title,
+            body: message.notification?.body,
+          );
+
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Center(
+                  child: Text(
+                    notification.title!,
+                    style: Theme.of(context).primaryTextTheme.bodyLarge,
+                  ),
+                ),
+                content: Text(notification.body!),
+                actions: [
+                  MaterialButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Done'),
+                  ),
+                ],
+              );
+            },
+          );
+          setState(() {
+            _notificationInfo = notification;
+          });
+        },
+      );
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
+      print('User granted provisional permission');
+    } else {
+      print('User declined or has not accepted permission');
+    }
   }
 }

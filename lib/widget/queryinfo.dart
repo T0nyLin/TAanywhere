@@ -1,11 +1,12 @@
 import 'dart:convert';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
+import 'package:ta_anywhere/components/auth.dart';
 
 class QueryInfoScreen extends StatefulWidget {
   const QueryInfoScreen({super.key, required this.data});
@@ -17,6 +18,7 @@ class QueryInfoScreen extends StatefulWidget {
 }
 
 class _QueryInfoScreenState extends State<QueryInfoScreen> {
+  final User? user = Auth().currentUser;
   _lifetimeconversion(Map<String, dynamic> data) {
     Timestamp firstuploadtime = data['lifetime'];
     final DateTime dateConvert =
@@ -86,11 +88,11 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
   void sendPushMessage(String token, String title, String body) async {
     try {
       await http.post(
-        Uri.parse('https//fcm.googleapis.com/fcm/send'),
+        Uri.parse('https://fcm.googleapis.com/fcm/send'),
         headers: <String, String>{
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json; charset=UTF-8',
           'Authorization':
-              'key=AAAAIik8mAg:APA91bHxWYYQtiqIqpDYr_xQ1qX6CXYwcTjtyxABYFR6XMVoGO9XdWh1cAm9DrSIrJzFBAEAlaYPzhzj3GjeO08o6F15h27XqmDUVz8M3RQFaCrjbJmVpkkpRU1HcakGAshXbPrpiH6j'
+              'key=AAAAIik8mAg:APA91bHxWYYQtiqIqpDYr_xQ1qX6CXYwcTjtyxABYFR6XMVoGO9XdWh1cAm9DrSIrJzFBAEAlaYPzhzj3GjeO08o6F15h27XqmDUVz8M3RQFaCrjbJmVpkkpRU1HcakGAshXbPrpiH6j',
         },
         body: jsonEncode(
           <String, dynamic>{
@@ -101,12 +103,11 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
               'title': title,
               'body': body,
             },
-            "notification": <String, dynamic>{
-              "title": title,
-              "body": body,
-              "android_channel_id": "ta_anywhere"
+            'notification': <String, dynamic>{
+              'title': title,
+              'body': body,
             },
-            "to": token,
+            'to': token,
           },
         ),
       );
@@ -120,6 +121,10 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
   @override
   Widget build(BuildContext context) {
     var posted = _lifetimeconversion(widget.data);
+    String token = widget.data['token'];
+    String title = 'Congrats, ${widget.data['mentee']}!';
+    String body = 'Mentor found! ${user!.email} is on the way!';
+
     return Container(
       padding: const EdgeInsets.all(25),
       child: Column(
@@ -243,14 +248,7 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
           ),
           ElevatedButton.icon(
             onPressed: () {
-              String token = widget.data['token'];
-              String title = 'Congrats, ${widget.data['mentee']}!';
-              String body = 'You have found a mentor!';
-              sendPushMessage(
-                token,
-                title,
-                body,
-              );
+              sendPushMessage(token, title, body);
             },
             icon: const Icon(Icons.assignment_turned_in_rounded),
             label: const Text('Accept to help?'),
