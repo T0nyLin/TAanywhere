@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ta_anywhere/components/auth.dart';
-import 'package:ta_anywhere/screens/profile.dart';
 
 class SettingScreen extends StatelessWidget {
   SettingScreen({super.key});
@@ -12,18 +11,19 @@ class SettingScreen extends StatelessWidget {
     return Text(user?.email ?? 'User email');
   }
   
-  Widget _backButton(BuildContext context) {
-  return ElevatedButton(
-    onPressed: () {
-      Navigator.pop(context, MaterialPageRoute(builder: (context) => ProfileScreen()));
-    },
-    child: const Text("Back"),
-  );
-}
+//   Widget _backButton(BuildContext context) {
+//   return ElevatedButton(
+//     onPressed: () {
+//       Navigator.pop(context, MaterialPageRoute(builder: (context) => ProfileScreen()));
+//     },
+//     child: const Text("Back"),
+//   );
+// }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
       body: Stack(
         children: [
           Align(
@@ -35,7 +35,7 @@ class SettingScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   _userUid(),
-                  _backButton(context),
+                  //_backButton(context),
                 ],
               ),
             ),

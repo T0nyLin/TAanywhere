@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+
 import 'package:ta_anywhere/widget/tabs.dart';
 
 class SearchMentorScreen extends StatelessWidget {
@@ -8,13 +9,14 @@ class SearchMentorScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async => false,     //disable system back button
+      onWillPop: () async => false, //disable system back button
       child: Scaffold(
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            LoadingAnimationWidget.beat(color: const Color.fromARGB(255, 48, 97, 104), size: 100),
+            LoadingAnimationWidget.beat(
+                color: const Color.fromARGB(255, 48, 97, 104), size: 100),
             const SizedBox(
               height: 15,
             ),
@@ -46,7 +48,10 @@ class SearchMentorScreen extends StatelessWidget {
                   ),
                 );
               },
-              icon: const Icon(Icons.home, color: Color.fromARGB(255, 48, 97, 104),),
+              icon: const Icon(
+                Icons.home,
+                color: Color.fromARGB(255, 48, 97, 104),
+              ),
               label: const Text('Back to Browse'),
             ),
           ],
