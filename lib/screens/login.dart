@@ -1,7 +1,3 @@
-// login_register_part.dart
-// The third input statement follows the tutorial,
-// please adjust to fit out project.
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -35,9 +31,19 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> createUserWithEmailAndPassword() async {
+    final String email = _controllerEmail.text.trim();
+
+    // Check if the email ends with "@u.nus.edu"
+    if (!email.endsWith("@u.nus.edu")) {
+      setState(() {
+        errorMessage = 'Email must end with "@u.nus.edu"';
+      });
+      return;
+    }
+
     try {
       await Auth().createUserWithEmailAndPassword(
-        email: _controllerEmail.text,
+        email: email,
         password: _controllerPassword.text,
       );
     } on FirebaseAuthException catch (e) {
