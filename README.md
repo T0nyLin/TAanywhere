@@ -46,6 +46,31 @@ Firebase is a Backend-as-a-Service (BaaS) app development platform that provides
 \
 We have used firebase in several parts of our project. An example is the user email authentication via firebase, where the email and password registered by the user will be stored in the database of firebase and be used for login authentication purpose. We also plan to use firebase's database to store some users' information, and use firebase's cloud function for one-time-pass (OTP) authentication.
 
+## Software Development Process
+**Planning & Designing:**
+
+Our project's motivation starts from the common problem most of the students will face: Who can help me when I'm facing academic problem? Inspired by other existing apps such as **_NUSNextBus_** and SCDF’s **_myResponder_**, we decide to combine their advantages and apply to our project.
+
+Our idea starts from "Making an apps so that every NUS students can post their questions, and others can browse to help". This mode is similar to **_Carousell_**'s page where users can browse different items in a screen and see if they want to buy anything. This concept has been implemented as our **Browse Screen**, which is the first screen users will be interacted with after then login the apps. 
+
+The **Browse Screen** shows all the questions posted by users, who are also known as "mentees". Users can browse the questions in **Browse Screen** and decide to help the mentees to solve their questions, these users who help others are known as "mentors". Furthermore, the mentors can search for questions that are specific to a certain course (a new term replacing "module") by entering the course code in a search bar. This feature can help them narrow down their target from a large question bank.
+
+Now we have done the designing of our core feature. Intuitively, our next challenge will be, how should the users post their question? It leads us to our second screen - **Upload Screen**, where users can upload their question along with some descriptions to seek for assistance from others. To upload an image of the question, users can choose between capturing photo with native camera or get it from the device's photo gallery. After choosing an image, users can add descriptions about the question, e.g. pain point of the question and course code (if applicable), and also the location to meet up. These questions will be shown in **Browse Screen** eventually.
+
+Until here, the apps are only managing the interaction between user and our system. Once a mentor decide to help a mentee with his or her question, the apps need to serve as a bridge between the mentor and mentee. Therefore, there are more new and challenging considerations.
+
+First of all, when a mentor decide to help a mentee, we need to reserve the question to that mentor so that other users can't choose to be the mentor anymore. We choose to employ this first-come-first-serve mechanism because we don't want to form conflict between mentors as the result of fighting for the question. This is similar to the rider-hailing apps where the customers are assigned to only one driver who accepts the request first.
+
+While providing convenience to the mentor by reserving the mentee for he or she, we also need to ensure that the mentee will receive the assistance as intended. As such, the reservation has a time limit, which means the mentor need to arrive to the designated location by the mentee within the time limit. The question will be reopened to other users if the mentor fail to meet the mentee within the time limit.
+
+For sure, if the mentoring is profitable, there will be more users who are willing to help. But at the same time, we don't want to cost too much financial burden to the mentee. As a result, we decide to set a standard price around SGD$4 as the hourly rate for the mentoring session, as we deem that this should be sufficient to have a decent meal around the campus. This price only serves as a reference when the mentee post the question, but the final decision still depends on the discussion between both the mentor and the mentee. To assist, we will set an in-apps timer for the users to record the time once they start the mentoring session, and we will implement a random generated qrcode for users for e-payment purpose.
+
+Until here, a full routine of mentoring session from uploading questions, matching mentors and mentees, processing the mentoring session to completing the session with payment, is considered completed. This is the main service of our mobile apps, and we will have other functionalities to assist this service.
+
+
+
+
+
 ## Features
 
 - Import a HTML file and watch it magically convert to Markdown
