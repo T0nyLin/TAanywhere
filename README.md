@@ -1,7 +1,19 @@
 # Project's Title
 **_TAanywhere_**
 
-# Project Description
+# Table of Contents
+| Sections | Subsections |
+| - | - |
+| Project Descriptions | Our Motivation |
+| | Our Aim |
+| | Our Techstack |
+| | |
+| Software Development Process | Planning |
+| | Designing |
+| | Implementing |
+
+
+# Project Descriptions
 **Our Motivation:** 
 When you’re stuck with a burning question in one of your modules, and you have spent tons of time on it, your current alternatives are friends, peers, seniors, teaching assistants and perhaps the professor teaching the module. 
 
@@ -10,11 +22,9 @@ Many may have reached the point where either these alternatives don’t know the
 So what if you had a way to find someone around you who can help you out of the rabbit hole? 
 
 **Our Aim:** 
-
 We hope to design a mobile application called **_TAanywhere_** to address the issues mentioned in the previous point. **_TAanywhere_** is an innovative app that aims to provide students with access to affordable mentoring services. The app aims to connect students with experienced students who are willing to meet them at campus venues. We emphasize the importance of physical meetups because we believe that in-person teaching is best suited to our motivation, as mentors and mentees can focus on the discussion, free from external disruptions and network issues. To ensure the safety of both mentors and mentees, we plan to restrict the application to work only within the campus, similar to the **_NUSNextBus_** app. The app offers quick meet with instant alert features, similar to SCDF’s **_myResponder_** app, enabling students to find suitable mentors quickly and easily. Payment is made through the app.
 
 **Our Techstack:** 
-
 1. Flutter:
 Flutter Is an open-source UI software development kit. It is a tool that allows engineers to create different applications using one programming language and one codebase. Flutter is a valuable modern tool used to create stunning cross-platform applications that render native code on each device and OS. Flutter is compatible with Android, iOS, Linux, macOs, Windows, etc.
 \
@@ -47,15 +57,14 @@ Firebase is a Backend-as-a-Service (BaaS) app development platform that provides
 We have used firebase in several parts of our project. An example is the user email authentication via firebase, where the email and password registered by the user will be stored in the database of firebase and be used for login authentication purpose. We also plan to use firebase's database to store some users' information, and use firebase's cloud function for one-time-pass (OTP) authentication.
 
 ## Software Development Process
-**Planning & Designing:**
-
+**Planning:**
 Our project's motivation starts from the common problem most of the students will face: Who can help me when I'm facing academic problem? Inspired by other existing apps such as **_NUSNextBus_** and SCDF’s **_myResponder_**, we decide to combine their advantages and apply to our project.
 
 Our idea starts from "Making an apps so that every NUS students can post their questions, and others can browse to help". This mode is similar to **_Carousell_**'s page where users can browse different items in a screen and see if they want to buy anything. This concept has been implemented as our **Browse Screen**, which is the first screen users will be interacted with after then login the apps. 
 
 The **Browse Screen** shows all the questions posted by users, who are also known as "mentees". Users can browse the questions in **Browse Screen** and decide to help the mentees to solve their questions, these users who help others are known as "mentors". Furthermore, the mentors can search for questions that are specific to a certain course (a new term replacing "module") by entering the course code in a search bar. This feature can help them narrow down their target from a large question bank.
 
-Now we have done the designing of our core feature. Intuitively, our next challenge will be, how should the users post their question? It leads us to our second screen - **Upload Screen**, where users can upload their question along with some descriptions to seek for assistance from others. To upload an image of the question, users can choose between capturing photo with native camera or get it from the device's photo gallery. After choosing an image, users can add descriptions about the question, e.g. pain point of the question and course code (if applicable), and also the location to meet up. These questions will be shown in **Browse Screen** eventually.
+Now we have done the designing of our core feature. Intuitively, our next challenge will be, how should the users post their question? It leads us to our second screen - **Camera Screen**, where users can upload their question along with some descriptions to seek for assistance from others. To upload an image of the question, users can choose between capturing photo with native camera or get it from the device's photo gallery. After choosing an image, users can add descriptions about the question, e.g. pain point of the question and course code (if applicable), and also the location to meet up. These questions will be shown in **Browse Screen** eventually.
 
 Until here, the apps are only managing the interaction between user and our system. Once a mentor decide to help a mentee with his or her question, the apps need to serve as a bridge between the mentor and mentee. Therefore, there are more new and challenging considerations.
 
@@ -73,51 +82,35 @@ We also want a **Profile Screen** to record user details, such as mentor ranking
 
 Last but not least, considering that our project will success in NUS, we are preparing to apply this idea to other university in Singapore, or even overseas. For this purpose, as the courses and campus map belongs to a certain university, we will need to categorize our users based on their university. Therefore, the users are required to register an account using their school email, which we will verify by One-Time-Pass (OTP) to the email.
 
+**Designing:**
+*13 May 2023 - 18 May 2023*
+With the complete ideas, the next step will be creating a prototype to visualize the mobile application's interface. We have many good choices such as Google Slides, Canvas, and Figma, and our final decision is an application called **JustInMind**. With a lot of useful functions provided, we have drafted various screens and simulates the user interactions. Unfortunately, we didn't manage to delve into more details before our free trial ends. Ultimately, we have taken a recording of the simple prototype as referral and start building the apps.
 
-
+**Implementing:** 
+*10 May 2023*
+We have created the our first poster and video for the lift off event. The poster includes a basic introduction, simple features, theme and techstack. The one minute long video is about the motivation and introduction of the project.
 
 
 ## Features
 
-- Import a HTML file and watch it magically convert to Markdown
-- Drag and drop images (requires your Dropbox account be linked)
-- Import and save files from GitHub, Dropbox, Google Drive and One Drive
-- Drag and drop markdown and HTML files into Dillinger
-- Export documents as Markdown, HTML and PDF
+**Before matching mentor and mentee:**
+- Academic questions can be posted and browsed by users, just like the **_Carousell_**'s page where users can browse different items in a screen and see if they want to buy anything.
+- Mentors can search for questions that are specific to a certain course by entering the course code in a search bar. This feature can help them narrow down their target from a large question bank.
+- Users can upload their question along with some descriptions to seek for assistance from others. To upload an image of the question, users can choose between capturing photo with native camera or get it from the device's photo gallery. After choosing an image, users can add descriptions about the question, e.g. pain point of the question and course code (if applicable), and also the location to meet up.
+- First-come-first-serve mechanism, which means the first mentor who accept a help request can reserve the request in a limited time period.
+- Live locations of users in the map. Ideally, we can implement a map interface similar to the popular mobile game **_Pokemon Go_**, where each "pokemon" around the user is replaced with different questions posted by other users.
+- Profile page of users include informations such as mentor ranking, rating given by other users, current taking courses, and courses prefer to teach. 
+- Gamification features to provide more fun and inclusive user experience.
 
-Markdown is a lightweight markup language based on the formatting conventions
-that people naturally use in email.
-As [John Gruber] writes on the [Markdown site][df1]
+**After matching mentor and mentee:**
+- In-apps timer for the users to record the time after mentor has accepted a help request. The mentor's reservation will be cancelled if he or she fails to approach the mentee in a certain time limit.
 
-> The overriding design goal for Markdown's
-> formatting syntax is to make it as readable
-> as possible. The idea is that a
-> Markdown-formatted document should be
-> publishable as-is, as plain text, without
-> looking like it's been marked up with tags
-> or formatting instructions.
+**After mentoring session starts:**
+- In-apps timer for the users to record the time after the mentoring session starts. The mentor and mentee can discuss and decide to adjust the time.
 
-This text you see here is *actually- written in Markdown! To get a feel
-for Markdown's syntax, type some text into the left window and
-watch the results in the right.
-
-## Tech
-
-Dillinger uses a number of open source projects to work properly:
-
-- [AngularJS] - HTML enhanced for web apps!
-- [Ace Editor] - awesome web-based text editor
-- [markdown-it] - Markdown parser done right. Fast and easy to extend.
-- [Twitter Bootstrap] - great UI boilerplate for modern web apps
-- [node.js] - evented I/O for the backend
-- [Express] - fast node.js network app framework [@tjholowaychuk]
-- [Gulp] - the streaming build system
-- [Breakdance](https://breakdance.github.io/breakdance/) - HTML
-to Markdown converter
-- [jQuery] - duh
-
-And of course Dillinger itself is open source with a [public repository][dill]
- on GitHub.
+**After mentoring session:**
+- Random generated qrcode for users for e-payment purpose.
+- Mentee's can rate the mentor, which will show in the mentor's profile page, indicating the mentor's reliability.
 
 ## Installation
 
