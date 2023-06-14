@@ -67,6 +67,12 @@ For sure, if the mentoring is profitable, there will be more users who are willi
 
 Until here, a full routine of mentoring session from uploading questions, matching mentors and mentees, processing the mentoring session to completing the session with payment, is considered completed. This is the main service of our mobile apps, and we will have other functionalities to assist this service.
 
+One of the assistive functionality is the **Map Screen**, where the users can check their live locations in the map. Ideally, we can implement a map interface similar to the popular mobile game **_Pokemon Go_**, where each "pokemon" around the user is replaced with different questions posted by other users.
+
+We also want a **Profile Screen** to record user details, such as mentor ranking, rating given by other users, current taking courses, and courses prefer to teach. We plan to integrate these informations with more gamification features to provide more fun and inclusive user experience. It also serves as an important showcase of the user to other users.
+
+Last but not least, considering that our project will success in NUS, we are preparing to apply this idea to other university in Singapore, or even overseas. For this purpose, as the courses and campus map belongs to a certain university, we will need to categorize our users based on their university. Therefore, the users are required to register an account using their school email, which we will verify by One-Time-Pass (OTP) to the email.
+
 
 
 
