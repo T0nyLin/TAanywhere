@@ -56,6 +56,14 @@ Firebase is a Backend-as-a-Service (BaaS) app development platform that provides
 \
 We have used Firebase in several parts of our project. An example is the user email authentication via Firebase, where the email and password registered by the user will be stored in the database of Firebase and be used for login authentication purpose. We also plan to use Firebase's database to store some users' information, and use Firebase's cloud function for one-time-pass (OTP) authentication.
 
+6. Google Maps Platform API:
+Google Maps Platform API is a service provided by Google to create real world and real time experiences with dynamic maps, routes & places. With Google Maps API, we can display interactive maps and customize them how you want on the website or mobile apps.
+\
+We can show the live locations of users in the map using Google Maps Platform API. Ideally, we can even implement a map interface similar to the popular mobile game Pokemon Go, where each “pokemon” around the user is replaced with different questions posted by other users.
+\
+However, one thing to take note is the Google Maps Platform API is not a free service. We use the service by registering for three months free trial in Google Cloud Console using our Google account. Within the trial period, we are able to utilize a certain amount of free credit (USD$300, which is around SGD$400) for their services. Therefore, we need to be careful and keep monitoring the remaining balance while using the map service.
+
+
 ## Software Development Process
 **Planning:**  
 Our project's motivation starts from the common problem most of the students will face: Who can help me when I'm facing academic problem? Inspired by other existing apps such as **_NUSNextBus_** and SCDF’s **_myResponder_**, we decide to combine their advantages and apply to our project.
@@ -118,7 +126,47 @@ The date of "Milestone 1" is around the corner, we treat it seriously as it serv
 *30 May 2023*  
 As an update in the **Upload Query Screen**, users can now search and select course codes of the query from remote JSON url. We also fix the user issue where pixel overflow happens when keyboard appears. 
 
+*1 June 2023*  
+As an update in the **Upload Query Screen**, we have added validation to the textfields. Furthermore, the query datas can now be passed to **Confirm Upload Screen**.
 
+*2 June 2023*  
+After we have collected the query data including text descriptions, image, course code, and meet up location, we need to store the data to a database in order to retrieve it and display it for other usage. Therefore, we have utilized Cloud Firestore, which is the Firebase's newest database for mobile app development, to store our query datas.
+
+*3 June 2023*  
+With the query datas in the Cloud Firestore, we are able to develop the next main screen that is closely related to the **Camera Screen**, which is the **Browse Screen**. As a recap, **Browse Screen** is the screen that gathers all the queries uploaded, so that users can browse the queries and choose to be mentor to help. We are able to retrieve the query datas from Cloud Firestore, and display them in the **Browse Screen**.
+
+*4 June 2023*  
+While we are working on the **Browse Screen**, we also start dealing with another screen that is relatively simple - **Map Screen**. We have integrated the Google Maps Platform API in our flutter apps to show the campus map, and have also implemented a button to indicate the users' current location on the map.  
+
+*5 June 2023*  
+As an update for the **Browse Screen**, users are able to filter queries by course codes based on their input in the search bar.
+
+*6 June 2023*  
+There are more small refinements to the **Browse Screen**. For instances, query images can be opened in full screen mode to provide a better view. To keep the queries fresh, each query will be removed from the screen after 60 minutes from the upload if no mentor decide to help. Furthermore, the screen will automatically sorts old posts to the top of the screen in order to increase exposure to users before they are gone.
+
+*7 June 2023*  
+As an extension to the **Browse Screen**, there is a **Query Info Screen** that displays more details of each queries listed.
+
+*9 June 2023*  
+As further enhancement to the **Browse Screen**, we have implemented the caching of network loaded images to improve user experience. We have also developed an animated pull screen down effect to refresh the queries in the screen.
+
+*10 June 2023*  
+Since most of the basic functionalities in the **Browse Screen** seems to be completed, we have added more details in the **Upload Query Screen**. Now, the "set location" function can get user's current location, add new markers in the map, and save the addresses by xy-coordinates.
+
+*5 June 2023 - 10 June 2023*  
+Since most of the main functionalities for the upload queries and browsing queries process, we start working on some assistive part that can provide more user experience. That leads us to our last main screen: **Profile Screen**. We have developed the whole interface based on the prototype we have designed earlier, with a setting button that leads to **Setting Screen**. Currently most of the functionalities are not implemented yet, except the logout button where user can logout from their current account. The logout functionality is also part of the authentication service provided by Firebase.
+
+*11 June 2023*  
+After settling most of the internal functionalities, we start to consider about pushing notification the the users while they are not using the apps. This is implemented using Firebase Messaging.
+
+At the same time, we have received the update on NUS Authentication which we plan to implement in our apps. With NUS Authentication, users can login using their NUS Credentials instead of registering another account in our firebase database. However, after careful research and consideration, we have decided not to implement NUS Authentication in our mobile apps. 
+
+Beside technical difficulties in redirecting the apps to an external link, we change our mind mainly because we realize that most of our user datas are stored in Firebase database. If we provide NUS Authentication as an alternative login method, it will bypass our Firebase authentication and we will face problem in retrieving and storing user data from Firebase database.
+
+*12 June 2023*  
+We have further developed the push notification function by adding more details. Now, we can send push notification to targetted device, show notification in application background. In apps, the notification will be displayed as an overlay alert, and is able to dismissed it. There is also an notification icon that can be dragged around on the screen.
+
+On the other hand, as an alternative of NUS Authentication, we choose to verify the users' identity as NUS students by sending an One-Time-Pass (OTP) to their NUS email when they register at our apps.
 
 ## Features
 
