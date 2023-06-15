@@ -28,38 +28,48 @@ We hope to design a mobile application called **_TAanywhere_** to address the is
 1. Flutter:
 Flutter Is an open-source UI software development kit. It is a tool that allows engineers to create different applications using one programming language and one codebase. Flutter is a valuable modern tool used to create stunning cross-platform applications that render native code on each device and OS. Flutter is compatible with Android, iOS, Linux, macOs, Windows, etc.
 \
+\
 In our case, we want to develop a mobile application that can be deployed on various platforms. For simplicity, we start off with Android, and ideally we will extend to other operating system soon. While choosing the technology used for development, we notice that Flutter is a popular choice among mobile application developers, and hence we choose to employ this SDK as one of our main development tools.
 \
+\
 The first challenge faced by a beginner in Flutter will be the installment process to the local device. We have put a lot of effort to install Flutter in our local devices and completed various settings to ensure our Flutter works properly.
+\
 \
 Another major challenge faced by people who are not familiar in Flutter is the lack of existing examples. As a relatively new toolkit, it is challenging to find online resources or discussions regarding its syntax, especially if the issue is uncommon and specific to certain project. Most of the time, the flutter's official documentation only provide simple and limited example, which is not helpful when dealing with complex usage.
 
 2. Dart:
 Dart is a client-optimized language for developing fast apps on any platform. Its goal is to offer the most productive programming language for multi-platform development, paired with a flexible execution runtime platform for app frameworks.
 \
+\
 Dart also forms the foundation of Flutter. Dart provides the language and runtimes that power Flutter apps, but Dart also supports many core developer tasks like formatting, analyzing, and testing code. 
+\
 \
 Therefore, since we are using Flutter, we also need to learn and use Dart in writing the main codes. Fortunately, Dart is similar to another language, Java, which we are relatively familiar with. Despite unfamiliar with Dart at first, we can sense its semantic using experience in Java and eventually come in handy.
 
 3. Android Studio
 Android Studio is the official Integrated Development Environment (IDE) for Android app development. Based on the powerful code editor and developer tools from IntelliJ IDEA , Android Studio offers even more features that enhance the productivity when building Android apps. It is also one of the requirement for developing Android apps using Flutter.
 \
+\
 As we are using another Integrated Development Environment (IDE) that we are more familiar with (Visual Studio Code), we mainly don't use Android Studio as an IDE. Instead, it provides the mobile emulator that can reflect the live change of our application, which is very useful in development process.
 
 4. Github
 GitHub, is an Internet hosting service for software development and version control using Git. It provides the distributed version control of Git plus access control, bug tracking, software feature requests, task management, continuous integration, and wikis for every project. It is commonly used to host open source software development projects.
+\
 \
 As this project has two developers, it is extremely crucial to have an effective and efficient version control method to combine and share our works. Github has helped us a lot as we can easily get and share the latest version of each others' progress using simple and short command. We can also trackback to previous version of each file in Github to recover our progress in case of some unexpected error in the latest version. 
 
 5. Firebase:
 Firebase is a Backend-as-a-Service (BaaS) app development platform that provides hosted backend services such as a realtime database, cloud storage, authentication, crash reporting, machine learning, remote configuration, and hosting for static files. It supports Flutter as a plugin and we can use most of the functionality of Firebase in our Flutter project.
 \
+\
 We have used Firebase in several parts of our project. An example is the user email authentication via Firebase, where the email and password registered by the user will be stored in the database of Firebase and be used for login authentication purpose. We also plan to use Firebase's database to store some users' information, and use Firebase's cloud function for one-time-pass (OTP) authentication.
 
 6. Google Maps Platform API:
 Google Maps Platform API is a service provided by Google to create real world and real time experiences with dynamic maps, routes & places. With Google Maps API, we can display interactive maps and customize them how you want on the website or mobile apps.
 \
+\
 We can show the live locations of users in the map using Google Maps Platform API. Ideally, we can even implement a map interface similar to the popular mobile game Pokemon Go, where each “pokemon” around the user is replaced with different questions posted by other users.
+\
 \
 However, one thing to take note is the Google Maps Platform API is not a free service. We use the service by registering for three months free trial in Google Cloud Console using our Google account. Within the trial period, we are able to utilize a certain amount of free credit (USD$300, which is around SGD$400) for their services. Therefore, we need to be careful and keep monitoring the remaining balance while using the map service.
 
@@ -166,7 +176,10 @@ Beside technical difficulties in redirecting the apps to an external link, we ch
 *12 June 2023*  
 We have further developed the push notification function by adding more details. Now, we can send push notification to targetted device, show notification in application background. In apps, the notification will be displayed as an overlay alert, and is able to dismissed it. There is also an notification icon that can be dragged around on the screen.
 
-On the other hand, as an alternative of NUS Authentication, we choose to verify the users' identity as NUS students by sending an One-Time-Pass (OTP) to their NUS email when they register at our apps. This requires us to setup Firebase Command Line Interface (CLI), and develop a cloud function to prepare for user OTP Verification.
+On the other hand, as an alternative of NUS Authentication, we choose to verify the users' identity as NUS students by sending an One-Time-Pass (OTP) to their NUS email when they register at our apps. This requires us to set up Firebase Command Line Interface (CLI) in our device, and develop a cloud function to prepare for user OTP Verification.
+
+*13 June 2023*  
+When the mentors accept the query requests from **Browse Screen**, they are required to meet the mentee at the designated location within a time period. For this purpose, we have designed an in-apps timer that will countdown to record the reamining time. This timer can also be used to record the on-going timing of the mentoring session.
 
 ## Features
 
