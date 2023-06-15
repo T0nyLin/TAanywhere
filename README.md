@@ -166,7 +166,7 @@ Beside technical difficulties in redirecting the apps to an external link, we ch
 *12 June 2023*  
 We have further developed the push notification function by adding more details. Now, we can send push notification to targetted device, show notification in application background. In apps, the notification will be displayed as an overlay alert, and is able to dismissed it. There is also an notification icon that can be dragged around on the screen.
 
-On the other hand, as an alternative of NUS Authentication, we choose to verify the users' identity as NUS students by sending an One-Time-Pass (OTP) to their NUS email when they register at our apps.
+On the other hand, as an alternative of NUS Authentication, we choose to verify the users' identity as NUS students by sending an One-Time-Pass (OTP) to their NUS email when they register at our apps. This requires us to setup Firebase Command Line Interface (CLI), and develop a cloud function to prepare for user OTP Verification.
 
 ## Features
 
