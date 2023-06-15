@@ -14,14 +14,14 @@
 
 
 # Project Descriptions
-**Our Motivation:** 
+**Our Motivation:**  
 When you’re stuck with a burning question in one of your modules, and you have spent tons of time on it, your current alternatives are friends, peers, seniors, teaching assistants and perhaps the professor teaching the module. 
 
 Many may have reached the point where either these alternatives don’t know the answer, or it’s inconvenient to ask them, and the teaching assistants and professor are too busy to reply to your long-winded question. The question is also too module-specific for Google to help you out, or you need a more interactive dialogue to solve all the doubts you have been stacking up. Also, since you’re somewhere in the campus, you’re sure that someone around you has taken this module and may have all the answers that you needed, but you don’t know who they are. 
 
 So what if you had a way to find someone around you who can help you out of the rabbit hole? 
 
-**Our Aim:** 
+**Our Aim:**  
 We hope to design a mobile application called **_TAanywhere_** to address the issues mentioned in the previous point. **_TAanywhere_** is an innovative app that aims to provide students with access to affordable mentoring services. The app aims to connect students with experienced students who are willing to meet them at campus venues. We emphasize the importance of physical meetups because we believe that in-person teaching is best suited to our motivation, as mentors and mentees can focus on the discussion, free from external disruptions and network issues. To ensure the safety of both mentors and mentees, we plan to restrict the application to work only within the campus, similar to the **_NUSNextBus_** app. The app offers quick meet with instant alert features, similar to SCDF’s **_myResponder_** app, enabling students to find suitable mentors quickly and easily. Payment is made through the app.
 
 **Our Techstack:** 
@@ -57,7 +57,7 @@ Firebase is a Backend-as-a-Service (BaaS) app development platform that provides
 We have used Firebase in several parts of our project. An example is the user email authentication via Firebase, where the email and password registered by the user will be stored in the database of Firebase and be used for login authentication purpose. We also plan to use Firebase's database to store some users' information, and use Firebase's cloud function for one-time-pass (OTP) authentication.
 
 ## Software Development Process
-**Planning:**
+**Planning:**  
 Our project's motivation starts from the common problem most of the students will face: Who can help me when I'm facing academic problem? Inspired by other existing apps such as **_NUSNextBus_** and SCDF’s **_myResponder_**, we decide to combine their advantages and apply to our project.
 
 Our idea starts from "Making an apps so that every NUS students can post their questions, and others can browse to help". This mode is similar to **_Carousell_**'s page where users can browse different items in a screen and see if they want to buy anything. This concept has been implemented as our **Browse Screen**, which is the first screen users will be interacted with after then login the apps. 
@@ -82,40 +82,40 @@ We also want a **Profile Screen** to record user details, such as mentor ranking
 
 Last but not least, considering that our project will success in NUS, we are preparing to apply this idea to other university in Singapore, or even overseas. For this purpose, as the courses and campus map belongs to a certain university, we will need to categorize our users based on their university. Therefore, the users are required to register an account using their school email, which we will verify by One-Time-Pass (OTP) to the email.
 
-**Designing:**
-*13 May 2023 - 18 May 2023*
+**Designing:**  
+*13 May 2023 - 18 May 2023*  
 With the complete ideas, the next step will be creating a prototype to visualize the mobile application's interface. We have many good choices such as Google Slides, Canvas, and Figma, and our final decision is an application called **JustInMind**. With a lot of useful functions provided, we have drafted various screens and simulates the user interactions. Unfortunately, we didn't manage to delve into more details before our free trial ends. Ultimately, we have taken a recording of the simple prototype as referral and start building the apps.
 
-**Implementing:** 
-*8 May 2023 - 12 May 2023*
+**Implementing:**  
+*8 May 2023 - 12 May 2023*  
 We start learning the framework (Flutter) and the programming language (Dart) online. It takes about a week to learn the basic concept and syntax required, and to install the software requirements in our devices. We also set up our github repository for the project, and start learning about git to perform version control.
 
 
-*10 May 2023*
+*10 May 2023*  
 We have created the our first poster and video for the lift off event. The poster includes a basic introduction, simple features, theme and techstack. The one minute long video is about the motivation and introduction of the project. The poster and video serve as the first impression of our projects, and we will keep updating them subsequently. 
 
-*19 May 2023 - 23 May 2023*
+*19 May 2023 - 23 May 2023*  
 We have implemented the **Login Screen** based on the prototype that we have designed earlier. As this is still at the early stage of developing and we are not very familiar with Dart & Fluter yet, it takes a lot of time to figure out the way to adjust the layout of the interface and adding different components. Ultimately, the interface only contains the most basic components, which is some instructional texts, two textboxes for users to input email and password respectively, and a button to perform login.
 
-*22 May 2023*
+*22 May 2023*  
 There is a lot of different functionalities implemented in our apps, therefore we decide to divide them into different screens to ease the usage. There are four main screens that form the main contents of the apps: **Browse Screen**, **Map Screen**, **Camera Screen**, and **Profile Screen**. Before implementing the details of each screens, we have developed a navigation bar at the bottom of the apps, so that users can switch between different screens with the navigation bar.
 
-*23 May 2023*
+*23 May 2023*  
 Among the four main screens, the first screen that we decide to work on is the **Camera Screen** because the whole mentoring process starts from users uploading their query. At this time, the **Camera Screen** is able to utilize native camera to take picture, with the option of using device's flashlight, and switch to front-facing camera.
 
-*24 May 2023*
+*24 May 2023*  
 As an extension for the **Camera Screen**, besides capturing live picture, now the users can choose to select existing image from device gallery. The **Upload Query Screen** is also developed as the subsequent step of selecting an image for the query.
 
-*25 May 2023*
+*25 May 2023*  
 When the users want to upload a query, they also need to indicate the meeting location so that the mentor know where to go. Therefore, a **Set Location Screen** is implemented as one of the function in the **Upload Query Screen** to facilitate users in setting the meet up location. When users are searching for a location by typing the name of location, text autocomplete will be done based on the database of the locations.
 
-*26 May 2023 - 28 May 2023*
+*26 May 2023 - 28 May 2023*  
 Moving back to the **Login Screen**, after placing the components, the next challenge will be reading the inputs and perform the authentication. For this goal, we will need to have a database that records the registered email and password, and the authentication mechanism should check if the users have input the matching credentials that exist in the database. Therefore, we have utilized Firebase for this purpose as it supports Flutter and provides the services that we require. With that, users can now register with their credentials in our **Login Screen**, and login to access the main contents of the apps subsequently.
 
-*29 May 2023*
+*29 May 2023*  
 The date of "Milestone 1" is around the corner, we treat it seriously as it serves as an important showcase of our progress within the past one month. We have updated the proposal, poster, and video with more details, and also build an Android Package Kit (APK) of our apps. Other groups who evaluate our project can download the APK and try the apps on their own devices without installing the softwares we have been using for development.
 
-*30 May 2023*
+*30 May 2023*  
 As an update in the **Upload Query Screen**, users can now search and select course codes of the query from remote JSON url. We also fix the user issue where pixel overflow happens when keyboard appears. 
 
 
