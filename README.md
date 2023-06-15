@@ -54,7 +54,7 @@ As this project has two developers, it is extremely crucial to have an effective
 5. Firebase:
 Firebase is a Backend-as-a-Service (BaaS) app development platform that provides hosted backend services such as a realtime database, cloud storage, authentication, crash reporting, machine learning, remote configuration, and hosting for static files. It supports Flutter as a plugin and we can use most of the functionality of Firebase in our Flutter project.
 \
-We have used firebase in several parts of our project. An example is the user email authentication via firebase, where the email and password registered by the user will be stored in the database of firebase and be used for login authentication purpose. We also plan to use firebase's database to store some users' information, and use firebase's cloud function for one-time-pass (OTP) authentication.
+We have used Firebase in several parts of our project. An example is the user email authentication via Firebase, where the email and password registered by the user will be stored in the database of Firebase and be used for login authentication purpose. We also plan to use Firebase's database to store some users' information, and use Firebase's cloud function for one-time-pass (OTP) authentication.
 
 ## Software Development Process
 **Planning:**
@@ -87,8 +87,37 @@ Last but not least, considering that our project will success in NUS, we are pre
 With the complete ideas, the next step will be creating a prototype to visualize the mobile application's interface. We have many good choices such as Google Slides, Canvas, and Figma, and our final decision is an application called **JustInMind**. With a lot of useful functions provided, we have drafted various screens and simulates the user interactions. Unfortunately, we didn't manage to delve into more details before our free trial ends. Ultimately, we have taken a recording of the simple prototype as referral and start building the apps.
 
 **Implementing:** 
+*8 May 2023 - 12 May 2023*
+We start learning the framework (Flutter) and the programming language (Dart) online. It takes about a week to learn the basic concept and syntax required, and to install the software requirements in our devices. We also set up our github repository for the project, and start learning about git to perform version control.
+
+
 *10 May 2023*
-We have created the our first poster and video for the lift off event. The poster includes a basic introduction, simple features, theme and techstack. The one minute long video is about the motivation and introduction of the project.
+We have created the our first poster and video for the lift off event. The poster includes a basic introduction, simple features, theme and techstack. The one minute long video is about the motivation and introduction of the project. The poster and video serve as the first impression of our projects, and we will keep updating them subsequently. 
+
+*19 May 2023 - 23 May 2023*
+We have implemented the **Login Screen** based on the prototype that we have designed earlier. As this is still at the early stage of developing and we are not very familiar with Dart & Fluter yet, it takes a lot of time to figure out the way to adjust the layout of the interface and adding different components. Ultimately, the interface only contains the most basic components, which is some instructional texts, two textboxes for users to input email and password respectively, and a button to perform login.
+
+*22 May 2023*
+There is a lot of different functionalities implemented in our apps, therefore we decide to divide them into different screens to ease the usage. There are four main screens that form the main contents of the apps: **Browse Screen**, **Map Screen**, **Camera Screen**, and **Profile Screen**. Before implementing the details of each screens, we have developed a navigation bar at the bottom of the apps, so that users can switch between different screens with the navigation bar.
+
+*23 May 2023*
+Among the four main screens, the first screen that we decide to work on is the **Camera Screen** because the whole mentoring process starts from users uploading their query. At this time, the **Camera Screen** is able to utilize native camera to take picture, with the option of using device's flashlight, and switch to front-facing camera.
+
+*24 May 2023*
+As an extension for the **Camera Screen**, besides capturing live picture, now the users can choose to select existing image from device gallery. The **Upload Query Screen** is also developed as the subsequent step of selecting an image for the query.
+
+*25 May 2023*
+When the users want to upload a query, they also need to indicate the meeting location so that the mentor know where to go. Therefore, a **Set Location Screen** is implemented as one of the function in the **Upload Query Screen** to facilitate users in setting the meet up location. When users are searching for a location by typing the name of location, text autocomplete will be done based on the database of the locations.
+
+*26 May 2023 - 28 May 2023*
+Moving back to the **Login Screen**, after placing the components, the next challenge will be reading the inputs and perform the authentication. For this goal, we will need to have a database that records the registered email and password, and the authentication mechanism should check if the users have input the matching credentials that exist in the database. Therefore, we have utilized Firebase for this purpose as it supports Flutter and provides the services that we require. With that, users can now register with their credentials in our **Login Screen**, and login to access the main contents of the apps subsequently.
+
+*29 May 2023*
+The date of "Milestone 1" is around the corner, we treat it seriously as it serves as an important showcase of our progress within the past one month. We have updated the proposal, poster, and video with more details, and also build an Android Package Kit (APK) of our apps. Other groups who evaluate our project can download the APK and try the apps on their own devices without installing the softwares we have been using for development.
+
+*30 May 2023*
+As an update in the **Upload Query Screen**, users can now search and select course codes of the query from remote JSON url. We also fix the user issue where pixel overflow happens when keyboard appears. 
+
 
 
 ## Features
@@ -105,7 +134,7 @@ We have created the our first poster and video for the lift off event. The poste
 **After matching mentor and mentee:**
 - In-apps timer for the users to record the time after mentor has accepted a help request. The mentor's reservation will be cancelled if he or she fails to approach the mentee in a certain time limit.
 
-**After mentoring session starts:**
+**When mentoring session starts:**
 - In-apps timer for the users to record the time after the mentoring session starts. The mentor and mentee can discuss and decide to adjust the time.
 
 **After mentoring session:**
