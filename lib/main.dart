@@ -21,8 +21,8 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
   ]).then((fn) {
     runApp(const MyApp());
-  });
-}
+  });}
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

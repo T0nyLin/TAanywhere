@@ -7,9 +7,10 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:overlay_support/overlay_support.dart';
-import 'package:ta_anywhere/models/pushNotification.dart';
+import 'package:ta_anywhere/components/pushNotification.dart';
 
 import 'package:ta_anywhere/widget/queryinfo.dart';
+import 'package:ta_anywhere/widget/countdown.dart';
 
 class BrowseScreen extends StatefulWidget {
   const BrowseScreen({super.key});
@@ -255,6 +256,20 @@ class _BrowseScreenState extends State<BrowseScreen> {
             });
           },
         ),
+        // actions: [
+        //   IconButton(
+        //       onPressed: () {
+        //         Navigator.of(context).push(
+        //           MaterialPageRoute(
+        //             builder: (ctx) => Countdown(
+        //               time: 2,
+        //               data: widget.data,
+        //             ),
+        //           ),
+        //         );
+        //       },
+        //       icon: const Icon(Icons.timer)),
+        // ],
       ),
       body: LiquidPullToRefresh(
         springAnimationDurationInMilliseconds: 20,
@@ -375,43 +390,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
             title: message.notification?.title,
             body: message.notification?.body,
           );
-          if (mounted) {
-            setState(() {
-              _notificationInfo = notification;
-            });
-          }
-
-          if (_notificationInfo != null) {
-            showOverlay(
-              duration: const Duration(minutes: 5),
-              (context, progress) => AlertDialog(
-                title: Center(
-                  child: Text(
-                    notification.title!,
-                    style: Theme.of(context).primaryTextTheme.bodyLarge,
-                  ),
-                ),
-                content: Text(notification.body!),
-                actions: [
-                  MaterialButton(
-                    onPressed: () {
-                      _showNoti();
-                      OverlaySupportEntry? dismissButton =
-                          OverlaySupportEntry.of(context);
-                      if (dismissButton != null) {
-                        dismissButton.dismiss();
-                      }
-                    },
-                    child: const Text('Dismiss'),
-                  ),
-                  MaterialButton(
-                    onPressed: () {},
-                    child: const Text('Go'),
-                  ),
-                ],
-              ),
-            );
-          }
+          showoverlayalert(notification);
         },
       );
       FirebaseMessaging.onMessageOpenedApp.listen(
@@ -420,32 +399,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
             title: message.notification?.title,
             body: message.notification?.body,
           );
-
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: Center(
-                  child: Text(
-                    notification.title!,
-                    style: Theme.of(context).primaryTextTheme.bodyLarge,
-                  ),
-                ),
-                content: Text(notification.body!),
-                actions: [
-                  MaterialButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Done'),
-                  ),
-                ],
-              );
-            },
-          );
-          setState(() {
-            _notificationInfo = notification;
-          });
+          showoverlayalert(notification);
         },
       );
     } else if (settings.authorizationStatus ==
@@ -453,6 +407,44 @@ class _BrowseScreenState extends State<BrowseScreen> {
       print('User granted provisional permission');
     } else {
       print('User declined or has not accepted permission');
+    }
+  }
+
+  void showoverlayalert(PushNotification notification) {
+    setState(() {
+      _notificationInfo = notification;
+    });
+    if (_notificationInfo != null) {
+      showOverlay(
+        duration: const Duration(minutes: 5),
+        (context, progress) => AlertDialog(
+          title: Center(
+            child: Text(
+              notification.title!,
+              style: Theme.of(context).primaryTextTheme.bodyLarge,
+            ),
+          ),
+          content: Text(notification.body!),
+          actions: [
+            MaterialButton(
+              onPressed: () {
+                _showNoti();
+                OverlaySupportEntry? dismissButton =
+                    OverlaySupportEntry.of(context);
+                if (dismissButton != null) {
+                  dismissButton.dismiss();
+                }
+              },
+              child: const Text('Dismiss'),
+            ),
+            if(notification.title != 'Oops!')
+              MaterialButton(
+                onPressed: () {},
+                child: const Text('Go'),
+              ),
+          ],
+        ),
+      );
     }
   }
 }

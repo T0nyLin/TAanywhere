@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gcm_defaultSenderId" translatable="false">146720725000</string>
+    <string name="google_api_key" translatable="false">AIzaSyDyYdqKCGH30sb_1mN-9NcgoWcZvFEVsLc</string>
+    <string name="google_app_id" translatable="false">1:146720725000:android:613fb763f52f651a1499bd</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyDyYdqKCGH30sb_1mN-9NcgoWcZvFEVsLc</string>
+    <string name="google_storage_bucket" translatable="false">taanywhere.appspot.com</string>
+    <string name="project_id" translatable="false">taanywhere</string>
+</resources>

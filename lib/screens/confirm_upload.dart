@@ -54,8 +54,6 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
     getToken();
   }
 
-
-
   void getToken() async {
     await FirebaseMessaging.instance.getToken().then((token) {
       setState(() {
@@ -95,6 +93,13 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
     });
 
     isUploading = false;
+  }
+
+  Widget mediumLabel(String data) {
+    return Text(
+      data,
+      style: Theme.of(context).primaryTextTheme.bodyMedium,
+    );
   }
 
   @override
@@ -147,18 +152,9 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
                   widget.query,
                   style: Theme.of(context).primaryTextTheme.bodyLarge,
                 ),
-                Text(
-                  'Module Code: ${widget.modcode}',
-                  style: Theme.of(context).primaryTextTheme.bodyMedium,
-                ),
-                Text(
-                  'Cost: $cost',
-                  style: Theme.of(context).primaryTextTheme.bodyMedium,
-                ),
-                Text(
-                  'Level: $level',
-                  style: Theme.of(context).primaryTextTheme.bodyMedium,
-                ),
+                mediumLabel('Module Code: ${widget.modcode}'),
+                mediumLabel('Cost: $cost'),
+                mediumLabel('Level: $level'),
               ],
             ),
             const SizedBox(
@@ -166,10 +162,7 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
             ),
             Text(widget.location,
                 style: const TextStyle(color: Colors.black, fontSize: 19)),
-            Text(
-              'Landmark: ${widget.landmark}',
-              style: Theme.of(context).primaryTextTheme.bodyMedium,
-            ),
+            mediumLabel('Landmark: ${widget.landmark}'),
             const SizedBox(
               height: 30,
             ),

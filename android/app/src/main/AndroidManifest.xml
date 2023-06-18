@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
    <application
-        android:label="ta_anywhere"
+        android:label="taAnywhere"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 

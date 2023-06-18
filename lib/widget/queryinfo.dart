@@ -1,12 +1,12 @@
-import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:http/http.dart' as http;
+
 import 'package:ta_anywhere/components/auth.dart';
+import 'package:ta_anywhere/components/sendPushMessage.dart';
+import 'package:ta_anywhere/widget/countdown.dart';
 
 class QueryInfoScreen extends StatefulWidget {
   const QueryInfoScreen({super.key, required this.data});
@@ -85,37 +85,18 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
     );
   }
 
-  void sendPushMessage(String token, String title, String body) async {
-    try {
-      await http.post(
-        Uri.parse('https://fcm.googleapis.com/fcm/send'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization':
-              'key=AAAAIik8mAg:APA91bHxWYYQtiqIqpDYr_xQ1qX6CXYwcTjtyxABYFR6XMVoGO9XdWh1cAm9DrSIrJzFBAEAlaYPzhzj3GjeO08o6F15h27XqmDUVz8M3RQFaCrjbJmVpkkpRU1HcakGAshXbPrpiH6j',
-        },
-        body: jsonEncode(
-          <String, dynamic>{
-            'priority': 'high',
-            'data': <String, dynamic>{
-              'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-              'status': 'done',
-              'title': title,
-              'body': body,
-            },
-            'notification': <String, dynamic>{
-              'title': title,
-              'body': body,
-            },
-            'to': token,
-          },
-        ),
-      );
-    } catch (e) {
-      if (kDebugMode) {
-        print('error push notification');
-      }
-    }
+  Widget mediumLabel(String data) {
+    return Text(
+      data,
+      style: Theme.of(context).primaryTextTheme.bodyMedium,
+    );
+  }
+
+  Widget smallLabel(String data) {
+    return Text(
+      data,
+      style: Theme.of(context).primaryTextTheme.bodySmall,
+    );
   }
 
   @override
@@ -165,24 +146,14 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
           ),
           TextButton.icon(
             icon: const Icon(Icons.location_on_rounded),
-            label: Text(
-              widget.data['location'],
-              style: Theme.of(context).primaryTextTheme.bodyMedium,
-              maxLines: 2,
-            ),
+            label: mediumLabel(widget.data['location']),
             onPressed: _previewMap,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                'Landmark: ',
-                style: Theme.of(context).primaryTextTheme.bodySmall,
-              ),
-              Text(
-                '${widget.data['landmark']}',
-                style: Theme.of(context).primaryTextTheme.bodySmall,
-              ),
+              smallLabel('Landmark: '),
+              smallLabel(widget.data['landmark']),
             ],
           ),
           const SizedBox(
@@ -194,51 +165,21 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
-                    'Module Code: ',
-                    style: Theme.of(context).primaryTextTheme.bodyMedium,
-                  ),
-                  Text(
-                    'Mentee: ',
-                    style: Theme.of(context).primaryTextTheme.bodyMedium,
-                  ),
-                  Text(
-                    'Cost: ',
-                    style: Theme.of(context).primaryTextTheme.bodyMedium,
-                  ),
-                  Text(
-                    'Level: ',
-                    style: Theme.of(context).primaryTextTheme.bodyMedium,
-                  ),
-                  Text(
-                    'Posted: ',
-                    style: Theme.of(context).primaryTextTheme.bodyMedium,
-                  ),
+                  mediumLabel('Module Code: '),
+                  mediumLabel('Mentee: '),
+                  mediumLabel('Cost: '),
+                  mediumLabel('Level: '),
+                  mediumLabel('Posted: '),
                 ],
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    '${widget.data['module Code']}',
-                    style: Theme.of(context).primaryTextTheme.bodyMedium,
-                  ),
-                  Text(
-                    '${widget.data['mentee']}',
-                    style: Theme.of(context).primaryTextTheme.bodyMedium,
-                  ),
-                  Text(
-                    '${widget.data['cost']}',
-                    style: Theme.of(context).primaryTextTheme.bodyMedium,
-                  ),
-                  Text(
-                    '${widget.data['level']}',
-                    style: Theme.of(context).primaryTextTheme.bodyMedium,
-                  ),
-                  Text(
-                    '$posted min ago',
-                    style: Theme.of(context).primaryTextTheme.bodyMedium,
-                  ),
+                  mediumLabel(widget.data['module Code']),
+                  mediumLabel(widget.data['mentee']),
+                  mediumLabel(widget.data['cost']),
+                  mediumLabel(widget.data['level']),
+                  mediumLabel('$posted min ago'),
                 ],
               ),
             ],
@@ -249,6 +190,14 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
           ElevatedButton.icon(
             onPressed: () {
               sendPushMessage(token, title, body);
+              Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (ctx) => Countdown(
+                      time: 10,
+                      data: widget.data,
+                    ),
+                  ),
+                );
             },
             icon: const Icon(Icons.assignment_turned_in_rounded),
             label: const Text('Accept to help?'),
