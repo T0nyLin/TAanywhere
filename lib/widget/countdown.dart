@@ -1,9 +1,13 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
+import 'package:ta_anywhere/components/auth.dart';
 import 'package:ta_anywhere/components/sendPushMessage.dart';
+import 'package:ta_anywhere/widget/qr_scanner.dart';
 
 class Countdown extends StatefulWidget {
   const Countdown({
@@ -20,10 +24,22 @@ class Countdown extends StatefulWidget {
 }
 
 class _CountdownState extends State<Countdown> {
+  final User? user = Auth().currentUser;
+  DateTime timenow = DateTime.now();
   static Duration countdownDuration = const Duration();
   Duration duration = const Duration();
   Timer? timer;
   bool isCountDown = true;
+
+  void reupload() async {
+    await FirebaseFirestore.instance
+        .collection('user queries')
+        .doc(widget.data['uid'])
+        .update({
+      'uploadedTime': timenow,
+      'lifetime': timenow,
+    });
+  }
 
   @override
   void initState() {
@@ -40,6 +56,8 @@ class _CountdownState extends State<Countdown> {
         timer?.cancel();
         sendPushMessage(widget.data['token'], 'Oops!',
             'Your mentor did not reach on time!');
+        //add local noti to say timer run out, and meet is cancelled
+        reupload();
       } else if (seconds < 0 && widget.time == 60) {
         timer?.cancel();
         sendPushMessage(widget.data['token'], 'Well Done!', 'Session Over!');
@@ -101,7 +119,11 @@ class _CountdownState extends State<Countdown> {
             child: const Text('No'),
           ),
           MaterialButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: ((context) =>
+                      QRScan(menteeID: widget.data['menteeid']))));
+            },
             child: const Text('Yes'),
           ),
         ],

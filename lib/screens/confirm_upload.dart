@@ -77,7 +77,7 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
         .doc(user.uid)
         .set({
       'mentee': user.email,
-      'uid': user.uid,
+      'menteeid': user.uid,
       'token': myToken,
       'image_url': imageUrl,
       'query': widget.query,

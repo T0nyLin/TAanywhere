@@ -104,7 +104,7 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
     var posted = _lifetimeconversion(widget.data);
     String token = widget.data['token'];
     String title = 'Congrats, ${widget.data['mentee']}!';
-    String body = 'Mentor found! ${user!.email} is on the way!';
+    String body = 'Mentor found! ${user!.email} is on the way now.';
 
     return Container(
       padding: const EdgeInsets.all(25),
@@ -191,13 +191,14 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
             onPressed: () {
               sendPushMessage(token, title, body);
               Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (ctx) => Countdown(
-                      time: 10,
-                      data: widget.data,
-                    ),
+                MaterialPageRoute(
+                  builder: (ctx) => Countdown(
+                    time: 10,
+                    data: widget.data,
                   ),
-                );
+                ),
+              );
+              widget.data.addEntries({'mentorID': user!.uid}.entries);
             },
             icon: const Icon(Icons.assignment_turned_in_rounded),
             label: const Text('Accept to help?'),

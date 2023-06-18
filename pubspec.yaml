@@ -54,6 +54,7 @@ dependencies:
   camera_avfoundation: ^0.9.13+2
   easy_image_viewer: ^1.2.0
   cached_network_image: ^3.2.3
+  qr_flutter: ^4.1.0
 
   # firebase
   firebase_core: ^2.13.0
@@ -62,12 +63,13 @@ dependencies:
   cloud_firestore: ^4.8.0
   firebase_messaging: ^14.6.2
   cloud_functions: ^4.3.2
+  email_otp: ^2.0.1
+  qr_code_scanner: ^1.0.1
 
   #googlemaps
   google_maps_flutter: ^2.2.8
   geolocator: ^9.0.2
   location: ^4.4.0
-  email_otp: ^2.0.1
 
 
   

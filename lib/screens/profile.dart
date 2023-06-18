@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:ta_anywhere/components/auth.dart';
 import 'package:ta_anywhere/screens/setting.dart';
+import 'package:ta_anywhere/widget/qr_code.dart';
 
 class ProfileScreen extends StatelessWidget {
   ProfileScreen({Key? key}) : super(key: key);
@@ -49,7 +50,9 @@ class ProfileScreen extends StatelessWidget {
         icon: const Icon(Icons.qr_code),
         iconSize: 40,
         onPressed: () {
-          // Implement QR code button functionality here
+          Navigator.of(context).push(MaterialPageRoute(
+                  builder: ((context) =>
+                      QRcode())));
         },
       ),
     );

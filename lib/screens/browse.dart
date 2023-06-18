@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -7,10 +8,11 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:ta_anywhere/components/auth.dart';
 import 'package:ta_anywhere/components/pushNotification.dart';
+import 'package:ta_anywhere/screens/mentor_found.dart';
 
 import 'package:ta_anywhere/widget/queryinfo.dart';
-import 'package:ta_anywhere/widget/countdown.dart';
 
 class BrowseScreen extends StatefulWidget {
   const BrowseScreen({super.key});
@@ -27,6 +29,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
   PushNotification? _notificationInfo;
   OverlayEntry? entry;
   Offset offset = const Offset(20, 60);
+  final User? user = Auth().currentUser;
 
   @override
   void initState() {
@@ -256,20 +259,6 @@ class _BrowseScreenState extends State<BrowseScreen> {
             });
           },
         ),
-        // actions: [
-        //   IconButton(
-        //       onPressed: () {
-        //         Navigator.of(context).push(
-        //           MaterialPageRoute(
-        //             builder: (ctx) => Countdown(
-        //               time: 2,
-        //               data: widget.data,
-        //             ),
-        //           ),
-        //         );
-        //       },
-        //       icon: const Icon(Icons.timer)),
-        // ],
       ),
       body: LiquidPullToRefresh(
         springAnimationDurationInMilliseconds: 20,
@@ -437,9 +426,12 @@ class _BrowseScreenState extends State<BrowseScreen> {
               },
               child: const Text('Dismiss'),
             ),
-            if(notification.title != 'Oops!')
+            if (notification.title != 'Oops!')
               MaterialButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => MentorFound(mentorName: user!.email!)));
+                },
                 child: const Text('Go'),
               ),
           ],
