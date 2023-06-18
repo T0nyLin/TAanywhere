@@ -61,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
       appName: "Email OTP",
       userEmail: email,
       otpLength: 6,
-      otpType: OTPType.digitsOnly
+      otpType: OTPType.digitsOnly,
     );
 
     if (await myauth.sendOTP() == true) {
@@ -76,7 +76,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> verifyOTP(String email, String otp) async {
-
     if (await myauth.verifyOTP(otp: otp) == true) {
       createUserWithEmailAndPassword();
     } else {
@@ -90,30 +89,55 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _entryField(
     String title,
     TextEditingController controller,
+    IconData? iconData,
   ) {
-    return TextField(
-      keyboardType: title == 'Email'
-          ? TextInputType.emailAddress
-          : TextInputType.text,
-      obscureText: title == 'Email' || title == 'OTP' ? false : true,
-      obscuringCharacter: '*',
-      controller: controller,
-      enabled: !isOTPSent || (isOTPSent && title == 'OTP'),
-      decoration: InputDecoration(
-        labelText: title,
-        border: const OutlineInputBorder(),
-        hintText: title == 'Email'
-            ? 'Email'
-            : title == 'OTP'
-                ? 'OTP'
-                : 'Password',
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 40.0),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.0),
+          border: Border.all(color: Colors.black),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black12,
+              spreadRadius: 2.0,
+              blurRadius: 4.0,
+              offset: Offset(0, 2),
+            ),
+          ],
+          color: Colors.white,
+        ),
+        child: TextField(
+          keyboardType: title == 'Email'
+              ? TextInputType.emailAddress
+              : TextInputType.text,
+          obscureText: title == 'Email' || title == 'OTP' ? false : true,
+          obscuringCharacter: '*',
+          controller: controller,
+          enabled: !isOTPSent || (isOTPSent && title == 'OTP'),
+          decoration: InputDecoration(
+            labelText: title,
+            border: InputBorder.none,
+            hintText: title == 'Email'
+                ? 'Email'
+                : title == 'OTP'
+                    ? 'OTP'
+                    : 'Password',
+            contentPadding: const EdgeInsets.symmetric(horizontal: 10.0),
+            prefixIcon: Icon(iconData),
+          ),
+        ),
       ),
     );
   }
 
   Widget _errorMessage() {
-    return Text(errorMessage == '' ? '' : 'Humm ? $errorMessage');
-  }
+  return Center(
+    child: Text(
+      errorMessage == '' ? '' : 'Humm ? $errorMessage',
+    ),
+  );
+}
 
   Widget _submitButton() {
     String buttonText = isLogin
@@ -136,18 +160,34 @@ class _LoginScreenState extends State<LoginScreen> {
       });
     });
 
-    return ElevatedButton.icon(
-      onPressed: isLogin
-          ? () => signInWithEmailAndPassword()
-          : () => isOTPSent
-              ? verifyOTP(_controllerEmail.text, _controllerOTP.text)
-              : sendOTP(_controllerEmail.text),
-      icon: const Icon(Icons.arrow_circle_right_outlined),
-      label: Text(buttonText),
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.blue,
+      ),
+      child: ElevatedButton.icon(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        onPressed: isLogin
+            ? () => signInWithEmailAndPassword()
+            : () => isOTPSent
+                ? verifyOTP(_controllerEmail.text, _controllerOTP.text)
+                : sendOTP(_controllerEmail.text),
+        icon: const Icon(
+          Icons.arrow_circle_right_outlined,
+          color: Colors.white,
+        ),
+        label: Text(
+          buttonText,
+          style: const TextStyle(color: Colors.white),
+        ),
+      ),
     );
   }
-
-
 
   Widget _loginOrRegisterButton() {
     return TextButton(
@@ -157,8 +197,11 @@ class _LoginScreenState extends State<LoginScreen> {
           isOTPSent = false;
         });
       },
-      child: Text(isLogin ? 'Register Instead' : 'Login Instead'),
-    );
+      child: Text(
+        isLogin ? 'Register Instead' : 'Login Instead',
+        style: const TextStyle(fontSize: 15,),
+        ),
+  );
   }
 
   @override
@@ -168,28 +211,74 @@ class _LoginScreenState extends State<LoginScreen> {
         title: const Text("TAanywhere"),
         backgroundColor: const Color.fromARGB(255, 128, 222, 234),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Please login to continue.",
-                style: TextStyle(fontSize: 20),
-              ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.white,
+              Color.fromARGB(255, 128, 222, 234),
+            ],
+          ),
+        ),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 40.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Login",
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        "Please login to continue.",
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 40),
+                _entryField(
+                  'Email',
+                  _controllerEmail,
+                  Icons.email,
+                ),
+                const SizedBox(height: 15),
+                _entryField(
+                  'Password',
+                  _controllerPassword,
+                  Icons.lock,
+                ),
+                const SizedBox(height: 15),
+                _entryField(
+                  'OTP',
+                  _controllerOTP,
+                  Icons.security,
+                ),
+                _errorMessage(),
+                const SizedBox(height: 15),
+                Center(
+                  child: _submitButton(),
+                ),
+                const SizedBox(height: 5),
+                Center(
+                  child: _loginOrRegisterButton(),
+                ),
+              ],
             ),
-            const SizedBox(width: 100, height: 40),
-            _entryField('Email', _controllerEmail),
-            const SizedBox(width: 100, height: 15),
-            _entryField('Password', _controllerPassword),
-            const SizedBox(width: 100, height: 15),
-            _entryField('OTP', _controllerOTP),
-            _errorMessage(),
-            const SizedBox(width: 100, height: 15),
-            _submitButton(),
-            _loginOrRegisterButton(),
-          ],
+          ),
         ),
       ),
     );
