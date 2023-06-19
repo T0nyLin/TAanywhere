@@ -190,6 +190,13 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
           ElevatedButton.icon(
             onPressed: () {
               sendPushMessage(token, title, body);
+              FirebaseFirestore.instance
+                  .collection('user queries')
+                  .doc('${widget.data['menteeid']}')
+                  .update({'mentorID': user!.uid})
+                  .then((value) => debugPrint('Added MentorID'))
+                  .catchError(
+                      (error) => debugPrint('Failed to add new data: $error'));
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (ctx) => Countdown(
@@ -198,7 +205,6 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
                   ),
                 ),
               );
-              widget.data.addEntries({'mentorID': user!.uid}.entries);
             },
             icon: const Icon(Icons.assignment_turned_in_rounded),
             label: const Text('Accept to help?'),

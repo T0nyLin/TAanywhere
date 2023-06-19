@@ -120,6 +120,11 @@ class _CountdownState extends State<Countdown> {
           ),
           MaterialButton(
             onPressed: () {
+              OverlaySupportEntry? dismissButton =
+                  OverlaySupportEntry.of(context);
+              if (dismissButton != null) {
+                dismissButton.dismiss();
+              }
               Navigator.of(context).push(MaterialPageRoute(
                   builder: ((context) =>
                       QRScan(menteeID: widget.data['menteeid']))));

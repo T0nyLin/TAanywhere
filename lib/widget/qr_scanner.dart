@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:ta_anywhere/widget/countdown.dart';
 
 class QRScan extends StatefulWidget {
   const QRScan({super.key, required this.menteeID});
@@ -19,6 +20,7 @@ class _QRScanState extends State<QRScan> {
 
   Barcode? barcode;
   QRViewController? controller;
+  Map<String, dynamic> blank = {};
 
   @override
   void dispose() {
@@ -57,30 +59,50 @@ class _QRScanState extends State<QRScan> {
           borderRadius: BorderRadius.circular(8),
           color: Colors.white24,
         ),
-        child: verifyMentee(context),
+        child: Text(barcode != null ? verifyMentee(context).toString() : 'Scan Mentee', maxLines: 1,),
       );
 
   Widget verifyMentee(BuildContext context) {
-    if (barcode!.code != null && barcode!.code == widget.menteeID) {
+    if (barcode!.code == widget.menteeID) {
       return FutureBuilder(
-          builder: ((context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-        if (snapshot.hasError) {
-          return Text("Something went wrong");
-        }
-        if (snapshot.hasData && !snapshot.data!.exists) {
-          return Text("Document does not exist");
-        }
+        future: users.doc('${widget.menteeID}').get(),
+        builder: ((context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return Text('Something went wrong...');
+          }
+          if (snapshot.hasData && !snapshot.data!.exists) {
+            return Text('Mentee not found.');
+          }
+          if (snapshot.connectionState == ConnectionState.done) {
+            Map<String, dynamic> data =
+                snapshot.data!.data() as Map<String, dynamic>;
+            return Column(
+              children: [
+                Text(
+                  "Mentee verified: ${data['username']}",
+                ),
+                TextButton(onPressed: () {
+                  Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (ctx) => Countdown(
+                    time: 60,
+                    data: blank,
+                  ),
+                ),
+              );
+                }, child: Text('Next')),
+              ],
+            );
+          }
 
-        if (snapshot.connectionState == ConnectionState.done) {
-          Map<String, dynamic> data =
-              snapshot.data!.data() as Map<String, dynamic>;
-          return Text("Mentee verified: ${data['username']}", maxLines: 1,);
-        }
-
-        return Text("loading");
-      }));
+          return CircularProgressIndicator(
+            color: Color.fromARGB(255, 48, 97, 104),
+          );
+        }),
+      );
+    } else {
+      return Text('Mentee not found.');
     }
-    return Text('Mentee not found.');
   }
 
   Widget buildQrView(BuildContext context) => QRView(

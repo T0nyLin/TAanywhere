@@ -22,7 +22,7 @@ class BrowseScreen extends StatefulWidget {
 }
 
 Future _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print("Handling a background message: ${message.messageId}");
+  debugPrint("Handling a background message: ${message.messageId}");
 }
 
 class _BrowseScreenState extends State<BrowseScreen> {
@@ -216,7 +216,9 @@ class _BrowseScreenState extends State<BrowseScreen> {
                       actions: [
                         MaterialButton(
                           onPressed: () {
-                            Navigator.pop(context);
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) =>
+                                    MentorFound(mentorID: user!.uid)));
                           },
                           child: const Text('Go'),
                         ),
@@ -309,7 +311,11 @@ class _BrowseScreenState extends State<BrowseScreen> {
                         queries
                             .doc(queriesSnapshots.data!.docs[index].id
                                 .toString())
-                            .update({'uploadedTime': DateTime.now()});
+                            .update({'uploadedTime': DateTime.now()})
+                            .then((value) =>
+                                debugPrint('Updated uploadTime field'))
+                            .catchError((error) =>
+                                debugPrint('Failed to update: $error'));
                       }
                       //auto purge after 60min
                       var lifetime = _lifetimeconversion(data);
@@ -317,7 +323,11 @@ class _BrowseScreenState extends State<BrowseScreen> {
                         queries
                             .doc(queriesSnapshots.data!.docs[index].id
                                 .toString())
-                            .delete();
+                            .delete()
+                            .then((value) =>
+                                debugPrint('Purged data after 60min'))
+                            .catchError((error) =>
+                                debugPrint('Failed to delete query: $error'));
                         _deleteImages(data); //del image in FirebaseStorage too
                       }
 
@@ -393,9 +403,9 @@ class _BrowseScreenState extends State<BrowseScreen> {
       );
     } else if (settings.authorizationStatus ==
         AuthorizationStatus.provisional) {
-      print('User granted provisional permission');
+      debugPrint('User granted provisional permission');
     } else {
-      print('User declined or has not accepted permission');
+      debugPrint('User declined or has not accepted permission');
     }
   }
 
@@ -430,7 +440,8 @@ class _BrowseScreenState extends State<BrowseScreen> {
               MaterialButton(
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => MentorFound(mentorName: user!.email!)));
+                      builder: (context) =>
+                          MentorFound(mentorID: user!.uid)));
                 },
                 child: const Text('Go'),
               ),
