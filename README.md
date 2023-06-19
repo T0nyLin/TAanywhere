@@ -181,6 +181,17 @@ On the other hand, as an alternative of NUS Authentication, we choose to verify 
 *13 June 2023*  
 When the mentors accept the query requests from **Browse Screen**, they are required to meet the mentee at the designated location within a time period. For this purpose, we have designed an in-apps timer that will countdown to record the reamining time. This timer can also be used to record the on-going timing of the mentoring session.
 
+*16 June 2023 - 18 June 2023*  
+Back to our OTP Verification feature, it has brought a lot of challenges in our development process. As we are a two-man team but the Firebase Console only recognize one of us as the main owner, some settings in the Firebase Console is only allowed to be modified by the main owner, which has brought some delay to the developer that is editor. Fortunately, these configuration settings only need to be done at the very first time deploying the cloud function. Any editor can freely deploy the modifed same name cloud function subsequently.
+
+After developing the cloud functions, we need to provide our Google Account as the sender of the OTP email to the users. However, apparently Google has disabled this access method from third party previously due to account security reason. We are forced to seek for alternative mail service provider such as Mailgun, but it turns out that their free trial restricts to testing purpose and we may need to pay for it in order to send the email.
+
+Surprisingly, we have found an OTP sending Flutter package that includes our desired features. We have tried on it and it works as we intended to. The only flaw is that the sender of email is set to be the developer's email. We will try to change its setting in order to let the sender of email be our own email soon. After that, we have touched up with our code and the **Login Screen** interface, which enables it to send an OTP email to the user's NUS email address, in order to verify user's student identity while registering an account in our apps.
+
+*18 June 2023*  
+When the mentor and the mentee meets up, we have design a qrcode scanning mechanism to verify their identities. In the **Profile Screen**, they can display their generated QR code based on UserID, and there is a QR code scanner for identity verification.
+
+
 ## Features
 
 **Before matching mentor and mentee:**

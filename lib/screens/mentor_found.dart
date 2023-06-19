@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:ta_anywhere/components/auth.dart';
+import 'package:ta_anywhere/components/getUser.dart';
 import 'package:ta_anywhere/screens/browse.dart';
 import 'package:ta_anywhere/widget/qr_code.dart';
 
@@ -15,9 +16,7 @@ class MentorFound extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final User? user = Auth().currentUser;
-
-    final mentor = FirebaseFirestore.instance.collection('users').doc(mentorID).get();
+    final User? user = Auth().currentUser;    
 
     DateTime timenow = DateTime.now();
 
@@ -56,8 +55,7 @@ class MentorFound extends StatelessWidget {
               backgroundImage: AssetImage("assets/icons/profile_pic.png"),
               radius: 60,
             ),
-            mediumLabel(
-                '$mentorID has accepted to mentor you. He/She will be arriving your location in 10 minutes.'),
+            getUser(context, mentorID),
             smallLabel(
                 '(Else the meet will be cancelled and the query will be reuploaded.)'),
             Transform.rotate(
