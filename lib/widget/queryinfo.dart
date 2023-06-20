@@ -202,6 +202,7 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
                   builder: (ctx) => Countdown(
                     time: 10,
                     data: widget.data,
+                    token: '',
                   ),
                 ),
               );

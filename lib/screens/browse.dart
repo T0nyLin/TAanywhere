@@ -11,6 +11,7 @@ import 'package:overlay_support/overlay_support.dart';
 import 'package:ta_anywhere/components/auth.dart';
 import 'package:ta_anywhere/components/pushNotification.dart';
 import 'package:ta_anywhere/screens/mentor_found.dart';
+import 'package:ta_anywhere/screens/paymentNrate.dart';
 
 import 'package:ta_anywhere/widget/queryinfo.dart';
 
@@ -214,6 +215,14 @@ class _BrowseScreenState extends State<BrowseScreen> {
                       ),
                       content: Text(_notificationInfo!.body!),
                       actions: [
+                        MaterialButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            entry?.remove();
+                            _showNoti();
+                          },
+                          child: const Text('Dismiss'),
+                        ),
                         MaterialButton(
                           onPressed: () {
                             Navigator.of(context).push(MaterialPageRoute(
@@ -425,25 +434,54 @@ class _BrowseScreenState extends State<BrowseScreen> {
           ),
           content: Text(notification.body!),
           actions: [
-            MaterialButton(
-              onPressed: () {
-                _showNoti();
-                OverlaySupportEntry? dismissButton =
-                    OverlaySupportEntry.of(context);
-                if (dismissButton != null) {
-                  dismissButton.dismiss();
-                }
-              },
-              child: const Text('Dismiss'),
-            ),
-            if (notification.title != 'Oops!')
+            if (notification.title!.startsWith('Congrats,'))
+              MaterialButton(
+                onPressed: () {
+                  _showNoti();
+                  OverlaySupportEntry? dismissButton =
+                      OverlaySupportEntry.of(context);
+                  if (dismissButton != null) {
+                    dismissButton.dismiss();
+                  }
+                },
+                child: const Text('Dismiss'),
+              ),
               MaterialButton(
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) =>
-                          MentorFound(mentorID: user!.uid)));
+                      builder: (context) => MentorFound(mentorID: user!.uid)));
                 },
                 child: const Text('Go'),
+              ),
+            if (notification.title == 'Oops!')
+              MaterialButton(
+                onPressed: () {
+                  OverlaySupportEntry? dismissButton =
+                      OverlaySupportEntry.of(context);
+                  if (dismissButton != null) {
+                    dismissButton.dismiss();
+                  }
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => BrowseScreen()),
+                    ModalRoute.withName('/'),
+                  );
+                },
+                child: const Text('Dismiss'),
+              ),
+              MaterialButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => MentorFound(mentorID: user!.uid)));
+                },
+                child: const Text('Go'),
+              ),
+            if (notification.title == 'Session Over')
+              MaterialButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => PaymentAndRateScreen()));
+                },
+                child: const Text('Proceed to payment'),
               ),
           ],
         ),

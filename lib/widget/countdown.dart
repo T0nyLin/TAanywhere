@@ -7,6 +7,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'package:ta_anywhere/components/auth.dart';
 import 'package:ta_anywhere/components/sendPushMessage.dart';
+import 'package:ta_anywhere/screens/browse.dart';
 import 'package:ta_anywhere/widget/qr_scanner.dart';
 
 class Countdown extends StatefulWidget {
@@ -14,10 +15,12 @@ class Countdown extends StatefulWidget {
     super.key,
     required this.time,
     required this.data,
+    required this.token,
   });
 
   final Map<String, dynamic> data;
   final int time;
+  final String token;
 
   @override
   State<Countdown> createState() => _CountdownState();
@@ -56,11 +59,16 @@ class _CountdownState extends State<Countdown> {
         timer?.cancel();
         sendPushMessage(widget.data['token'], 'Oops!',
             'Your mentor did not reach on time!');
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => BrowseScreen()),
+          ModalRoute.withName('/'),
+        );
         //add local noti to say timer run out, and meet is cancelled
         reupload();
       } else if (seconds < 0 && widget.time == 60) {
         timer?.cancel();
-        sendPushMessage(widget.data['token'], 'Well Done!', 'Session Over!');
+
+        //sendPushMessage(widget.data['token'], 'Well Done!', 'Session Over!');
       }
     });
   }
@@ -97,7 +105,7 @@ class _CountdownState extends State<Countdown> {
     timer?.cancel();
   }
 
-  void showAlert() {
+  void menteeFound() {
     showOverlay(
       duration: const Duration(seconds: 10),
       (context, progress) => AlertDialog(
@@ -126,8 +134,52 @@ class _CountdownState extends State<Countdown> {
                 dismissButton.dismiss();
               }
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: ((context) =>
-                      QRScan(menteeID: widget.data['menteeid']))));
+                  builder: ((context) => QRScan(
+                        menteeID: widget.data['menteeid'],
+                        token: widget.data['token'],
+                      ))));
+            },
+            child: const Text('Yes'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void sessionOver() {
+    showOverlay(
+      duration: const Duration(seconds: 10),
+      (context, progress) => AlertDialog(
+        title: Center(
+          child: Text(
+            'Stop session now?',
+            style: Theme.of(context).primaryTextTheme.bodyLarge,
+          ),
+        ),
+        actions: [
+          MaterialButton(
+            onPressed: () {
+              OverlaySupportEntry? dismissButton =
+                  OverlaySupportEntry.of(context);
+              if (dismissButton != null) {
+                dismissButton.dismiss();
+              }
+            },
+            child: const Text('No'),
+          ),
+          MaterialButton(
+            onPressed: () {
+              OverlaySupportEntry? dismissButton =
+                  OverlaySupportEntry.of(context);
+              if (dismissButton != null) {
+                dismissButton.dismiss();
+              }
+              sendPushMessage(widget.token, 'Session Over', '');
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: ((context) => QRScan(
+                        menteeID: widget.data['menteeid'],
+                        token: widget.data['token'],
+                      ))));
             },
             child: const Text('Yes'),
           ),
@@ -204,10 +256,10 @@ class _CountdownState extends State<Countdown> {
           const SizedBox(
             height: 80,
           ),
-          if (isRunning)
+          if (isRunning && widget.time == 10)
             ElevatedButton(
               onPressed: () {
-                showAlert();
+                menteeFound();
               },
               child: const Text('STOP'),
             ),
@@ -220,6 +272,13 @@ class _CountdownState extends State<Countdown> {
             label: mediumLabel(widget.data['location']),
             onPressed: () {},
           ),
+          if (isRunning && widget.time == 60)
+            ElevatedButton(
+              onPressed: () {
+                sessionOver();
+              },
+              child: const Text('STOP'),
+            ),
         ],
       )),
     );

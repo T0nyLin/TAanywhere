@@ -6,9 +6,10 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:ta_anywhere/widget/countdown.dart';
 
 class QRScan extends StatefulWidget {
-  const QRScan({super.key, required this.menteeID});
+  const QRScan({super.key, required this.menteeID, required this.token});
 
   final String menteeID;
+  final String token;
 
   @override
   State<QRScan> createState() => _QRScanState();
@@ -59,7 +60,11 @@ class _QRScanState extends State<QRScan> {
           borderRadius: BorderRadius.circular(8),
           color: Colors.white24,
         ),
-        child: Text(barcode != null ? verifyMentee(context).toString() : 'Scan Mentee', maxLines: 1,),
+        child: Text(
+          barcode != null ? verifyMentee(context).toString() : 'Scan Mentee',
+          maxLines: 1,
+          style: Theme.of(context).primaryTextTheme.bodySmall,
+        ),
       );
 
   Widget verifyMentee(BuildContext context) {
@@ -81,16 +86,19 @@ class _QRScanState extends State<QRScan> {
                 Text(
                   "Mentee verified: ${data['username']}",
                 ),
-                TextButton(onPressed: () {
-                  Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (ctx) => Countdown(
-                    time: 60,
-                    data: blank,
-                  ),
-                ),
-              );
-                }, child: Text('Next')),
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (ctx) => Countdown(
+                            time: 60,
+                            data: blank,
+                            token: widget.token,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Text('Next')),
               ],
             );
           }

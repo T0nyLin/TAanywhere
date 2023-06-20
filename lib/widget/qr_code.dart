@@ -9,7 +9,7 @@ class QRcode extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final User? user = Auth().currentUser;
-    String userid = user!.email!;
+    String userid = user!.uid;
 
     return Scaffold(
       appBar: AppBar(

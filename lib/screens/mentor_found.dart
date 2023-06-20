@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:ta_anywhere/components/auth.dart';
-import 'package:ta_anywhere/components/getUser.dart';
 import 'package:ta_anywhere/screens/browse.dart';
 import 'package:ta_anywhere/widget/qr_code.dart';
 
@@ -16,7 +15,7 @@ class MentorFound extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final User? user = Auth().currentUser;    
+    final User? user = Auth().currentUser;
 
     DateTime timenow = DateTime.now();
 
@@ -41,6 +40,44 @@ class MentorFound extends StatelessWidget {
       return Text(
         data,
         style: Theme.of(context).primaryTextTheme.bodySmall,
+      );
+    }
+
+    Widget getUser(BuildContext context, String mentorID) {
+      CollectionReference mentor =
+          FirebaseFirestore.instance.collection('users');
+      String gender = '';
+
+      return FutureBuilder<DocumentSnapshot>(
+        future: mentor.doc(mentorID).get(),
+        builder:
+            (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return Text("Something went wrong");
+          }
+
+          if (snapshot.hasData && !snapshot.data!.exists) {
+            return Text("Mentor does not exist");
+          }
+
+          if (snapshot.connectionState == ConnectionState.done) {
+            Map<String, dynamic> data =
+                snapshot.data!.data() as Map<String, dynamic>;
+            if (data['gender'] == 'Male') {
+              gender = 'He';
+            } else {
+              gender = 'She';
+            }
+            return Text(
+              '${data['username']} has accepted to mentor you. $gender will be arriving your location in 10 minutes.',
+              style: Theme.of(context).primaryTextTheme.bodyMedium,
+            );
+          }
+
+          return CircularProgressIndicator(
+            color: Color.fromARGB(255, 48, 97, 104),
+          );
+        },
       );
     }
 
