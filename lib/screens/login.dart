@@ -12,11 +12,14 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   String? errorMessage = '';
+  String? selectedGender;
   bool isLogin = true;
   bool isOTPSent = false;
+  bool isFormValid = false;
   EmailOTP myauth = EmailOTP();
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
+  final TextEditingController _controllerUsername= TextEditingController();
   final TextEditingController _controllerOTP = TextEditingController();
 
   Future<void> signInWithEmailAndPassword() async {
@@ -56,6 +59,14 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
+    if(!isFormValid) {
+      setState(() {
+        errorMessage = 'Please fill in all fields';
+      });
+      debugPrint('Error sending OTP: $errorMessage');
+      return;
+    }
+
     myauth.setConfig(
       appEmail: "taanywhere@gmail.com",
       appName: "Email OTP",
@@ -65,7 +76,9 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     if (await myauth.sendOTP() == true) {
-      debugPrint('OTP Sent');
+      setState(() {
+        errorMessage = "OTP Sent Successfully! Please check your email.";
+      });
       isOTPSent = true;
     } else {
       setState(() {
@@ -91,6 +104,45 @@ class _LoginScreenState extends State<LoginScreen> {
     TextEditingController controller,
     IconData? iconData,
   ) {
+
+    if ((title == 'OTP' || title == 'Username') && isLogin) {
+      // Hide OTP field in login mode
+      return Container();
+    }
+
+    if (title == 'Username') {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 40.0),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.0),
+          border: Border.all(color: Colors.black),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black12,
+              spreadRadius: 2.0,
+              blurRadius: 4.0,
+              offset: Offset(0, 2),
+            ),
+          ],
+          color: Colors.white,
+        ),
+        child: TextField(
+          keyboardType: TextInputType.text,
+          obscureText: false,
+          controller: controller,
+          decoration: InputDecoration(
+            labelText: title,
+            border: InputBorder.none,
+            hintText: title,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 10.0),
+            prefixIcon: Icon(iconData),
+          ),
+        ),
+      ),
+    );
+  }
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 40.0),
       child: Container(
@@ -146,9 +198,13 @@ class _LoginScreenState extends State<LoginScreen> {
             ? 'Verify OTP'
             : 'Send OTP';
 
+    _controllerEmail.addListener(_validateForm);
+    _controllerPassword.addListener(_validateForm);
+    _controllerUsername.addListener(_validateForm);
+
     _controllerOTP.addListener(() {
       setState(() {
-        if (_controllerOTP.text.isNotEmpty && !isOTPSent) {
+        if (_controllerOTP.text.isNotEmpty && isOTPSent) {
           buttonText = 'Submit OTP';
         } else {
           buttonText = isLogin
@@ -173,10 +229,10 @@ class _LoginScreenState extends State<LoginScreen> {
           elevation: 0,
         ),
         onPressed: isLogin
-            ? () => signInWithEmailAndPassword()
-            : () => isOTPSent
-                ? verifyOTP(_controllerEmail.text, _controllerOTP.text)
-                : sendOTP(_controllerEmail.text),
+              ? () => signInWithEmailAndPassword()
+              : () => isOTPSent
+                  ? verifyOTP(_controllerEmail.text, _controllerOTP.text)
+                  : sendOTP(_controllerEmail.text),
         icon: const Icon(
           Icons.arrow_circle_right_outlined,
           color: Colors.white,
@@ -203,6 +259,86 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
   );
   }
+
+  Widget _buildGenderDropdown() {
+    if (isLogin) {
+      return Container();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 9.0, horizontal: 40.0),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.0),
+          border: Border.all(color: Colors.black),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black12,
+              spreadRadius: 2.0,
+              blurRadius: 4.0,
+              offset: Offset(0, 2),
+            ),
+          ],
+          color: Colors.white,
+        ),
+        child: DropdownButtonFormField<String>(
+          decoration: const InputDecoration(
+            border: InputBorder.none,
+            labelText: "Gender",
+            contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
+            prefixIcon: Icon(Icons.face),
+          ),
+          value: selectedGender,
+          onChanged: (value) {
+            setState(() {
+              selectedGender = value;
+            });
+          },
+          items: const [
+            DropdownMenuItem(
+              value: 'Male',
+              child: Text('Male'),
+            ),
+            DropdownMenuItem(
+              value: 'Female',
+              child: Text('Female'),
+            ),
+            DropdownMenuItem(
+              value: 'Prefer not to tell',
+              child: Text('Prefer not to tell'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _validateForm() {
+  debugPrint(_controllerEmail.text.isEmpty ? "Email" : "");
+  debugPrint(_controllerPassword.text.isEmpty ? "Password" : "");
+  debugPrint(_controllerUsername.text.isEmpty ? "Username" : "");
+  debugPrint(selectedGender == null ? "Gender" : "");
+  // debugPrint(isFormValid ? "True" : "False");
+  setState(() {
+    if (isLogin) {
+      if (_controllerEmail.text.isEmpty || _controllerPassword.text.isEmpty) {
+        isFormValid = false;
+      } else {
+        isFormValid = true;
+      }
+    } else {
+      if (_controllerEmail.text.isEmpty ||
+          _controllerPassword.text.isEmpty ||
+          _controllerUsername.text.isEmpty ||
+          selectedGender == null) {
+        isFormValid = false;
+      } else {
+        isFormValid = true;
+      }
+    }
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -261,6 +397,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   _controllerPassword,
                   Icons.lock,
                 ),
+                const SizedBox(height: 15),
+                _buildGenderDropdown(),
+                const SizedBox(height: 15),
+                  _entryField(
+                  'Username',
+                  _controllerUsername,
+                  Icons.person,
+                ),                
                 const SizedBox(height: 15),
                 _entryField(
                   'OTP',
