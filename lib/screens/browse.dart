@@ -314,40 +314,41 @@ class _BrowseScreenState extends State<BrowseScreen> {
                     (BuildContext context, int index) {
                       var data = queriesSnapshots.data!.docs[index].data()
                           as Map<String, dynamic>;
-
-                      var posted = _uploadtimeconversion(data);
-                      if (posted >= 10) {
-                        queries
-                            .doc(queriesSnapshots.data!.docs[index].id
-                                .toString())
-                            .update({'uploadedTime': DateTime.now()})
-                            .then((value) =>
-                                debugPrint('Updated uploadTime field'))
-                            .catchError((error) =>
-                                debugPrint('Failed to update: $error'));
-                      }
-                      //auto purge after 60min
-                      var lifetime = _lifetimeconversion(data);
-                      if (lifetime >= 60) {
-                        queries
-                            .doc(queriesSnapshots.data!.docs[index].id
-                                .toString())
-                            .delete()
-                            .then((value) =>
-                                debugPrint('Purged data after 60min'))
-                            .catchError((error) =>
-                                debugPrint('Failed to delete query: $error'));
-                        _deleteImages(data); //del image in FirebaseStorage too
-                      }
-
-                      if (code.trim().isEmpty) {
-                        return _search(data, lifetime);
-                      }
-                      if (data['module Code']
-                          .toString()
-                          .toLowerCase()
-                          .contains(code.toLowerCase())) {
-                        return _search(data, lifetime);
+                      if (data['inSession'] != true) {
+                        var posted = _uploadtimeconversion(data);
+                        if (posted >= 10) {
+                          queries
+                              .doc(queriesSnapshots.data!.docs[index].id
+                                  .toString())
+                              .update({'uploadedTime': DateTime.now()})
+                              .then((value) =>
+                                  debugPrint('Updated uploadTime field'))
+                              .catchError((error) =>
+                                  debugPrint('Failed to update: $error'));
+                        }
+                        //auto purge after 60min
+                        var lifetime = _lifetimeconversion(data);
+                        if (lifetime >= 60) {
+                          queries
+                              .doc(queriesSnapshots.data!.docs[index].id
+                                  .toString())
+                              .delete()
+                              .then((value) =>
+                                  debugPrint('Purged data after 60min'))
+                              .catchError((error) =>
+                                  debugPrint('Failed to delete query: $error'));
+                          _deleteImages(
+                              data); //del image in FirebaseStorage too
+                        }
+                        if (code.trim().isEmpty) {
+                          return _search(data, lifetime);
+                        }
+                        if (data['module Code']
+                            .toString()
+                            .toLowerCase()
+                            .contains(code.toLowerCase())) {
+                          return _search(data, lifetime);
+                        }
                       }
                       return Container();
                     },
@@ -437,17 +438,23 @@ class _BrowseScreenState extends State<BrowseScreen> {
             if (notification.title!.startsWith('Congrats,'))
               MaterialButton(
                 onPressed: () {
-                  _showNoti();
                   OverlaySupportEntry? dismissButton =
                       OverlaySupportEntry.of(context);
                   if (dismissButton != null) {
                     dismissButton.dismiss();
                   }
+                  _showNoti();
                 },
                 child: const Text('Dismiss'),
               ),
+            if (notification.title!.startsWith('Congrats,'))
               MaterialButton(
                 onPressed: () {
+                  OverlaySupportEntry? dismissButton =
+                      OverlaySupportEntry.of(context);
+                  if (dismissButton != null) {
+                    dismissButton.dismiss();
+                  }
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => MentorFound(mentorID: user!.uid)));
                 },
@@ -468,16 +475,27 @@ class _BrowseScreenState extends State<BrowseScreen> {
                 },
                 child: const Text('Dismiss'),
               ),
+            if (notification.title == 'Oops!')
               MaterialButton(
                 onPressed: () {
+                  OverlaySupportEntry? dismissButton =
+                      OverlaySupportEntry.of(context);
+                  if (dismissButton != null) {
+                    dismissButton.dismiss();
+                  }
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => MentorFound(mentorID: user!.uid)));
                 },
                 child: const Text('Go'),
               ),
-            if (notification.title == 'Session Over')
+            if (notification.title == 'Well Done!')
               MaterialButton(
                 onPressed: () {
+                  OverlaySupportEntry? dismissButton =
+                      OverlaySupportEntry.of(context);
+                  if (dismissButton != null) {
+                    dismissButton.dismiss();
+                  }
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => PaymentAndRateScreen()));
                 },

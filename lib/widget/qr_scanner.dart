@@ -6,10 +6,12 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:ta_anywhere/widget/countdown.dart';
 
 class QRScan extends StatefulWidget {
-  const QRScan({super.key, required this.menteeID, required this.token});
+  const QRScan({
+    super.key,
+    required this.data,
+  });
 
-  final String menteeID;
-  final String token;
+  final Map<String, dynamic> data;
 
   @override
   State<QRScan> createState() => _QRScanState();
@@ -60,17 +62,23 @@ class _QRScanState extends State<QRScan> {
           borderRadius: BorderRadius.circular(8),
           color: Colors.white24,
         ),
-        child: Text(
-          barcode != null ? verifyMentee(context).toString() : 'Scan Mentee',
-          maxLines: 1,
-          style: Theme.of(context).primaryTextTheme.bodySmall,
+        child: Column(
+          children: [
+            barcode != null
+                ? verifyMentee(context)
+                : Text(
+                    'Scan Mentee',
+                    maxLines: 1,
+                    style: Theme.of(context).primaryTextTheme.bodySmall,
+                  ),
+          ],
         ),
       );
 
   Widget verifyMentee(BuildContext context) {
-    if (barcode!.code == widget.menteeID) {
+    if (barcode!.code == widget.data['menteeid']) {
       return FutureBuilder(
-        future: users.doc('${widget.menteeID}').get(),
+        future: users.doc('${widget.data['menteeid']}').get(),
         builder: ((context, AsyncSnapshot<DocumentSnapshot> snapshot) {
           if (snapshot.hasError) {
             return Text('Something went wrong...');
@@ -85,6 +93,11 @@ class _QRScanState extends State<QRScan> {
               children: [
                 Text(
                   "Mentee verified: ${data['username']}",
+                  maxLines: 1,
+                  style: Theme.of(context)
+                      .primaryTextTheme
+                      .bodySmall!
+                      .copyWith(color: Colors.white),
                 ),
                 TextButton(
                     onPressed: () {
@@ -92,13 +105,18 @@ class _QRScanState extends State<QRScan> {
                         MaterialPageRoute(
                           builder: (ctx) => Countdown(
                             time: 60,
-                            data: blank,
-                            token: widget.token,
+                            data: widget.data,
                           ),
                         ),
                       );
                     },
-                    child: Text('Next')),
+                    child: Text(
+                      'Next',
+                      style: Theme.of(context)
+                          .primaryTextTheme
+                          .bodyMedium!
+                          .copyWith(color: Colors.white),
+                    )),
               ],
             );
           }

@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:ta_anywhere/components/auth.dart';
-import 'package:ta_anywhere/screens/browse.dart';
 import 'package:ta_anywhere/widget/qr_code.dart';
 
 class MentorFound extends StatelessWidget {
@@ -53,11 +52,11 @@ class MentorFound extends StatelessWidget {
         builder:
             (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
           if (snapshot.hasError) {
-            return Text("Something went wrong");
+            return mediumLabel('Something went wrong');
           }
 
           if (snapshot.hasData && !snapshot.data!.exists) {
-            return Text("Mentor does not exist");
+            return mediumLabel('Mentor does not exist');
           }
 
           if (snapshot.connectionState == ConnectionState.done) {
@@ -68,10 +67,8 @@ class MentorFound extends StatelessWidget {
             } else {
               gender = 'She';
             }
-            return Text(
-              '${data['username']} has accepted to mentor you. $gender will be arriving your location in 10 minutes.',
-              style: Theme.of(context).primaryTextTheme.bodyMedium,
-            );
+            return mediumLabel(
+                '${data['username']} has accepted to mentor you. $gender will be arriving your location in 10 minutes.');
           }
 
           return CircularProgressIndicator(
@@ -96,7 +93,7 @@ class MentorFound extends StatelessWidget {
             smallLabel(
                 '(Else the meet will be cancelled and the query will be reuploaded.)'),
             Transform.rotate(
-                angle: 90 * pi / 180,
+                angle: -90 * pi / 180,
                 child: LoadingAnimationWidget.prograssiveDots(
                     color: Color.fromARGB(255, 48, 97, 104), size: 50)),
             mediumLabel(
@@ -108,37 +105,37 @@ class MentorFound extends StatelessWidget {
                 },
                 icon: Icon(Icons.qr_code_rounded),
                 label: Text('Ready QR')),
-            TextButton(
-              onPressed: () {
-                showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                          title: Text('Are you sure you want to cancel meet?'),
-                          actions: [
-                            MaterialButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: Text('No'),
-                            ),
-                            MaterialButton(
-                              onPressed: () {
-                                reupload();
-                                Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute<void>(
-                                    builder: (BuildContext context) =>
-                                        const BrowseScreen(),
-                                  ),
-                                  ModalRoute.withName('/'),
-                                );
-                              },
-                              child: Text('Yes'),
-                            ),
-                          ],
-                        ));
-              },
-              child: Text('Cancel Meet'),
-            ),
+            // TextButton(
+            //   onPressed: () {
+            //     showDialog(
+            //         context: context,
+            //         builder: (context) => AlertDialog(
+            //               title: Text('Are you sure you want to cancel meet?'),
+            //               actions: [
+            //                 MaterialButton(
+            //                   onPressed: () {
+            //                     Navigator.pop(context);
+            //                   },
+            //                   child: Text('No'),
+            //                 ),
+            //                 MaterialButton(
+            //                   onPressed: () {
+            //                     reupload();
+            //                     Navigator.of(context).pushAndRemoveUntil(
+            //                       MaterialPageRoute<void>(
+            //                         builder: (BuildContext context) =>
+            //                             const BrowseScreen(),
+            //                       ),
+            //                       ModalRoute.withName('/'),
+            //                     );
+            //                   },
+            //                   child: Text('Yes'),
+            //                 ),
+            //               ],
+            //             ));
+            //   },
+            //   child: Text('Cancel Meet'),
+            // ),
           ],
         ),
       ),

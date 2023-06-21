@@ -1,5 +1,8 @@
+import 'dart:async';
+import 'dart:ui' as ui;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:ta_anywhere/components/auth.dart';
 
@@ -11,8 +14,49 @@ class QRcode extends StatelessWidget {
     final User? user = Auth().currentUser;
     String userid = user!.uid;
 
+    Future<ui.Image> _loadImage() async {
+      final completer = Completer<ui.Image>();
+      final data = await rootBundle.load("assets/icons/logo.png");
+      ui.decodeImageFromList(data.buffer.asUint8List(), completer.complete);
+
+      return completer.future;
+    }
+
+    final qrCode = FutureBuilder(
+      future: _loadImage(),
+      builder: (ctx, snapshot) {
+        final size = 400.0;
+        if (!snapshot.hasData) {
+          return Container(
+            color: Colors.black,
+            height: size,
+            width: size,
+          );
+        }
+        return CustomPaint(
+          size: Size.square(size),
+          painter: QrPainter(
+            // data: '1234',
+            data: userid,
+            version: QrVersions.auto,
+            eyeStyle: QrEyeStyle(
+              eyeShape: QrEyeShape.circle,
+              color: Color.fromARGB(255, 48, 97, 104),
+            ),
+            dataModuleStyle: const QrDataModuleStyle(
+              dataModuleShape: QrDataModuleShape.square,
+              color: Color.fromARGB(255, 128, 222, 234),
+            ),
+            embeddedImage: snapshot.data,
+            embeddedImageStyle:
+                QrEmbeddedImageStyle(size: const Size.square(25)),
+          ),
+        );
+      },
+    );
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text(
           'MY QR',
           style: Theme.of(context)
@@ -24,40 +68,11 @@ class QRcode extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Center(
-          child: QrImageView(
-            data: userid,
-            version: QrVersions.auto,
-            backgroundColor: Colors.white,
-            eyeStyle: QrEyeStyle(
-              eyeShape: QrEyeShape.square,
-              color: Color.fromARGB(255, 48, 97, 104),
-            ),
-            dataModuleStyle: const QrDataModuleStyle(
-              dataModuleShape: QrDataModuleShape.square,
-              color: Color.fromARGB(255, 128, 222, 234),
-            ),
-            embeddedImage: AssetImage("assets/icons/logo.png"),
-            embeddedImageStyle: QrEmbeddedImageStyle(size: const Size(150, 150)),
-            size: 400,
-          ),
+          child: Container(
+            decoration: BoxDecoration(color: Colors.white),
+            child: qrCode),
         ),
       ),
-      // SizedBox(
-      //   height: 20,
-      // ),
-      // Visibility(
-      //   visible: menteeID.isNotEmpty ? true : false,
-      //   child: TextButton(
-      //     onPressed: () {
-      //       Navigator.of(context)
-      //           .push(MaterialPageRoute(builder: ((context) => QRScan())));
-      //     },
-      //     child: Text('Open Scanner'),
-      //   ),
-      // ),
-      // SizedBox(
-      //   height: 20,
-      // ),
     );
   }
 }

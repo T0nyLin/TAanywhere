@@ -193,7 +193,7 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
               FirebaseFirestore.instance
                   .collection('user queries')
                   .doc('${widget.data['menteeid']}')
-                  .update({'mentorID': user!.uid})
+                  .update({'mentorID': user!.uid, 'inSession': true,})
                   .then((value) => debugPrint('Added MentorID'))
                   .catchError(
                       (error) => debugPrint('Failed to add new data: $error'));
@@ -202,7 +202,6 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
                   builder: (ctx) => Countdown(
                     time: 10,
                     data: widget.data,
-                    token: '',
                   ),
                 ),
               );

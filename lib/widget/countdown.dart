@@ -7,7 +7,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'package:ta_anywhere/components/auth.dart';
 import 'package:ta_anywhere/components/sendPushMessage.dart';
-import 'package:ta_anywhere/screens/browse.dart';
+import 'package:ta_anywhere/screens/mentorSelectPayment.dart';
 import 'package:ta_anywhere/widget/qr_scanner.dart';
 
 class Countdown extends StatefulWidget {
@@ -15,12 +15,10 @@ class Countdown extends StatefulWidget {
     super.key,
     required this.time,
     required this.data,
-    required this.token,
   });
 
-  final Map<String, dynamic> data;
   final int time;
-  final String token;
+  final Map<String, dynamic> data;
 
   @override
   State<Countdown> createState() => _CountdownState();
@@ -37,11 +35,19 @@ class _CountdownState extends State<Countdown> {
   void reupload() async {
     await FirebaseFirestore.instance
         .collection('user queries')
-        .doc(widget.data['uid'])
+        .doc(widget.data['menteeid'])
         .update({
+      'inSession': false,
       'uploadedTime': timenow,
       'lifetime': timenow,
     });
+  }
+
+  void deleteQuery() {
+    FirebaseFirestore.instance
+        .collection('user queries')
+        .doc(widget.data['menteeid'])
+        .delete();
   }
 
   @override
@@ -59,16 +65,12 @@ class _CountdownState extends State<Countdown> {
         timer?.cancel();
         sendPushMessage(widget.data['token'], 'Oops!',
             'Your mentor did not reach on time!');
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => BrowseScreen()),
-          ModalRoute.withName('/'),
-        );
         //add local noti to say timer run out, and meet is cancelled
         reupload();
       } else if (seconds < 0 && widget.time == 60) {
         timer?.cancel();
 
-        //sendPushMessage(widget.data['token'], 'Well Done!', 'Session Over!');
+        sendPushMessage(widget.data['token'], 'Well Done!', 'Session Over!');
       }
     });
   }
@@ -128,6 +130,8 @@ class _CountdownState extends State<Countdown> {
           ),
           MaterialButton(
             onPressed: () {
+              timer?.cancel();
+              deleteQuery();
               OverlaySupportEntry? dismissButton =
                   OverlaySupportEntry.of(context);
               if (dismissButton != null) {
@@ -135,8 +139,7 @@ class _CountdownState extends State<Countdown> {
               }
               Navigator.of(context).push(MaterialPageRoute(
                   builder: ((context) => QRScan(
-                        menteeID: widget.data['menteeid'],
-                        token: widget.data['token'],
+                        data: widget.data,
                       ))));
             },
             child: const Text('Yes'),
@@ -169,17 +172,14 @@ class _CountdownState extends State<Countdown> {
           ),
           MaterialButton(
             onPressed: () {
+              timer?.cancel();
               OverlaySupportEntry? dismissButton =
                   OverlaySupportEntry.of(context);
               if (dismissButton != null) {
                 dismissButton.dismiss();
               }
-              sendPushMessage(widget.token, 'Session Over', '');
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: ((context) => QRScan(
-                        menteeID: widget.data['menteeid'],
-                        token: widget.data['token'],
-                      ))));
+                  builder: (_) => const MentorSelectPaymentScreen()));
             },
             child: const Text('Yes'),
           ),
@@ -246,41 +246,45 @@ class _CountdownState extends State<Countdown> {
   @override
   Widget build(BuildContext context) {
     final isRunning = timer == null ? false : timer!.isActive;
-    return Scaffold(
-      appBar: AppBar(),
-      body: Center(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          buildTime(),
-          const SizedBox(
-            height: 80,
-          ),
-          if (isRunning && widget.time == 10)
-            ElevatedButton(
-              onPressed: () {
-                menteeFound();
-              },
-              child: const Text('STOP'),
+    return WillPopScope(
+      onWillPop: () async => false, //disable system back button
+      child: Scaffold(
+        body: Center(
+            child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            buildTime(),
+            const SizedBox(
+              height: 80,
             ),
-          const SizedBox(
-            height: 40,
-          ),
-          mediumLabel('See Location on Map:'),
-          TextButton.icon(
-            icon: const Icon(Icons.location_on_rounded),
-            label: mediumLabel(widget.data['location']),
-            onPressed: () {},
-          ),
-          if (isRunning && widget.time == 60)
-            ElevatedButton(
-              onPressed: () {
-                sessionOver();
-              },
-              child: const Text('STOP'),
+            if (isRunning && widget.time == 10)
+              ElevatedButton(
+                onPressed: () {
+                  menteeFound();
+                },
+                child: const Text('STOP'),
+              ),
+            const SizedBox(
+              height: 40,
             ),
-        ],
-      )),
+            if (isRunning && widget.time == 10)
+              mediumLabel('See Location on Map:'),
+            if (isRunning && widget.time == 10)
+              TextButton.icon(
+                icon: const Icon(Icons.location_on_rounded),
+                label: mediumLabel(widget.data['location']),
+                onPressed: () {},
+              ),
+            if (isRunning && widget.time == 60)
+              ElevatedButton(
+                onPressed: () {
+                  sessionOver();
+                },
+                child: const Text('End Session'),
+              ),
+          ],
+        )),
+      ),
     );
   }
 }
