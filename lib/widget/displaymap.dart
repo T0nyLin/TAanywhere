@@ -8,8 +8,8 @@ class DisplayMap extends StatefulWidget {
     super.key,
     this.location = const PlaceLocation(
       //wont need "required" if picking the location for the first time
-      latitude: 37.422,
-      longitude: -122.084,
+      latitude: 1.2971365,
+      longitude: 103.7775268,
       address: '',
     ),
     this.isSelecting = true,
@@ -48,6 +48,8 @@ class _DisplayMapState extends State<DisplayMap> {
                   _pickedLocation = position;
                 });
               },
+        myLocationEnabled: true,
+        compassEnabled: true,
         initialCameraPosition: CameraPosition(
             target: LatLng(
               widget.location.latitude,

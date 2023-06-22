@@ -111,7 +111,7 @@ class _UploadScreenState extends State<UploadScreen> {
                     ),
                     Column(
                       children: [
-                        ElevatedButton(
+                        ElevatedButton.icon(
                           style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.all(
                                 const Color.fromARGB(255, 30, 97, 33)),
@@ -119,10 +119,11 @@ class _UploadScreenState extends State<UploadScreen> {
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
-                          child: const Text('Retake'),
+                          icon: Icon(Icons.camera_alt_rounded),
+                          label: Text('Retake', style: Theme.of(context).primaryTextTheme.bodyLarge,),
                         ),
                         const Padding(padding: EdgeInsets.all(40)),
-                        ElevatedButton(
+                        ElevatedButton.icon(
                           style: ButtonStyle(
                             backgroundColor:
                                 MaterialStateProperty.all(Colors.grey),
@@ -135,7 +136,8 @@ class _UploadScreenState extends State<UploadScreen> {
 
                             _cropImage(pickedFile.path);
                           },
-                          child: const Text('Browse'),
+                          icon: Icon(Icons.crop_original_rounded),
+                          label: Text('Browse', style: Theme.of(context).primaryTextTheme.bodyLarge,),
                         ),
                       ],
                     ),
@@ -201,12 +203,15 @@ class _UploadScreenState extends State<UploadScreen> {
                             title: Text(modcode.modCode),
                           );
                         },
-                        noItemsFoundBuilder: (context) => Center(
-                          child: Text(
-                            'Module not found.',
-                            style: Theme.of(context).primaryTextTheme.bodySmall,
-                          ),
-                        ),
+                        noItemsFoundBuilder: (context) {
+                          return Center(
+                            child: Text(
+                              _modController.text = 'Module not found.',
+                              style:
+                                  Theme.of(context).primaryTextTheme.bodySmall,
+                            ),
+                          );
+                        },
                         onSuggestionSelected: (ModuleCode? suggestion) {
                           final modcode = suggestion!;
                           ScaffoldMessenger.of(context)
@@ -225,7 +230,12 @@ class _UploadScreenState extends State<UploadScreen> {
                           if (value == null ||
                               value.isEmpty ||
                               value.trim().length <= 1 ||
-                              value.trim().length > 10) {
+                              value.trim().length > 10 ||
+                              value.trim() == 'Module not found.') {
+                            setState(() {
+                              _modController.clear();
+                              _modController.text = '';
+                            });
                             return 'Invalid Code';
                           }
                           return null;
@@ -344,19 +354,11 @@ class _UploadScreenState extends State<UploadScreen> {
                   height: 30,
                 ),
                 ElevatedButton.icon(
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(
-                      const Color.fromARGB(255, 1, 104, 107),
-                    ),
-                    textStyle: MaterialStateProperty.all(
-                      const TextStyle(fontSize: 30),
-                    ),
-                  ),
                   onPressed: () {
                     _saveQuery(context);
                   },
                   icon: const Icon(Icons.arrow_circle_right_outlined),
-                  label: const Text('Next'),
+                  label: Text('Next', style: Theme.of(context).primaryTextTheme.bodyLarge,),
                 ),
               ],
             ),

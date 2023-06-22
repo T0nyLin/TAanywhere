@@ -187,28 +187,32 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
           const SizedBox(
             height: 80,
           ),
-          ElevatedButton.icon(
-            onPressed: () {
-              sendPushMessage(token, title, body);
-              FirebaseFirestore.instance
-                  .collection('user queries')
-                  .doc('${widget.data['menteeid']}')
-                  .update({'mentorID': user!.uid, 'inSession': true,})
-                  .then((value) => debugPrint('Added MentorID'))
-                  .catchError(
-                      (error) => debugPrint('Failed to add new data: $error'));
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (ctx) => Countdown(
-                    time: 10,
-                    data: widget.data,
+          if (user!.uid != widget.data['menteeid'])
+            ElevatedButton.icon(
+              onPressed: () {
+                sendPushMessage(token, title, body);
+                FirebaseFirestore.instance
+                    .collection('user queries')
+                    .doc('${widget.data['menteeid']}')
+                    .update({
+                      'mentorID': user!.uid,
+                      'inSession': true,
+                    })
+                    .then((value) => debugPrint('Added MentorID'))
+                    .catchError((error) =>
+                        debugPrint('Failed to add new data: $error'));
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (ctx) => Countdown(
+                      time: 10,
+                      data: widget.data,
+                    ),
                   ),
-                ),
-              );
-            },
-            icon: const Icon(Icons.assignment_turned_in_rounded),
-            label: const Text('Accept to help?'),
-          ),
+                );
+              },
+              icon: const Icon(Icons.assignment_turned_in_rounded),
+              label: const Text('Accept to help?'),
+            ),
         ],
       ),
     );

@@ -42,19 +42,22 @@ class _QRScanState extends State<QRScan> {
   }
 
   @override
-  Widget build(BuildContext context) => SafeArea(
-          child: Scaffold(
-        body: Stack(
-          alignment: Alignment.center,
-          children: <Widget>[
-            buildQrView(context),
-            Positioned(
-              bottom: 10,
-              child: buildResult(),
-            ),
-          ],
-        ),
-      ));
+  Widget build(BuildContext context) => WillPopScope(
+        onWillPop: () async => false, //disable system back button
+        child: SafeArea(
+            child: Scaffold(
+          body: Stack(
+            alignment: Alignment.center,
+            children: <Widget>[
+              buildQrView(context),
+              Positioned(
+                bottom: 10,
+                child: buildResult(),
+              ),
+            ],
+          ),
+        )),
+      );
 
   Widget buildResult() => Container(
         padding: EdgeInsets.all(12),
@@ -71,6 +74,24 @@ class _QRScanState extends State<QRScan> {
                     maxLines: 1,
                     style: Theme.of(context).primaryTextTheme.bodySmall,
                   ),
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (ctx) => Countdown(
+                        time: 60,
+                        data: widget.data,
+                      ),
+                    ),
+                  );
+                },
+                child: Text(
+                  'Next',
+                  style: Theme.of(context)
+                      .primaryTextTheme
+                      .bodyMedium!
+                      .copyWith(color: Colors.white),
+                )),
           ],
         ),
       );

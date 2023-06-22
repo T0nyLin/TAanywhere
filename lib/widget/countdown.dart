@@ -70,7 +70,8 @@ class _CountdownState extends State<Countdown> {
       } else if (seconds < 0 && widget.time == 60) {
         timer?.cancel();
 
-        sendPushMessage(widget.data['token'], 'Well Done!', 'Session Over!');
+        sendPushMessage(
+            widget.data['token'], 'Well Done!', widget.data['mentorID']);
       }
     });
   }
@@ -117,6 +118,7 @@ class _CountdownState extends State<Countdown> {
             style: Theme.of(context).primaryTextTheme.bodyLarge,
           ),
         ),
+        content: Text('You cannot come back to this screen later.'),
         actions: [
           MaterialButton(
             onPressed: () {
@@ -131,7 +133,7 @@ class _CountdownState extends State<Countdown> {
           MaterialButton(
             onPressed: () {
               timer?.cancel();
-              deleteQuery();
+              //deleteQuery();
               OverlaySupportEntry? dismissButton =
                   OverlaySupportEntry.of(context);
               if (dismissButton != null) {
@@ -142,7 +144,7 @@ class _CountdownState extends State<Countdown> {
                         data: widget.data,
                       ))));
             },
-            child: const Text('Yes'),
+            child: const Text('Open Scanner'),
           ),
         ],
       ),
@@ -179,7 +181,9 @@ class _CountdownState extends State<Countdown> {
                 dismissButton.dismiss();
               }
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => const MentorSelectPaymentScreen()));
+                  builder: ((context) => MentorSelectReceiveModeScreen(
+                        data: widget.data,
+                      ))));
             },
             child: const Text('Yes'),
           ),

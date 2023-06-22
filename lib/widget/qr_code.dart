@@ -40,16 +40,18 @@ class QRcode extends StatelessWidget {
             data: userid,
             version: QrVersions.auto,
             eyeStyle: QrEyeStyle(
-              eyeShape: QrEyeShape.circle,
+              eyeShape: QrEyeShape.square,
               color: Color.fromARGB(255, 48, 97, 104),
             ),
             dataModuleStyle: const QrDataModuleStyle(
               dataModuleShape: QrDataModuleShape.square,
-              color: Color.fromARGB(255, 128, 222, 234),
+              color: Colors.black,
+              // color: Color.fromARGB(255, 128, 222, 234),
             ),
+            errorCorrectionLevel: QrErrorCorrectLevel.H,
             embeddedImage: snapshot.data,
             embeddedImageStyle:
-                QrEmbeddedImageStyle(size: const Size.square(25)),
+                QrEmbeddedImageStyle(size: const Size.square(50)),
           ),
         );
       },
