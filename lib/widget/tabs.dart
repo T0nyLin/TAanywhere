@@ -262,19 +262,6 @@ class _TabsScreenState extends State<TabsScreen> {
                 },
                 child: const Text('Dismiss'),
               ),
-            if (notification.title == 'Oops!')
-              MaterialButton(
-                onPressed: () {
-                  OverlaySupportEntry? dismissButton =
-                      OverlaySupportEntry.of(context);
-                  if (dismissButton != null) {
-                    dismissButton.dismiss();
-                  }
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => MentorFound(mentorID: user!.uid)));
-                },
-                child: const Text('Go'),
-              ),
             if (notification.title!.contains('Payment'))
               MaterialButton(
                 onPressed: () {

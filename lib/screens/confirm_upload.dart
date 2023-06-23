@@ -166,29 +166,22 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
             const SizedBox(
               height: 30,
             ),
-            if (isUploading)
-              const Center(
-                child: SizedBox(
-                  height: 40,
-                  width: 40,
-                  child: CircularProgressIndicator(
-                    color: Color.fromARGB(255, 48, 97, 104),
+            ElevatedButton.icon(
+              onPressed: () {
+                uploadQuery();
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const SearchMentorScreen(),
                   ),
-                ),
-              ),
-            if (!isUploading)
-              ElevatedButton.icon(
-                onPressed: () {
-                  uploadQuery();
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const SearchMentorScreen(),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.file_upload_outlined),
-                label: const Text('Confirm Upload'),
-              ),
+                );
+              },
+              icon: const Icon(Icons.file_upload_outlined),
+              label: isUploading
+                  ? CircularProgressIndicator(
+                      color: Color.fromARGB(255, 48, 97, 104),
+                    )
+                  : Text('Confirm Upload'),
+            ),
             const Text(
               'Note: Uploaded Queries will be removed from Browse after 60min.',
               maxLines: 2,

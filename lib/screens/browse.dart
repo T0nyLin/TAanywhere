@@ -15,7 +15,22 @@ class BrowseScreen extends StatefulWidget {
   State<BrowseScreen> createState() => _BrowseScreenState();
 }
 
-
+void deleteImages(Map<String, dynamic> data) async {
+    String fileName = data['image_url'].toString().replaceAll("%2F", "*");
+    fileName = fileName.replaceAll("?", "*");
+    fileName = fileName.split("*")[1];
+    Reference storageReferance = FirebaseStorage.instance.ref();
+    try {
+      await storageReferance
+          .child('query_images')
+          .child(fileName)
+          .delete()
+          .then(
+              (_) => debugPrint('Successfully deleted $fileName storage item'));
+    } catch (e) {
+      debugPrint('$e');
+    }
+  }
 
 class _BrowseScreenState extends State<BrowseScreen> {
   
@@ -75,22 +90,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
     return lifetime;
   }
 
-  _deleteImages(Map<String, dynamic> data) async {
-    String fileName = data['image_url'].toString().replaceAll("%2F", "*");
-    fileName = fileName.replaceAll("?", "*");
-    fileName = fileName.split("*")[1];
-    Reference storageReferance = FirebaseStorage.instance.ref();
-    try {
-      await storageReferance
-          .child('query_images')
-          .child(fileName)
-          .delete()
-          .then(
-              (_) => debugPrint('Successfully deleted $fileName storage item'));
-    } catch (e) {
-      debugPrint('$e');
-    }
-  }
+  
 
   Future<void> _refreshBrowse() async {
     return await Future.delayed(const Duration(seconds: 1));
@@ -258,7 +258,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
                                   debugPrint('Purged data after 60min'))
                               .catchError((error) =>
                                   debugPrint('Failed to delete query: $error'));
-                          _deleteImages(
+                          deleteImages(
                               data); //del image in FirebaseStorage too
                         }
                         if (code.trim().isEmpty) {

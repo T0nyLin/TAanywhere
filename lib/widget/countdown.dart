@@ -24,6 +24,13 @@ class Countdown extends StatefulWidget {
   State<Countdown> createState() => _CountdownState();
 }
 
+void deleteQuery(Map<String, dynamic> data) {
+    FirebaseFirestore.instance
+        .collection('user queries')
+        .doc(data['menteeid'])
+        .delete();
+  }
+
 class _CountdownState extends State<Countdown> {
   final User? user = Auth().currentUser;
   DateTime timenow = DateTime.now();
@@ -41,13 +48,6 @@ class _CountdownState extends State<Countdown> {
       'uploadedTime': timenow,
       'lifetime': timenow,
     });
-  }
-
-  void deleteQuery() {
-    FirebaseFirestore.instance
-        .collection('user queries')
-        .doc(widget.data['menteeid'])
-        .delete();
   }
 
   @override
@@ -133,7 +133,6 @@ class _CountdownState extends State<Countdown> {
           MaterialButton(
             onPressed: () {
               timer?.cancel();
-              //deleteQuery();
               OverlaySupportEntry? dismissButton =
                   OverlaySupportEntry.of(context);
               if (dismissButton != null) {

@@ -1,61 +1,108 @@
-import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:image_cropper/image_cropper.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
+import 'package:intl/intl.dart';
+import 'package:ta_anywhere/components/auth.dart';
 
 import 'package:ta_anywhere/components/modulecode.dart';
-import 'package:ta_anywhere/screens/confirm_upload.dart';
 import 'package:ta_anywhere/widget/picklocation.dart';
+import 'package:ta_anywhere/widget/tabs.dart';
 
-class UploadScreen extends StatefulWidget {
-  const UploadScreen({super.key, required this.image});
+class EditnReUploadScreen extends StatefulWidget {
+  const EditnReUploadScreen({super.key, required this.data});
 
-  final XFile image;
+  final Map<String, dynamic> data;
+
   @override
-  State<UploadScreen> createState() => _UploadScreenState();
+  State<EditnReUploadScreen> createState() => _EditnReUploadScreenState();
 }
 
-class _UploadScreenState extends State<UploadScreen> {
-  late File _selectedImage = File(widget.image.path);
+class _EditnReUploadScreenState extends State<EditnReUploadScreen> {
+  final User user = Auth().currentUser!;
+
   final _formKey = GlobalKey<FormState>();
-  var _queryInput = '';
+  String _newQuery = '';
   final _modController = TextEditingController();
   final _destinationController = TextEditingController();
-  var _landmarkInput = '';
+  String _newLandmark = '';
   double x = 0.0;
   double y = 0.0;
-
-  void _cropImage(filePath) async {
-    CroppedFile? croppedImage = await ImageCropper()
-        .cropImage(sourcePath: filePath, maxHeight: 1080, maxWidth: 1080);
-
-    if (croppedImage != null) {
-      setState(() {
-        _selectedImage = File(croppedImage.path);
-      });
-    }
-  }
+  String? myToken = '';
+  String cost = '';
+  String level = '';
+  bool isUploading = false;
+  DateTime timenow = DateTime.now();
+  String formatDate = DateFormat('ddMMyyHHmmss').format(DateTime.now());
 
   Widget _buildFileImage() {
     return GestureDetector(
       onTap: () {
         showImageViewer(
           context,
-          Image.file(
-            _selectedImage,
-            fit: BoxFit.cover,
-          ).image,
+          CachedNetworkImageProvider(widget.data['image_url']),
           swipeDismissible: true,
           doubleTapZoomable: true,
         );
       },
-      child: Image.file(
-        _selectedImage,
+      child: CachedNetworkImage(
+        imageUrl: widget.data['image_url'].toString(),
         fit: BoxFit.cover,
+        progressIndicatorBuilder: (context, url, progress) =>
+            const CircularProgressIndicator(
+                color: Color.fromARGB(255, 48, 97, 104)),
+        errorWidget: (context, url, error) => const Icon(Icons.error),
+        height: 50,
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getToken();
+  }
+
+  void getToken() async {
+    await FirebaseMessaging.instance.getToken().then((token) {
+      setState(() {
+        myToken = token;
+      });
+    });
+  }
+
+  void _saveQuery(BuildContext context) async {
+    isUploading = true;
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      await FirebaseFirestore.instance
+          .collection('user queries')
+          .doc(user.uid)
+          .update({
+        'mentee': user.email,
+        'menteeid': user.uid,
+        'token': myToken,
+        'query': _newQuery,
+        'module Code': _modController.text,
+        'cost': cost,
+        'level': level,
+        'location': _destinationController.text,
+        'x-coordinate': x,
+        'y-coordinate': y,
+        'landmark': _newLandmark,
+      });
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => TabsScreen()),
+        (route) => false,
+      );
+      isUploading = false;
+    } else {
+      isUploading = false;
+    }
+    FocusScope.of(context).unfocus(); //close keyboard
   }
 
   @override
@@ -65,43 +112,35 @@ class _UploadScreenState extends State<UploadScreen> {
     super.dispose();
   }
 
-  void _saveQuery(BuildContext context) {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => ConfirmUploadScreen(
-            image: _selectedImage,
-            query: _queryInput,
-            modcode: _modController.text,
-            location: _destinationController.text,
-            landmark: _landmarkInput,
-            x: x,
-            y: y,
-          ),
-        ),
-      );
-    }
-    FocusScope.of(context).unfocus(); //close keyboard
-  }
-
   @override
   Widget build(BuildContext context) {
+    String modNum = widget.data['module Code']
+        .toString()
+        .replaceAll(RegExp(r"\D"), ''); //remove letters from module code
+
+    if (modNum[0] == '1') {
+      level = '1000';
+      cost = '\$4';
+    } else if (modNum[0] == '2') {
+      level = '2000';
+      cost = '\$4';
+    } else if (modNum[0] == '3') {
+      level = '3000';
+      cost = '\$5';
+    } else if (modNum[0] == '4') {
+      level = '4000';
+      cost = '\$5';
+    } else if (modNum[0] == '5') {
+      level = '5000';
+      cost = '\$6';
+    } else if (modNum[0] == '6') {
+      level = '6000';
+      cost = '\$6';
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Upload Query'),
-        actions: [
-          IconButton(
-              onPressed: () async {
-                final picker = ImagePicker();
-                final pickedFile =
-                    await picker.pickImage(source: ImageSource.gallery);
-                if (pickedFile == null) return;
-
-                _cropImage(pickedFile.path);
-              },
-              icon: Icon(Icons.crop_original_rounded))
-        ],
+        title: const Text('Edit Query'),
       ),
       body: SingleChildScrollView(
         child: Form(
@@ -110,23 +149,19 @@ class _UploadScreenState extends State<UploadScreen> {
             padding: const EdgeInsets.all(15),
             child: Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(width: 1, color: Colors.black),
-                      ),
-                      width: MediaQuery.of(context).size.width * 0.9,
-                      height: 200,
-                      child: _buildFileImage(),
-                    ),
-                  ],
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(width: 1, color: Colors.black),
+                  ),
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  height: 200,
+                  child: _buildFileImage(),
                 ),
                 const SizedBox(
                   height: 30,
                 ),
                 TextFormField(
+                  initialValue: widget.data['query'].toString(),
                   maxLength: 280,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
@@ -144,7 +179,7 @@ class _UploadScreenState extends State<UploadScreen> {
                     return null;
                   },
                   onSaved: (value) {
-                    _queryInput = value!;
+                    _newQuery = value!;
                   },
                 ),
                 const SizedBox(
@@ -168,8 +203,7 @@ class _UploadScreenState extends State<UploadScreen> {
                               Icons.colorize_rounded,
                               size: 30,
                             ),
-                            labelText: 'Search Modules',
-                            hintText: 'Module Code',
+                            hintText: widget.data['module Code'],
                             hintStyle: const TextStyle(
                                 fontSize: 13, color: Colors.grey),
                             labelStyle: const TextStyle(fontSize: 9),
@@ -253,9 +287,9 @@ class _UploadScreenState extends State<UploadScreen> {
                       ),
                       borderRadius: BorderRadius.circular(5)),
                   child: TextFormField(
+                    controller: _destinationController,
                     maxLines: 2,
                     style: Theme.of(context).primaryTextTheme.bodyMedium,
-                    controller: _destinationController,
                     readOnly: true,
                     onTap: () {
                       Navigator.of(context).push(
@@ -280,7 +314,7 @@ class _UploadScreenState extends State<UploadScreen> {
                           color: Colors.black,
                         ),
                       ),
-                      hintText: 'Set Location',
+                      hintText: widget.data['location'],
                       border: InputBorder.none,
                     ),
                     validator: (value) {
@@ -297,6 +331,7 @@ class _UploadScreenState extends State<UploadScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: TextFormField(
+                    initialValue: widget.data['landmark'],
                     maxLines: 2,
                     maxLength: 200,
                     decoration: InputDecoration(
@@ -325,7 +360,7 @@ class _UploadScreenState extends State<UploadScreen> {
                       return null;
                     },
                     onSaved: (value) {
-                      _landmarkInput = value!;
+                      _newLandmark = value!;
                     },
                   ),
                 ),
@@ -336,11 +371,15 @@ class _UploadScreenState extends State<UploadScreen> {
                   onPressed: () {
                     _saveQuery(context);
                   },
-                  icon: const Icon(Icons.arrow_circle_right_outlined),
-                  label: Text(
-                    'Next',
-                    style: Theme.of(context).primaryTextTheme.bodyLarge,
-                  ),
+                  icon: const Icon(Icons.file_upload_outlined),
+                  label: isUploading
+                      ? CircularProgressIndicator(
+                          color: Color.fromARGB(255, 48, 97, 104),
+                        )
+                      : Text(
+                          'Re-Upload',
+                          style: Theme.of(context).primaryTextTheme.bodyLarge,
+                        ),
                 ),
               ],
             ),
