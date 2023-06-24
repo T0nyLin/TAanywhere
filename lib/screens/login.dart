@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ta_anywhere/components/auth.dart';
 import 'package:email_otp/email_otp.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -43,6 +44,17 @@ class _LoginScreenState extends State<LoginScreen> {
         email: email,
         password: _controllerPassword.text,
       );
+
+      final User user = Auth().currentUser!;
+
+      await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .set({
+          'email': email,
+          'gender': selectedGender,
+          'username': _controllerUsername.text
+        });
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
@@ -314,30 +326,25 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _validateForm() {
-  debugPrint(_controllerEmail.text.isEmpty ? "Email" : "");
-  debugPrint(_controllerPassword.text.isEmpty ? "Password" : "");
-  debugPrint(_controllerUsername.text.isEmpty ? "Username" : "");
-  debugPrint(selectedGender == null ? "Gender" : "");
-  // debugPrint(isFormValid ? "True" : "False");
-  setState(() {
-    if (isLogin) {
-      if (_controllerEmail.text.isEmpty || _controllerPassword.text.isEmpty) {
-        isFormValid = false;
+    setState(() {
+      if (isLogin) {
+        if (_controllerEmail.text.isEmpty || _controllerPassword.text.isEmpty) {
+          isFormValid = false;
+        } else {
+          isFormValid = true;
+        }
       } else {
-        isFormValid = true;
+        if (_controllerEmail.text.isEmpty ||
+            _controllerPassword.text.isEmpty ||
+            _controllerUsername.text.isEmpty ||
+            selectedGender == null) {
+          isFormValid = false;
+        } else {
+          isFormValid = true;
+        }
       }
-    } else {
-      if (_controllerEmail.text.isEmpty ||
-          _controllerPassword.text.isEmpty ||
-          _controllerUsername.text.isEmpty ||
-          selectedGender == null) {
-        isFormValid = false;
-      } else {
-        isFormValid = true;
-      }
-    }
-  });
-}
+    });
+  }
 
 
   @override
