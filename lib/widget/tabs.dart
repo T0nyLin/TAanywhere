@@ -29,6 +29,7 @@ class _TabsScreenState extends State<TabsScreen> {
   OverlayEntry? entry;
   Offset offset = const Offset(20, 60);
   final User? user = Auth().currentUser;
+  String? myToken = '';
 
   void _selectpage(int index) {
     setState(() {
@@ -43,11 +44,37 @@ class _TabsScreenState extends State<TabsScreen> {
     ProfileScreen(),
   ];
 
+  void getToken() async {
+    await FirebaseMessaging.instance.getToken().then((token) {
+      setState(() {
+        myToken = token;
+      });
+    });
+    // await FirebaseFirestore.instance
+    //     .collection('user queries')
+    //     .doc(user!.uid)
+    //     .update({
+    //       'token': myToken,
+    //     })
+    //     .then((value) => debugPrint('New device token updated'))
+    //     .catchError((error) => debugPrint('No query by user found: $error'));
+
+    // await FirebaseFirestore.instance
+    //     .collection('users')
+    //     .doc(user!.uid)
+    //     .update({
+    //       'token': myToken,
+    //     })
+    //     .then((value) => debugPrint('New device token updated'))
+    //     .catchError((error) => debugPrint('No user found: $error'));
+  }
+
   @override
   void initState() {
     checkForInitialMessage();
     requestPermission();
     super.initState();
+    getToken();
   }
 
   void displose() {
@@ -123,7 +150,7 @@ class _TabsScreenState extends State<TabsScreen> {
                           onPressed: () {
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) =>
-                                    MentorFound(mentorID: user!.uid)));
+                                    MentorFound(menteeID: user!.uid)));
                           },
                           child: const Text('Go'),
                         ),
@@ -238,7 +265,7 @@ class _TabsScreenState extends State<TabsScreen> {
                     dismissButton.dismiss();
                   }
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => MentorFound(mentorID: user!.uid)));
+                      builder: (context) => MentorFound(menteeID: user!.uid)));
                 },
                 child: const Text('Go'),
               ),
@@ -254,11 +281,6 @@ class _TabsScreenState extends State<TabsScreen> {
                     MaterialPageRoute(builder: (context) => TabsScreen()),
                     (route) => false,
                   );
-                  // final route = MaterialPageRoute(
-                  //   builder: (context) => const TabsScreen(),
-                  // );
-                  // Navigator.pushAndRemoveUntil(
-                  //     context, route, (route) => false);
                 },
                 child: const Text('Dismiss'),
               ),
@@ -276,7 +298,7 @@ class _TabsScreenState extends State<TabsScreen> {
                             mentorID: notification.body.toString(),
                           )));
                 },
-                child: const Text('Proceed to payment'),
+                child: const Text('Proceed to payment & rate'),
               ),
             if (notification.title!.contains('Free'))
               MaterialButton(

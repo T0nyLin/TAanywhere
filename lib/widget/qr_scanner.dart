@@ -77,6 +77,8 @@ class _QRScanState extends State<QRScan> {
                   ),
             TextButton(
                 onPressed: () {
+                  deleteQuery(widget.data);
+                  deleteImages(widget.data);
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (ctx) => Countdown(

@@ -124,7 +124,8 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
                   deleteQuery(widget.data);
                   deleteImages(widget.data);
                   ScaffoldMessenger.of(context)
-                    .showSnackBar(SnackBar(
+                    ..removeCurrentSnackBar()
+                    ..showSnackBar(SnackBar(
                       content: Text('Query removed successfully'),
                     ));
                   Navigator.of(context).pushAndRemoveUntil(
@@ -166,12 +167,67 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
     );
   }
 
+  Widget getUser() {
+    String token = widget.data['token'];
+    String mentorUsername = '';
+    String mentorGender = '';
+    CollectionReference mentor = FirebaseFirestore.instance.collection('users');
+    return FutureBuilder<DocumentSnapshot>(
+      future: mentor.doc(user!.uid).get(),
+      builder:
+          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return mediumLabel('Something went wrong');
+        }
+
+        if (snapshot.hasData && !snapshot.data!.exists) {
+          return mediumLabel('Mentor does not exist');
+        }
+
+        if (snapshot.connectionState == ConnectionState.done) {
+          Map<String, dynamic> data =
+              snapshot.data!.data() as Map<String, dynamic>;
+          mentorUsername = data['username'];
+          mentorGender = data['gender'];
+          return ElevatedButton.icon(
+            onPressed: () {
+              sendPushMessage(token, 'Congrats, ${widget.data['mentee']}!',
+                  '$mentorUsername is on the way now.');
+              FirebaseFirestore.instance
+                  .collection('user queries')
+                  .doc('${widget.data['menteeid']}')
+                  .update({
+                    'mentorID': user!.uid,
+                    'inSession': true,
+                    'mentorUsername': mentorUsername,
+                    'mentorGender': mentorGender,
+                  })
+                  .then((value) => debugPrint('Added MentorID'))
+                  .catchError(
+                      (error) => debugPrint('Failed to add new data: $error'));
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (ctx) => Countdown(
+                    time: 10,
+                    data: widget.data,
+                  ),
+                ),
+              );
+            },
+            icon: const Icon(Icons.assignment_turned_in_rounded),
+            label: const Text('Accept to help?'),
+          );
+        }
+        return CircularProgressIndicator(
+          color: Color.fromARGB(255, 48, 97, 104),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var posted = _lifetimeconversion(widget.data);
-    String token = widget.data['token'];
-    String title = 'Congrats, ${widget.data['mentee']}!';
-    String body = 'Mentor found! ${user!.email} is on the way now.';
 
     return Stack(
       children: [
@@ -274,32 +330,7 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
               const SizedBox(
                 height: 80,
               ),
-              if (user!.uid != widget.data['menteeid'])
-                ElevatedButton.icon(
-                  onPressed: () {
-                    sendPushMessage(token, title, body);
-                    FirebaseFirestore.instance
-                        .collection('user queries')
-                        .doc('${widget.data['menteeid']}')
-                        .update({
-                          'mentorID': user!.uid,
-                          'inSession': true,
-                        })
-                        .then((value) => debugPrint('Added MentorID'))
-                        .catchError((error) =>
-                            debugPrint('Failed to add new data: $error'));
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (ctx) => Countdown(
-                          time: 10,
-                          data: widget.data,
-                        ),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.assignment_turned_in_rounded),
-                  label: const Text('Accept to help?'),
-                ),
+              if (user!.uid != widget.data['menteeid']) getUser(),
             ],
           ),
         ),

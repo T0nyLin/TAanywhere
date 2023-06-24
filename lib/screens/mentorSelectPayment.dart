@@ -21,60 +21,65 @@ class _MentorSelectReceiveModeScreenState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.all(8),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              'Choose what you would like to receive',
-              style: Theme.of(context).primaryTextTheme.bodyLarge,
-            ),
-            SizedBox(height: 50,),
-            RadioListTile(
-              title: Text(
-                'Receive Payment of ${widget.data['cost']}',
-                style: Theme.of(context).primaryTextTheme.bodyMedium,
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        body: Padding(
+          padding: EdgeInsets.all(8),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                'Choose what you would like to receive',
+                style: Theme.of(context).primaryTextTheme.bodyLarge,
               ),
-              value: options[0],
-              groupValue: currentOption,
-              onChanged: (value) {
-                setState(() {
-                  currentOption = value.toString();
-                });
-              },
-            ),
-            RadioListTile(
-              title: Text(
-                'Free of Charge',
-                style: Theme.of(context).primaryTextTheme.bodyMedium,
+              SizedBox(
+                height: 50,
               ),
-              value: options[1],
-              groupValue: currentOption,
-              onChanged: (value) {
-                setState(() {
-                  currentOption = value.toString();
-                });
-              },
-            ),
-            ElevatedButton.icon(
-                onPressed: () {
-                  sendPushMessage(
-                      widget.data['token'],
-                      'Well Done! Session over! Your mentor has chosen: $currentOption.',
-                      widget.data['mentorID'].toString());
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => TabsScreen()),
-                    (route) => false,
-                  );
+              RadioListTile(
+                title: Text(
+                  'Receive Payment of ${widget.data['cost']}',
+                  style: Theme.of(context).primaryTextTheme.bodyMedium,
+                ),
+                value: options[0],
+                groupValue: currentOption,
+                onChanged: (value) {
+                  setState(() {
+                    currentOption = value.toString();
+                  });
                 },
-                icon: Icon(Icons.check_box),
-                label: Text(
-                  'Done',
-                ))
-          ],
+              ),
+              RadioListTile(
+                title: Text(
+                  'Free of Charge',
+                  style: Theme.of(context).primaryTextTheme.bodyMedium,
+                ),
+                value: options[1],
+                groupValue: currentOption,
+                onChanged: (value) {
+                  setState(() {
+                    currentOption = value.toString();
+                  });
+                },
+              ),
+              ElevatedButton.icon(
+                  onPressed: () {
+                    sendPushMessage(
+                        widget.data['token'],
+                        'Well Done! Session over! Your mentor has chosen: $currentOption.',
+                        widget.data['mentorID'].toString());
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) => TabsScreen()),
+                      (route) => false,
+                    );
+                  },
+                  icon: Icon(Icons.check_box),
+                  label: Text(
+                    'Done',
+                  ))
+            ],
+          ),
         ),
       ),
     );

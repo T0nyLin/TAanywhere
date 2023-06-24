@@ -40,6 +40,7 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
   bool isUploading = false;
   DateTime timenow = DateTime.now();
   String formatDate = DateFormat('ddMMyyHHmmss').format(DateTime.now());
+  String menteeUsername = '';
 
   String? myToken = '';
 
@@ -76,7 +77,7 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
         .collection('user queries')
         .doc(user.uid)
         .set({
-      'mentee': user.email,
+      'mentee': menteeUsername,
       'menteeid': user.uid,
       'token': myToken,
       'image_url': imageUrl,
@@ -128,67 +129,92 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
       cost = '\$6';
     }
 
-    return Scaffold(
-      appBar: AppBar(),
-      body: Container(
-        padding: const EdgeInsets.all(15),
-        child: Column(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(width: 1, color: Colors.black),
-              ),
-              width: double.infinity,
-              height: 200,
-              child: buildFileImage(),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  widget.query,
-                  style: Theme.of(context).primaryTextTheme.bodyLarge,
-                ),
-                mediumLabel('Module Code: ${widget.modcode}'),
-                mediumLabel('Cost: $cost'),
-                mediumLabel('Level: $level'),
-              ],
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Text(widget.location,
-                style: const TextStyle(color: Colors.black, fontSize: 19)),
-            mediumLabel('Landmark: ${widget.landmark}'),
-            const SizedBox(
-              height: 30,
-            ),
-            ElevatedButton.icon(
-              onPressed: () {
-                uploadQuery();
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const SearchMentorScreen(),
+    return FutureBuilder<DocumentSnapshot>(
+      future:
+          FirebaseFirestore.instance.collection('users').doc(user.uid).get(),
+      builder:
+          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return mediumLabel('Something went wrong');
+        }
+
+        if (snapshot.hasData && !snapshot.data!.exists) {
+          return mediumLabel('Mentor does not exist');
+        }
+
+        if (snapshot.connectionState == ConnectionState.done) {
+          Map<String, dynamic> data =
+              snapshot.data!.data() as Map<String, dynamic>;
+          menteeUsername = data['username'];
+          return Scaffold(
+            appBar: AppBar(),
+            body: Container(
+              padding: const EdgeInsets.all(15),
+              child: Column(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(width: 1, color: Colors.black),
+                    ),
+                    width: double.infinity,
+                    height: 200,
+                    child: buildFileImage(),
                   ),
-                );
-              },
-              icon: const Icon(Icons.file_upload_outlined),
-              label: isUploading
-                  ? CircularProgressIndicator(
-                      color: Color.fromARGB(255, 48, 97, 104),
-                    )
-                  : Text('Confirm Upload'),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        widget.query,
+                        style: Theme.of(context).primaryTextTheme.bodyLarge,
+                      ),
+                      mediumLabel('Module Code: ${widget.modcode}'),
+                      mediumLabel('Cost: $cost'),
+                      mediumLabel('Level: $level'),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text(widget.location,
+                      style:
+                          const TextStyle(color: Colors.black, fontSize: 19)),
+                  mediumLabel('Landmark: ${widget.landmark}'),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      uploadQuery();
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const SearchMentorScreen(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.file_upload_outlined),
+                    label: isUploading
+                        ? CircularProgressIndicator(
+                            color: Color.fromARGB(255, 48, 97, 104),
+                          )
+                        : Text('Confirm Upload'),
+                  ),
+                  const Text(
+                    'Note: Uploaded Queries will be removed from Browse after 60min.',
+                    maxLines: 2,
+                  ),
+                ],
+              ),
             ),
-            const Text(
-              'Note: Uploaded Queries will be removed from Browse after 60min.',
-              maxLines: 2,
-            ),
-          ],
-        ),
-      ),
+          );
+        }
+
+        return CircularProgressIndicator(
+          color: Color.fromARGB(255, 48, 97, 104),
+        );
+      },
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ta_anywhere/components/auth.dart';
 import 'package:ta_anywhere/screens/setting.dart';
 import 'package:ta_anywhere/widget/qr_code.dart';
+import 'package:ta_anywhere/widget/widget_tree.dart';
 
 class ProfileScreen extends StatelessWidget {
   ProfileScreen({Key? key}) : super(key: key);
@@ -18,9 +19,20 @@ class ProfileScreen extends StatelessWidget {
     return Text(user?.email ?? 'User email');
   }
 
-  Widget _signOutButton() {
+  Widget _signOutButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: signOut,
+      onPressed: () {
+        signOut();
+        ScaffoldMessenger.of(context)
+          ..removeCurrentSnackBar()
+          ..showSnackBar(SnackBar(
+            content: Text('Logged out successfully'),
+          ));
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => WidgetTree()),
+          (route) => false,
+        );
+      },
       child: const Text("Log Out"),
     );
   }
@@ -50,9 +62,8 @@ class ProfileScreen extends StatelessWidget {
         icon: const Icon(Icons.qr_code),
         iconSize: 40,
         onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(
-                  builder: ((context) =>
-                      QRcode())));
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: ((context) => QRcode())));
         },
       ),
     );
@@ -236,7 +247,7 @@ class ProfileScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   _userUid(),
-                  _signOutButton(),
+                  _signOutButton(context),
                 ],
               ),
             ),

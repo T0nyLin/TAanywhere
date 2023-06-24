@@ -26,7 +26,7 @@ class _EditnReUploadScreenState extends State<EditnReUploadScreen> {
 
   final _formKey = GlobalKey<FormState>();
   String _newQuery = '';
-  final _modController = TextEditingController();
+  static final _modController = TextEditingController();
   final _destinationController = TextEditingController();
   String _newLandmark = '';
   double x = 0.0;
@@ -62,6 +62,10 @@ class _EditnReUploadScreenState extends State<EditnReUploadScreen> {
 
   @override
   void initState() {
+    x = widget.data['x-coordinate'];
+    y = widget.data['y-coordinate'];
+    _modController..text = widget.data['module Code'];
+    _destinationController..text = widget.data['location'];
     super.initState();
     getToken();
   }
@@ -94,6 +98,11 @@ class _EditnReUploadScreenState extends State<EditnReUploadScreen> {
         'y-coordinate': y,
         'landmark': _newLandmark,
       });
+      ScaffoldMessenger.of(context)
+        ..removeCurrentSnackBar()
+        ..showSnackBar(SnackBar(
+          content: Text('Query updated successfully'),
+        ));
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => TabsScreen()),
         (route) => false,
@@ -105,12 +114,12 @@ class _EditnReUploadScreenState extends State<EditnReUploadScreen> {
     FocusScope.of(context).unfocus(); //close keyboard
   }
 
-  @override
-  void dispose() {
-    _destinationController.dispose();
-    _modController.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _destinationController.dispose();
+  //   _modController.dispose();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
