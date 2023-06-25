@@ -197,12 +197,20 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
                   .collection('user queries')
                   .doc('${widget.data['menteeid']}')
                   .update({
-                    'mentorID': user!.uid,
                     'inSession': true,
+                  })
+                  .then((value) => debugPrint('in session'))
+                  .catchError(
+                      (error) => debugPrint('Failed to add new data: $error'));
+              FirebaseFirestore.instance
+                  .collection('user queries')
+                  .doc(widget.data['menteeid']).collection('mentor Info')
+                  .doc(widget.data['menteeid']).set({
+                    'mentorID': user!.uid,
                     'mentorUsername': mentorUsername,
                     'mentorGender': mentorGender,
                   })
-                  .then((value) => debugPrint('Added MentorID'))
+                  .then((value) => debugPrint('Added Mentor info'))
                   .catchError(
                       (error) => debugPrint('Failed to add new data: $error'));
               Navigator.of(context).push(

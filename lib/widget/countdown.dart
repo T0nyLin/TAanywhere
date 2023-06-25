@@ -25,11 +25,17 @@ class Countdown extends StatefulWidget {
 }
 
 void deleteQuery(Map<String, dynamic> data) {
-    FirebaseFirestore.instance
-        .collection('user queries')
-        .doc(data['menteeid'])
-        .delete();
-  }
+  FirebaseFirestore.instance
+      .collection('user queries')
+      .doc(data['menteeid'])
+      .delete();
+  FirebaseFirestore.instance
+      .collection('user queries')
+      .doc(data['menteeid'])
+      .collection('mentor Info')
+      .doc(data['menteeid'])
+      .delete();
+}
 
 class _CountdownState extends State<Countdown> {
   final User? user = Auth().currentUser;

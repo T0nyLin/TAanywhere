@@ -84,7 +84,7 @@ class _PaymentAndRateScreenState extends State<PaymentAndRateScreen> {
                           if (Platform.isAndroid)
                             await LaunchApp.openApp(
                               androidPackageName: 'com.dbs.dbspaylah',
-                              openStore: true,
+                              openStore: false,
                             );
                         },
                         icon: Icon(Icons.home_rounded),

@@ -45,7 +45,7 @@ class MentorFound extends StatelessWidget {
 
     Widget getUser(BuildContext context, String menteeID) {
       CollectionReference mentor =
-          FirebaseFirestore.instance.collection('user queries');
+          FirebaseFirestore.instance.collection('user queries').doc(menteeID).collection('mentor Info');
       String gender = '';
 
       return FutureBuilder<DocumentSnapshot>(

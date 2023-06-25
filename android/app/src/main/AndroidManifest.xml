@@ -7,6 +7,10 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
+    <queries>
+        <package android:name="net.pulsesecure.pulsesecure" />
+    </queries>
+
    <application
         android:label="taAnywhere"
         android:name="${applicationName}"
@@ -42,6 +46,7 @@
             </intent-filter>
             <intent-filter>
               <action android:name="FLUTTER_NOTIFICATION_CLICK" />
+              <category android:name="android.intent.category.HOME"/>
               <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

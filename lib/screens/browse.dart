@@ -16,25 +16,23 @@ class BrowseScreen extends StatefulWidget {
 }
 
 void deleteImages(Map<String, dynamic> data) async {
-    String fileName = data['image_url'].toString().replaceAll("%2F", "*");
-    fileName = fileName.replaceAll("?", "*");
-    fileName = fileName.split("*")[1];
-    Reference storageReferance = FirebaseStorage.instance.ref();
-    try {
-      await storageReferance
-          .child('query_images')
-          .child(fileName)
-          .delete()
-          .then(
-              (_) => debugPrint('Successfully deleted $fileName storage item'));
-    } catch (e) {
-      debugPrint('$e');
-    }
+  String fileName = data['image_url'].toString().replaceAll("%2F", "*");
+  fileName = fileName.replaceAll("?", "*");
+  fileName = fileName.split("*")[1];
+  Reference storageReferance = FirebaseStorage.instance.ref();
+  try {
+    await storageReferance
+        .child('query_images')
+        .child(fileName)
+        .delete()
+        .then((_) => debugPrint('Successfully deleted $fileName storage item'));
+  } catch (e) {
+    debugPrint('$e');
   }
+}
 
 class _BrowseScreenState extends State<BrowseScreen> {
-  
-  void displose() {
+  void dispose() {
     searchController.dispose();
     super.dispose();
   }
@@ -89,8 +87,6 @@ class _BrowseScreenState extends State<BrowseScreen> {
 
     return lifetime;
   }
-
-  
 
   Future<void> _refreshBrowse() async {
     return await Future.delayed(const Duration(seconds: 1));
@@ -258,8 +254,17 @@ class _BrowseScreenState extends State<BrowseScreen> {
                                   debugPrint('Purged data after 60min'))
                               .catchError((error) =>
                                   debugPrint('Failed to delete query: $error'));
-                          deleteImages(
-                              data); //del image in FirebaseStorage too
+                          queries
+                              .doc(queriesSnapshots.data!.docs[index].id
+                                  .toString())
+                              .collection('mentor Info')
+                              .doc(queriesSnapshots.data!.docs[index].id)
+                              .delete()
+                              .then((value) =>
+                                  debugPrint('Purged data after 60min'))
+                              .catchError((error) =>
+                                  debugPrint('Failed to delete query: $error'));
+                          deleteImages(data); //del image in FirebaseStorage too
                         }
                         if (code.trim().isEmpty) {
                           return _search(data, lifetime);
@@ -281,5 +286,5 @@ class _BrowseScreenState extends State<BrowseScreen> {
         ),
       ),
     );
-  }  
+  }
 }

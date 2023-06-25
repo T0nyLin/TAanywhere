@@ -29,6 +29,14 @@ class _LoginScreenState extends State<LoginScreen> {
         email: _controllerEmail.text,
         password: _controllerPassword.text,
       );
+      // final User user = Auth().currentUser!;
+
+      // await FirebaseFirestore.instance
+      //   .collection('users')
+      //   .doc(user.uid)
+      //   .update({
+          
+      //   });
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;

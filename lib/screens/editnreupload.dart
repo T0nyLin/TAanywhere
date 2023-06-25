@@ -37,6 +37,7 @@ class _EditnReUploadScreenState extends State<EditnReUploadScreen> {
   bool isUploading = false;
   DateTime timenow = DateTime.now();
   String formatDate = DateFormat('ddMMyyHHmmss').format(DateTime.now());
+  String menteeUsername = '';
 
   Widget _buildFileImage() {
     return GestureDetector(
@@ -86,7 +87,7 @@ class _EditnReUploadScreenState extends State<EditnReUploadScreen> {
           .collection('user queries')
           .doc(user.uid)
           .update({
-        'mentee': user.email,
+        'mentee': menteeUsername,
         'menteeid': user.uid,
         'token': myToken,
         'query': _newQuery,
@@ -112,6 +113,54 @@ class _EditnReUploadScreenState extends State<EditnReUploadScreen> {
       isUploading = false;
     }
     FocusScope.of(context).unfocus(); //close keyboard
+  }
+
+  Widget mediumLabel(String data) {
+    return Text(
+      data,
+      style: Theme.of(context).primaryTextTheme.bodyMedium,
+    );
+  }
+
+  Widget getUserInfo(BuildContext context) {
+    return FutureBuilder<DocumentSnapshot>(
+      future:
+          FirebaseFirestore.instance.collection('users').doc(user.uid).get(),
+      builder:
+          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return mediumLabel('Something went wrong');
+        }
+
+        if (snapshot.hasData && !snapshot.data!.exists) {
+          return mediumLabel('Current user does not exists.');
+        }
+
+        if (snapshot.connectionState == ConnectionState.done) {
+          Map<String, dynamic> data =
+              snapshot.data!.data() as Map<String, dynamic>;
+          menteeUsername = data['username'];
+          return ElevatedButton.icon(
+            onPressed: () {
+              _saveQuery(context);
+            },
+            icon: const Icon(Icons.file_upload_outlined),
+            label: isUploading
+                ? CircularProgressIndicator(
+                    color: Color.fromARGB(255, 48, 97, 104),
+                  )
+                : Text(
+                    'Re-Upload',
+                    style: Theme.of(context).primaryTextTheme.bodyLarge,
+                  ),
+          );
+        }
+
+        return CircularProgressIndicator(
+          color: Color.fromARGB(255, 48, 97, 104),
+        );
+      },
+    );
   }
 
   // @override
@@ -376,20 +425,7 @@ class _EditnReUploadScreenState extends State<EditnReUploadScreen> {
                 const SizedBox(
                   height: 30,
                 ),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    _saveQuery(context);
-                  },
-                  icon: const Icon(Icons.file_upload_outlined),
-                  label: isUploading
-                      ? CircularProgressIndicator(
-                          color: Color.fromARGB(255, 48, 97, 104),
-                        )
-                      : Text(
-                          'Re-Upload',
-                          style: Theme.of(context).primaryTextTheme.bodyLarge,
-                        ),
-                ),
+                getUserInfo(context),
               ],
             ),
           ),
