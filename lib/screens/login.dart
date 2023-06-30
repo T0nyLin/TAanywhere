@@ -29,14 +29,6 @@ class _LoginScreenState extends State<LoginScreen> {
         email: _controllerEmail.text,
         password: _controllerPassword.text,
       );
-      // final User user = Auth().currentUser!;
-
-      // await FirebaseFirestore.instance
-      //   .collection('users')
-      //   .doc(user.uid)
-      //   .update({
-          
-      //   });
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
@@ -89,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     myauth.setConfig(
       appEmail: "taanywhere@gmail.com",
-      appName: "Email OTP",
+      appName: "TAanywhere: OTP For Account Registration",
       userEmail: email,
       otpLength: 6,
       otpType: OTPType.digitsOnly,

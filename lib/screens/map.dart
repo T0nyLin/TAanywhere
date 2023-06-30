@@ -42,7 +42,7 @@ class _MainMapScreenState extends State<MainMapScreen> {
   // on below line we have specified camera position
   static const CameraPosition _kGoogle = CameraPosition(
     target: LatLng(1.2971365,103.7775268),
-    zoom: 16.0,
+    zoom: 7,
   );
  
   // on below line we have created the list of markers
@@ -73,20 +73,27 @@ class _MainMapScreenState extends State<MainMapScreen> {
         child: SafeArea(
           // on below line creating google maps
           child: GoogleMap(
-          // on below line setting camera position
-          initialCameraPosition: _kGoogle,
-          // on below line we are setting markers on the map
-          markers: Set<Marker>.of(_markers),
-          // on below line specifying map type.
-          mapType: MapType.normal,
-          // on below line setting user location enabled.
-          myLocationEnabled: true,
-          // on below line setting compass enabled.
-          compassEnabled: true,
-          // on below line specifying controller on map complete.
-          onMapCreated: (GoogleMapController controller){
-                _controller.complete(controller);
-            },
+            // on below line setting camera position
+            initialCameraPosition: _kGoogle,
+            // on below line we are setting markers on the map
+            markers: Set<Marker>.of(_markers),
+            // on below line specifying map type.
+            mapType: MapType.normal,
+            // on below line setting user location enabled.
+            myLocationEnabled: true,
+            // on below line setting compass enabled.
+            compassEnabled: true,
+            // on below line specifying controller on map complete.
+            onMapCreated: (GoogleMapController controller){
+                  _controller.complete(controller);
+              },
+            minMaxZoomPreference: MinMaxZoomPreference(14, 20),
+            cameraTargetBounds: CameraTargetBounds(
+              LatLngBounds(
+              northeast: LatLng(1.29208237, 103.7844576),
+              southwest: LatLng(1.2917933,103.7787561),
+              ),
+            ),
           ),
         ),
       ),
