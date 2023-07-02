@@ -72,8 +72,8 @@ class _DisplayMapState extends State<DisplayMap> {
         minMaxZoomPreference: MinMaxZoomPreference(14, 20),
         cameraTargetBounds: CameraTargetBounds(
           LatLngBounds(
-          northeast: LatLng(1.29208237, 103.7844576),
-          southwest: LatLng(1.2917933,103.7787561),
+            northeast: LatLng(1.30908237, 103.7894576),
+            southwest: LatLng(1.2897933,103.7687561),
           ),
         ),
       ),
