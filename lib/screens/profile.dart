@@ -6,6 +6,8 @@ import 'package:ta_anywhere/components/auth.dart';
 import 'package:ta_anywhere/screens/setting.dart';
 import 'package:ta_anywhere/widget/qr_code.dart';
 import 'package:ta_anywhere/widget/widget_tree.dart';
+import 'package:ta_anywhere/components/modulecode.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class ProfileScreen extends StatefulWidget {
   ProfileScreen({Key? key}) : super(key: key);
@@ -16,7 +18,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final User? user = Auth().currentUser;
-  String newModule = '';
+  final _modController = TextEditingController();
 
   Future<void> signOut() async {
     await Auth().signOut();
@@ -121,14 +123,75 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Add Module'),
-          content: TextField(
-            onChanged: (value) {
-              setState(() {
-                newModule = value;
-              });
-            },
-            decoration: const InputDecoration(hintText: 'Enter a module'),
-          ),
+          content: SizedBox(
+                      width: 150,
+                      child: TypeAheadFormField<ModuleCode?>(
+                        debounceDuration: const Duration(milliseconds: 500),
+                        textFieldConfiguration: TextFieldConfiguration(
+                          controller: _modController,
+                          maxLength: 7,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(13),
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.colorize_rounded,
+                              size: 30,
+                            ),
+                            labelText: 'Search Modules',
+                            hintText: 'Module Code',
+                            hintStyle: const TextStyle(
+                                fontSize: 13, color: Colors.grey),
+                            labelStyle: const TextStyle(fontSize: 9),
+                            counterText: '',
+                          ),
+                        ),
+                        suggestionsCallback: getModCodes,
+                        itemBuilder: (context, ModuleCode? suggestion) {
+                          final modcode = suggestion!;
+                          return ListTile(
+                            title: Text(modcode.modCode),
+                          );
+                        },
+                        noItemsFoundBuilder: (context) {
+                          return Center(
+                            child: Text(
+                              _modController.text = 'Module not found.',
+                              style:
+                                  Theme.of(context).primaryTextTheme.bodySmall,
+                            ),
+                          );
+                        },
+                        onSuggestionSelected: (ModuleCode? suggestion) {
+                          final modcode = suggestion!;
+                          ScaffoldMessenger.of(context)
+                            ..removeCurrentSnackBar()
+                            ..showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                    'Selected mod code: ${modcode.modCode}'),
+                              ),
+                            );
+                          setState(() {
+                            _modController.text = modcode.modCode;
+                          });
+                        },
+                        validator: (value) {
+                          if (value == null ||
+                              value.isEmpty ||
+                              value.trim().length <= 1 ||
+                              value.trim().length > 10 ||
+                              value.trim() == 'Module not found.') {
+                            setState(() {
+                              _modController.clear();
+                              _modController.text = '';
+                            });
+                            return 'Invalid Code';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
           actions: [
             TextButton(
               child: const Text('Cancel'),
@@ -143,7 +206,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 String userId = user?.uid ?? '';
 
                 // Get the current list of modules for the user from Firestore
-                CollectionReference modulesRef = FirebaseFirestore.instance.collection('modules');
+                CollectionReference modulesRef = FirebaseFirestore.instance.collection('users');
                 modulesRef.doc(userId).get().then((snapshot) {
                   Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
 
@@ -154,10 +217,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   }
 
                   // Add the new module to the list
-                  modules.add(newModule);
+                  modules.add(_modController.text);
 
                   // Update the list of modules in Firestore for the user
-                  modulesRef.doc(userId).set({'modules': modules});
+                  modulesRef.doc(userId).update({'modules': modules});
                 });
 
                 Navigator.of(context).pop();
@@ -169,6 +232,121 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
   
+  void _showAddModuleDialogHelp(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Add Module'),
+          content: SizedBox(
+                      width: 150,
+                      child: TypeAheadFormField<ModuleCode?>(
+                        debounceDuration: const Duration(milliseconds: 500),
+                        textFieldConfiguration: TextFieldConfiguration(
+                          controller: _modController,
+                          maxLength: 7,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(13),
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.colorize_rounded,
+                              size: 30,
+                            ),
+                            labelText: 'Search Modules',
+                            hintText: 'Module Code',
+                            hintStyle: const TextStyle(
+                                fontSize: 13, color: Colors.grey),
+                            labelStyle: const TextStyle(fontSize: 9),
+                            counterText: '',
+                          ),
+                        ),
+                        suggestionsCallback: getModCodes,
+                        itemBuilder: (context, ModuleCode? suggestion) {
+                          final modcode = suggestion!;
+                          return ListTile(
+                            title: Text(modcode.modCode),
+                          );
+                        },
+                        noItemsFoundBuilder: (context) {
+                          return Center(
+                            child: Text(
+                              _modController.text = 'Module not found.',
+                              style:
+                                  Theme.of(context).primaryTextTheme.bodySmall,
+                            ),
+                          );
+                        },
+                        onSuggestionSelected: (ModuleCode? suggestion) {
+                          final modcode = suggestion!;
+                          ScaffoldMessenger.of(context)
+                            ..removeCurrentSnackBar()
+                            ..showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                    'Selected mod code: ${modcode.modCode}'),
+                              ),
+                            );
+                          setState(() {
+                            _modController.text = modcode.modCode;
+                          });
+                        },
+                        validator: (value) {
+                          if (value == null ||
+                              value.isEmpty ||
+                              value.trim().length <= 1 ||
+                              value.trim().length > 10 ||
+                              value.trim() == 'Module not found.') {
+                            setState(() {
+                              _modController.clear();
+                              _modController.text = '';
+                            });
+                            return 'Invalid Code';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+          actions: [
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Add'),
+              onPressed: () {
+                 // Get the user's ID
+                String userId = user?.uid ?? '';
+
+                // Get the current list of modules for the user from Firestore
+                CollectionReference modulesRef = FirebaseFirestore.instance.collection('users');
+                modulesRef.doc(userId).get().then((snapshot) {
+                  Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+
+                  // Extract the modules list from the data
+                  List<dynamic>? modules = data?['modules_help'] as List<dynamic>?;
+                  if (modules == null) {
+                    modules = [];
+                  }
+
+                  // Add the new module to the list
+                  modules.add(_modController.text);
+
+                  // Update the list of modules in Firestore for the user
+                  modulesRef.doc(userId).update({'modules_help': modules});
+                });
+
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _myModulesHeader() {
     return Row(
       children: [
@@ -226,8 +404,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         String userId = user?.uid ?? '';
 
                         // Update the list of modules in Firestore for the user
-                        CollectionReference modulesRef = FirebaseFirestore.instance.collection('modules');
-                        modulesRef.doc(userId).set({'modules': modules});
+                        CollectionReference modulesRef = FirebaseFirestore.instance.collection('users');
+                        modulesRef.doc(userId).update({'modules': modules});
                       });
                       Navigator.of(context).pop();
                     },
@@ -259,7 +437,95 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Widget _helpModulesHeader() {
+    return Row(
+      children: [
+        Text(
+          'Modules I can help with:',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(width: 10),
+        ElevatedButton(
+          onPressed: () {
+            _showAddModuleDialogHelp(context);
+          },
+          child: const Text('Add Module'),
+        ),
+      ],
+    );
+  }
 
+  Widget _helpModulesList(List<dynamic> modules) {
+    if (modules.isEmpty) {
+      return const Text('No modules added.');
+    }
+
+    List<Widget> moduleRows = [];
+    List<Widget> currentRow = [];
+
+    for (int i = 0; i < modules.length; i++) {
+      Widget moduleBox = GestureDetector(
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Confirmation'),
+                content: const Text('Are you sure you want to remove this module?'),
+                actions: [
+                  TextButton(
+                    child: const Text('Cancel'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  TextButton(
+                    child: const Text('Remove'),
+                    onPressed: () {
+                      setState(() {
+                        // Remove the module from the list
+                        modules.removeAt(i);
+                        
+                        // Get the user's ID
+                        String userId = user?.uid ?? '';
+
+                        // Update the list of modules in Firestore for the user
+                        CollectionReference modulesRef = FirebaseFirestore.instance.collection('users');
+                        modulesRef.doc(userId).update({'modules_help': modules});
+                      });
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        },
+        child: _moduleBox(modules[i]),
+      );
+      currentRow.add(moduleBox);
+      currentRow.add(SizedBox(width: 10));
+
+      // Check if four modules have been added to the current row
+      if (currentRow.length == 8 || i == modules.length - 1) {
+        moduleRows.add(Row(
+          children: currentRow,
+          mainAxisAlignment: MainAxisAlignment.start,
+        ));
+        moduleRows.add(SizedBox(height: 10));
+        currentRow = [];
+      }
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start, // Align rows to the left
+      children: moduleRows,
+    );
+  }
 
 @override
 Widget build(BuildContext context) {
@@ -269,7 +535,7 @@ Widget build(BuildContext context) {
   return Scaffold(
     body: StreamBuilder<DocumentSnapshot>(
       stream: FirebaseFirestore.instance
-          .collection('modules')
+          .collection('users')
           .doc(userId)
           .snapshots(),
       builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
@@ -282,6 +548,13 @@ Widget build(BuildContext context) {
           if (modules == null) {
             modules = [];
           }
+
+          List<dynamic>? modules_help = data?['modules_help'] as List<dynamic>?;
+
+          if (modules_help == null) {
+            modules_help = [];
+          }
+
           return Scrollbar(
             child: SingleChildScrollView(
             child: Column(
@@ -363,32 +636,9 @@ Widget build(BuildContext context) {
                       const SizedBox(height: 10),
                       _myModulesList(modules),
                       const SizedBox(height: 20),
-                      Text(
-                        'Modules I can help with:',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
+                      _helpModulesHeader(),
                       const SizedBox(height: 10),
-                      Wrap(
-                        children: [
-                          _moduleBox("MA1521"),
-                          const SizedBox(width: 10),
-                          _moduleBox("CS2040S"),
-                          const SizedBox(width: 10),
-                          _moduleBox("CS1231S"),
-                          const SizedBox(width: 10),
-                          _moduleBox("CS2030"),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Wrap(
-                        children: [
-                          _moduleBox("CS2100"),
-                        ],
-                      ),
+                      _helpModulesList(modules_help),
                       const SizedBox(height: 20),
                       Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
