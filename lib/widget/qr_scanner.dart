@@ -79,13 +79,14 @@ class _QRScanState extends State<QRScan> {
                 onPressed: () {
                   deleteQuery(widget.data);
                   deleteImages(widget.data);
-                  Navigator.of(context).push(
+                  Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(
                       builder: (ctx) => Countdown(
                         time: 60,
                         data: widget.data,
                       ),
                     ),
+                    (route) => false,
                   );
                 },
                 child: Text(

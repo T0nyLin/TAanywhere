@@ -7,10 +7,12 @@ import 'package:ta_anywhere/components/pushNotification.dart';
 import 'package:ta_anywhere/screens/browse.dart';
 import 'package:ta_anywhere/screens/map.dart';
 import 'package:ta_anywhere/screens/camera.dart';
+import 'package:ta_anywhere/screens/mentorSelectPayment.dart';
 import 'package:ta_anywhere/screens/mentor_found.dart';
 import 'package:ta_anywhere/screens/paymentNrate.dart';
 import 'package:ta_anywhere/screens/profile.dart';
 import 'package:ta_anywhere/components/auth.dart';
+import 'package:ta_anywhere/widget/countdown.dart';
 
 class TabsScreen extends StatefulWidget {
   const TabsScreen({super.key});
@@ -269,6 +271,39 @@ class _TabsScreenState extends State<TabsScreen> {
                 },
                 child: const Text('Go'),
               ),
+            if (notification.title == 'Sorry!')
+              MaterialButton(
+                onPressed: () {
+                  OverlaySupportEntry? dismissButton =
+                      OverlaySupportEntry.of(context);
+                  if (dismissButton != null) {
+                    dismissButton.dismiss();
+                  }
+                  deleteQuery(somedata);
+                  deleteImages(somedata);
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => TabsScreen()),
+                    (route) => false,
+                  );
+                },
+                child: const Text('No'),
+              ),
+            if (notification.title == 'Sorry!')
+              MaterialButton(
+                onPressed: () {
+                  OverlaySupportEntry? dismissButton =
+                      OverlaySupportEntry.of(context);
+                  if (dismissButton != null) {
+                    dismissButton.dismiss();
+                  }
+                  reupload();
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => TabsScreen()),
+                    (route) => false,
+                  );
+                },
+                child: const Text('Yes'),
+              ),
             if (notification.title == 'Oops!')
               MaterialButton(
                 onPressed: () {
@@ -282,7 +317,39 @@ class _TabsScreenState extends State<TabsScreen> {
                     (route) => false,
                   );
                 },
-                child: const Text('Dismiss'),
+                child: const Text('Noted'),
+              ),
+            if (notification.title!.startsWith("Time's up!"))
+              MaterialButton(
+                onPressed: () {
+                  OverlaySupportEntry? dismissButton =
+                      OverlaySupportEntry.of(context);
+                  if (dismissButton != null) {
+                    dismissButton.dismiss();
+                  }
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: ((context) => MentorSelectReceiveModeScreen(
+                            data: somedata,
+                          ))));
+                },
+                child: const Text('No'),
+              ),
+            if (notification.title!.startsWith("Time's up!"))
+              MaterialButton(
+                onPressed: () {
+                  OverlaySupportEntry? dismissButton =
+                      OverlaySupportEntry.of(context);
+                  if (dismissButton != null) {
+                    dismissButton.dismiss();
+                  }
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            Countdown(time: 30, data: somedata)),
+                    (route) => false,
+                  );
+                },
+                child: const Text('Yes!'),
               ),
             if (notification.title!.contains('Payment'))
               MaterialButton(

@@ -85,7 +85,20 @@ class _PickLocationState extends State<PickLocation> {
       return;
     }
 
-    _savePlace(lat, lng);
+    if (LatLngBounds(
+      northeast: LatLng(1.30908237, 103.7894576),
+      southwest: LatLng(1.2897933, 103.7687561),
+    ).contains(LatLng(lat, lng))) {
+      _savePlace(lat, lng);
+    } else {
+      setState(() {
+        previewContent = Text(
+          'Error: You are out of range.\nPlease meet within NUS campus.',
+          style: TextStyle(fontSize: 13, color: Colors.black),
+        );
+        _isGettingLocation = false;
+      });
+    }
   }
 
   void _selectOnMap() async {
@@ -102,14 +115,13 @@ class _PickLocationState extends State<PickLocation> {
     _savePlace(pickedLocation.latitude, pickedLocation.longitude);
   }
 
+  Widget previewContent = Text(
+    'No Location chosen',
+    textAlign: TextAlign.center,
+    style: TextStyle(fontSize: 13, color: Colors.black),
+  );
   @override
   Widget build(BuildContext context) {
-    Widget previewContent = Text(
-      'No Location chosen',
-      textAlign: TextAlign.center,
-      style: Theme.of(context).primaryTextTheme.bodyMedium!,
-    );
-
     if (_pickedLocation != null) {
       previewContent = Image.network(
         locationImage,
@@ -145,8 +157,7 @@ class _PickLocationState extends State<PickLocation> {
               ),
               child: previewContent,
             ),
-            if (_pickedLocation != null)
-              Text(_pickedLocation!.address),
+            if (_pickedLocation != null) Text(_pickedLocation!.address),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [

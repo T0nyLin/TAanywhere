@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -21,8 +22,14 @@ class Countdown extends StatefulWidget {
   final Map<String, dynamic> data;
 
   @override
-  State<Countdown> createState() => _CountdownState();
+  State<Countdown> createState() {
+    somedata = data;
+    return _CountdownState();
+  }
 }
+
+Map<String, dynamic> somedata = {};
+DateTime timenow = DateTime.now();
 
 void deleteQuery(Map<String, dynamic> data) {
   FirebaseFirestore.instance
@@ -37,49 +44,62 @@ void deleteQuery(Map<String, dynamic> data) {
       .delete();
 }
 
+void reupload() async {
+  await FirebaseFirestore.instance
+      .collection('user queries')
+      .doc(somedata['menteeid'])
+      .update({
+    'inSession': false,
+    'uploadedTime': timenow,
+    'lifetime': timenow,
+  });
+}
+
 class _CountdownState extends State<Countdown> {
   final User? user = Auth().currentUser;
-  DateTime timenow = DateTime.now();
   static Duration countdownDuration = const Duration();
   Duration duration = const Duration();
   Timer? timer;
   bool isCountDown = true;
-
-  void reupload() async {
-    await FirebaseFirestore.instance
-        .collection('user queries')
-        .doc(widget.data['menteeid'])
-        .update({
-      'inSession': false,
-      'uploadedTime': timenow,
-      'lifetime': timenow,
-    });
-  }
+  String? myToken = '';
 
   @override
   void initState() {
     super.initState();
-
     startTimer();
-
-    const minusSeconds = 1;
-
     reset();
-    setState(() {
-      final seconds = duration.inSeconds - minusSeconds;
-      if (seconds < 0 && widget.time == 10) {
-        timer?.cancel();
-        sendPushMessage(widget.data['token'], 'Oops!',
-            'Your mentor did not reach on time!');
-        //add local noti to say timer run out, and meet is cancelled
-        reupload();
-      } else if (seconds < 0 && widget.time == 60) {
-        timer?.cancel();
+    getToken();
 
-        sendPushMessage(
-            widget.data['token'], 'Well Done!', widget.data['mentorID']);
-      }
+    Future.delayed(Duration(minutes: widget.time), () {
+      const minusSeconds = 1;
+      setState(() {
+        final seconds = duration.inSeconds - minusSeconds;
+        if (seconds < 0 && widget.time == 10) {
+          timer?.cancel();
+          sendPushMessage(widget.data['token'], 'Sorry!',
+              'Your mentor did not reach on time! Your meet has been cancelled.\nDo you want to reupload your query?');
+          sendPushMessage(myToken!, 'Oops!',
+              'You did not reach your mentee on time. Your meet has been cancelled.');
+        } else if (seconds < 0 && widget.time == 60) {
+          timer?.cancel();
+          sendPushMessage(myToken!, "Time's up!", 'Do you need more time?');
+        }
+      });
     });
+  }
+
+  void getToken() async {
+    await FirebaseMessaging.instance.getToken().then((token) {
+      setState(() {
+        myToken = token;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    timer?.cancel();
   }
 
   void reset() {
