@@ -121,8 +121,8 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
               ),
               ElevatedButton.icon(
                 onPressed: () {
-                  deleteQuery(widget.data);
-                  deleteImages(widget.data);
+                  deleteQuery(widget.data['menteeid']);
+                  deleteImages(widget.data['image_url']);
                   ScaffoldMessenger.of(context)
                     ..removeCurrentSnackBar()
                     ..showSnackBar(SnackBar(

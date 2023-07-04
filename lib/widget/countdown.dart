@@ -31,23 +31,20 @@ class Countdown extends StatefulWidget {
 Map<String, dynamic> somedata = {};
 DateTime timenow = DateTime.now();
 
-void deleteQuery(Map<String, dynamic> data) {
+void deleteQuery(String menteeid) {
+  FirebaseFirestore.instance.collection('user queries').doc(menteeid).delete();
   FirebaseFirestore.instance
       .collection('user queries')
-      .doc(data['menteeid'])
-      .delete();
-  FirebaseFirestore.instance
-      .collection('user queries')
-      .doc(data['menteeid'])
+      .doc(menteeid)
       .collection('mentor Info')
-      .doc(data['menteeid'])
+      .doc(menteeid)
       .delete();
 }
 
-void reupload() async {
+void reupload(String menteeid) async {
   await FirebaseFirestore.instance
       .collection('user queries')
-      .doc(somedata['menteeid'])
+      .doc(menteeid)
       .update({
     'inSession': false,
     'uploadedTime': timenow,
@@ -80,7 +77,7 @@ class _CountdownState extends State<Countdown> {
               'Your mentor did not reach on time! Your meet has been cancelled.\nDo you want to reupload your query?');
           sendPushMessage(myToken!, 'Oops!',
               'You did not reach your mentee on time. Your meet has been cancelled.');
-        } else if (seconds < 0 && widget.time == 60) {
+        } else if (seconds < 0 && (widget.time == 60 || widget.time == 30)) {
           timer?.cancel();
           sendPushMessage(myToken!, "Time's up!", 'Do you need more time?');
         }
@@ -205,10 +202,12 @@ class _CountdownState extends State<Countdown> {
               if (dismissButton != null) {
                 dismissButton.dismiss();
               }
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: ((context) => MentorSelectReceiveModeScreen(
-                        data: widget.data,
-                      ))));
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                      builder: ((context) => MentorSelectReceiveModeScreen(
+                            data: somedata,
+                          ))),
+                  (route) => false);
             },
             child: const Text('Yes'),
           ),
@@ -304,7 +303,7 @@ class _CountdownState extends State<Countdown> {
                 label: mediumLabel(widget.data['location']),
                 onPressed: () {},
               ),
-            if (isRunning && widget.time == 60)
+            if (isRunning && (widget.time == 60 || widget.time == 30))
               ElevatedButton(
                 onPressed: () {
                   sessionOver();

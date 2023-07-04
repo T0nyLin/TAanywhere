@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -279,8 +280,14 @@ class _TabsScreenState extends State<TabsScreen> {
                   if (dismissButton != null) {
                     dismissButton.dismiss();
                   }
-                  deleteQuery(somedata);
-                  deleteImages(somedata);
+                  deleteQuery(user!.uid);
+                  CollectionReference query_ref =
+                      FirebaseFirestore.instance.collection('user_queries');
+                  query_ref.doc(user!.uid).get().then((snapshot) {
+                    Map<String, dynamic>? data =
+                        snapshot.data() as Map<String, dynamic>?;
+                    deleteImages(data?['image_url']);
+                  });
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => TabsScreen()),
                     (route) => false,
@@ -296,7 +303,7 @@ class _TabsScreenState extends State<TabsScreen> {
                   if (dismissButton != null) {
                     dismissButton.dismiss();
                   }
-                  reupload();
+                  reupload(user!.uid);
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => TabsScreen()),
                     (route) => false,
@@ -327,10 +334,12 @@ class _TabsScreenState extends State<TabsScreen> {
                   if (dismissButton != null) {
                     dismissButton.dismiss();
                   }
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: ((context) => MentorSelectReceiveModeScreen(
-                            data: somedata,
-                          ))));
+                  Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                          builder: ((context) => MentorSelectReceiveModeScreen(
+                                data: somedata,
+                              ))),
+                      (route) => false);
                 },
                 child: const Text('No'),
               ),

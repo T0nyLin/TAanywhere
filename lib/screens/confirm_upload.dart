@@ -91,6 +91,7 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
       'landmark': widget.landmark,
       'uploadedTime': timenow,
       'lifetime': timenow,
+      'inSession': false,
     });
 
     isUploading = false;

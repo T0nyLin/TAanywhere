@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
-import 'package:ta_anywhere/screens/browse.dart';
 import 'package:ta_anywhere/widget/countdown.dart';
 
 class QRScan extends StatefulWidget {
@@ -77,8 +76,6 @@ class _QRScanState extends State<QRScan> {
                   ),
             TextButton(
                 onPressed: () {
-                  deleteQuery(widget.data);
-                  deleteImages(widget.data);
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(
                       builder: (ctx) => Countdown(
@@ -126,8 +123,6 @@ class _QRScanState extends State<QRScan> {
                 ),
                 TextButton(
                     onPressed: () {
-                      deleteQuery(widget.data);
-                      deleteImages(widget.data);
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (ctx) => Countdown(

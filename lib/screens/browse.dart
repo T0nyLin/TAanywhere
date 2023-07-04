@@ -15,8 +15,8 @@ class BrowseScreen extends StatefulWidget {
   State<BrowseScreen> createState() => _BrowseScreenState();
 }
 
-void deleteImages(Map<String, dynamic> data) async {
-  String fileName = data['image_url'].toString().replaceAll("%2F", "*");
+void deleteImages(String imageurl) async {
+  String fileName = imageurl.replaceAll("%2F", "*");
   fileName = fileName.replaceAll("?", "*");
   fileName = fileName.split("*")[1];
   Reference storageReferance = FirebaseStorage.instance.ref();
@@ -231,7 +231,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
                     (BuildContext context, int index) {
                       var data = queriesSnapshots.data!.docs[index].data()
                           as Map<String, dynamic>;
-                      if (data['inSession'] != true) {
+                      if (data['inSession'] == false) {
                         var posted = _uploadtimeconversion(data);
                         if (posted >= 10) {
                           queries
@@ -264,7 +264,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
                                   debugPrint('Purged data after 60min'))
                               .catchError((error) =>
                                   debugPrint('Failed to delete query: $error'));
-                          deleteImages(data); //del image in FirebaseStorage too
+                          deleteImages(data['image_url']); //del image in FirebaseStorage too
                         }
                         if (code.trim().isEmpty) {
                           return _search(data, lifetime);
