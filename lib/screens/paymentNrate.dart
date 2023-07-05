@@ -1,8 +1,11 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:external_app_launcher/external_app_launcher.dart';
+import 'package:ta_anywhere/components/auth.dart';
 
 import 'package:ta_anywhere/widget/tabs.dart';
 
@@ -20,7 +23,26 @@ class PaymentAndRateScreen extends StatefulWidget {
 List<String> options = ['Receive Payment'];
 
 class _PaymentAndRateScreenState extends State<PaymentAndRateScreen> {
+  int rater = 0;
   double rating = 0;
+  final User? user = Auth().currentUser;
+
+  void updateRating() async {
+    CollectionReference modulesRef =
+        FirebaseFirestore.instance.collection('users');
+    await modulesRef.doc(widget.mentorID).get().then((snapshot) {
+      Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+      rater = data?['rater'] + 1;
+      rating = data?['rating'] + rating;
+    });
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.mentorID)
+        .update({
+      'rater': rater,
+      'rating': rating,
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +92,7 @@ class _PaymentAndRateScreenState extends State<PaymentAndRateScreen> {
                     ),
                     ElevatedButton.icon(
                         onPressed: () async {
+                          updateRating();
                           Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(
                                 builder: (context) => TabsScreen()),

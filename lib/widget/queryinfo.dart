@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -22,6 +23,7 @@ class QueryInfoScreen extends StatefulWidget {
 
 class _QueryInfoScreenState extends State<QueryInfoScreen> {
   final User? user = Auth().currentUser;
+  String? myToken = '';
   _lifetimeconversion(Map<String, dynamic> data) {
     Timestamp firstuploadtime = data['lifetime'];
     final DateTime dateConvert =
@@ -31,6 +33,20 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
     var lifetime = diff.inMinutes;
 
     return lifetime;
+  }
+
+  void getToken() async {
+    await FirebaseMessaging.instance.getToken().then((token) {
+      setState(() {
+        myToken = token;
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getToken();
   }
 
   String get locationImage {
@@ -198,21 +214,10 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
                   .doc('${widget.data['menteeid']}')
                   .update({
                     'inSession': true,
+                    'mentorToken': myToken,
+                    'mentorid': user!.uid,
                   })
                   .then((value) => debugPrint('in session'))
-                  .catchError(
-                      (error) => debugPrint('Failed to add new data: $error'));
-              FirebaseFirestore.instance
-                  .collection('user queries')
-                  .doc(widget.data['menteeid'])
-                  .collection('mentor Info')
-                  .doc(widget.data['menteeid'])
-                  .set({
-                    'mentorID': user!.uid,
-                    'mentorUsername': mentorUsername,
-                    'mentorGender': mentorGender,
-                  })
-                  .then((value) => debugPrint('Added Mentor info'))
                   .catchError(
                       (error) => debugPrint('Failed to add new data: $error'));
               Navigator.of(context).push(
@@ -340,7 +345,8 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
               const SizedBox(
                 height: 80,
               ),
-              if (user!.uid != widget.data['menteeid']) getUser(),
+              // if (user!.uid != widget.data['menteeid'])
+              getUser(),
             ],
           ),
         ),

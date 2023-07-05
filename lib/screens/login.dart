@@ -53,7 +53,9 @@ class _LoginScreenState extends State<LoginScreen> {
         .set({
           'email': email,
           'gender': selectedGender,
-          'username': _controllerUsername.text
+          'username': _controllerUsername.text,
+          'rater': 0,
+          'rating': 0,
         });
     } on FirebaseAuthException catch (e) {
       setState(() {

@@ -67,7 +67,7 @@ class _MentorSelectReceiveModeScreenState
                   onPressed: () {
                     sendPushMessage(
                         widget.data['token'],
-                        'Well Done! Session over! Your mentor has chosen: $currentOption.',
+                        'Well Done! Session over! ${widget.data['mentorinfo'][1]} has chosen: $currentOption.',
                         widget.data['mentorID'].toString());
                     Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(builder: (context) => TabsScreen()),

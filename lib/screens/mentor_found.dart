@@ -9,15 +9,15 @@ import 'package:ta_anywhere/widget/qr_code.dart';
 import 'package:ta_anywhere/widget/tabs.dart';
 
 class MentorFound extends StatelessWidget {
-  const MentorFound({super.key, required this.menteeID});
-
-  final String menteeID;
+  const MentorFound({super.key});
 
   @override
   Widget build(BuildContext context) {
     final User? user = Auth().currentUser;
 
     DateTime timenow = DateTime.now();
+
+    Map<String, dynamic>? data1 = {};
 
     void reupload() async {
       await FirebaseFirestore.instance
@@ -43,13 +43,13 @@ class MentorFound extends StatelessWidget {
       );
     }
 
-    Widget getUser(BuildContext context, String menteeID) {
-      CollectionReference mentor =
-          FirebaseFirestore.instance.collection('user queries').doc(menteeID).collection('mentor Info');
+    Widget getUser(
+        BuildContext context, String menteeID, Map<String, dynamic> data1) {
+      CollectionReference mentorInfo =
+          FirebaseFirestore.instance.collection('users');
       String gender = '';
-
       return FutureBuilder<DocumentSnapshot>(
-        future: mentor.doc(menteeID).get(),
+        future: mentorInfo.doc(data1['mentorid']).get(),
         builder:
             (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
           if (snapshot.hasError) {
@@ -61,17 +61,17 @@ class MentorFound extends StatelessWidget {
           }
 
           if (snapshot.connectionState == ConnectionState.done) {
-            Map<String, dynamic> data =
+            Map<String, dynamic> data2 =
                 snapshot.data!.data() as Map<String, dynamic>;
-            if (data['mentorGender'] == 'Male') {
+            if (data2[gender] == 'Male') {
               gender = 'He';
-            } else if (data['mentorGender'] == 'Female') {
+            } else if (data2['mentorGender'] == 'Female') {
               gender = 'She';
             } else {
               gender = 'They';
             }
             return mediumLabel(
-                '${data['mentorUsername']} has accepted to mentor you. $gender will be arriving your location in 10 minutes.');
+                '${data2['username']} has accepted to mentor you. $gender will be arriving your location in 10 minutes.');
           }
 
           return CircularProgressIndicator(
@@ -80,6 +80,12 @@ class MentorFound extends StatelessWidget {
         },
       );
     }
+
+    CollectionReference mentorRef =
+        FirebaseFirestore.instance.collection('users queries');
+    mentorRef.doc(user!.uid).get().then((snapshot) {
+      data1 = snapshot.data() as Map<String, dynamic>?;
+    });
 
     return WillPopScope(
       onWillPop: () async => false,
@@ -94,7 +100,7 @@ class MentorFound extends StatelessWidget {
                 backgroundImage: AssetImage("assets/icons/profile_pic.png"),
                 radius: 60,
               ),
-              Center(child: getUser(context, menteeID)),
+              Center(child: getUser(context, user.uid, data1!)),
               smallLabel(
                   '(Else the meet will be cancelled and the query will be reuploaded.)'),
               Transform.rotate(

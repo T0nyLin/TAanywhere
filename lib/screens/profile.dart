@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:ta_anywhere/components/auth.dart';
 import 'package:ta_anywhere/screens/setting.dart';
 import 'package:ta_anywhere/widget/qr_code.dart';
@@ -89,14 +90,60 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _ratingStars(int score) {
-    List<Widget> stars = [];
-    for (int i = 0; i < 5; i++) {
-      IconData starIcon = i < score ? Icons.star : Icons.star_border;
-      Widget star = Icon(starIcon, color: Colors.amber);
-      stars.add(star);
+  Widget _ratingStars(num rater, num rating) {
+    if (rater == 0.0) {
+      return RatingBar(
+        ratingWidget: RatingWidget(
+          full: Icon(
+            Icons.star,
+            color: Colors.amber,
+          ),
+          half: Icon(
+            Icons.star_half,
+            color: Colors.amber,
+          ),
+          empty: Icon(
+            Icons.star_outline,
+          ),
+        ),
+        glow: false,
+        direction: Axis.horizontal,
+        allowHalfRating: true,
+        itemSize: 22,
+        minRating: 0,
+        ignoreGestures: true,
+        initialRating: 0,
+        onRatingUpdate: (rating) {
+          debugPrint(rating.toString());
+        },
+      );
     }
-    return Row(children: stars);
+    double avg = rating / rater;
+    return RatingBar(
+      ratingWidget: RatingWidget(
+        full: Icon(
+          Icons.star,
+          color: Colors.amber,
+        ),
+        half: Icon(
+          Icons.star_half,
+          color: Colors.amber,
+        ),
+        empty: Icon(
+          Icons.star_outline,
+        ),
+      ),
+      glow: false,
+      direction: Axis.horizontal,
+      allowHalfRating: true,
+      itemSize: 30,
+      minRating: 0,
+      ignoreGestures: true,
+      initialRating: avg,
+      onRatingUpdate: (rating) {
+        debugPrint(rating.toString());
+      },
+    );
   }
 
   Widget _moduleBox(String text) {
@@ -124,74 +171,71 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return AlertDialog(
           title: const Text('Add Module'),
           content: SizedBox(
-                      width: 150,
-                      child: TypeAheadFormField<ModuleCode?>(
-                        debounceDuration: const Duration(milliseconds: 500),
-                        textFieldConfiguration: TextFieldConfiguration(
-                          controller: _modController,
-                          maxLength: 7,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(13),
-                            ),
-                            prefixIcon: const Icon(
-                              Icons.colorize_rounded,
-                              size: 30,
-                            ),
-                            labelText: 'Search Modules',
-                            hintText: 'Module Code',
-                            hintStyle: const TextStyle(
-                                fontSize: 13, color: Colors.grey),
-                            labelStyle: const TextStyle(fontSize: 9),
-                            counterText: '',
-                          ),
-                        ),
-                        suggestionsCallback: getModCodes,
-                        itemBuilder: (context, ModuleCode? suggestion) {
-                          final modcode = suggestion!;
-                          return ListTile(
-                            title: Text(modcode.modCode),
-                          );
-                        },
-                        noItemsFoundBuilder: (context) {
-                          return Center(
-                            child: Text(
-                              _modController.text = 'Module not found.',
-                              style:
-                                  Theme.of(context).primaryTextTheme.bodySmall,
-                            ),
-                          );
-                        },
-                        onSuggestionSelected: (ModuleCode? suggestion) {
-                          final modcode = suggestion!;
-                          ScaffoldMessenger.of(context)
-                            ..removeCurrentSnackBar()
-                            ..showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                    'Selected mod code: ${modcode.modCode}'),
-                              ),
-                            );
-                          setState(() {
-                            _modController.text = modcode.modCode;
-                          });
-                        },
-                        validator: (value) {
-                          if (value == null ||
-                              value.isEmpty ||
-                              value.trim().length <= 1 ||
-                              value.trim().length > 10 ||
-                              value.trim() == 'Module not found.') {
-                            setState(() {
-                              _modController.clear();
-                              _modController.text = '';
-                            });
-                            return 'Invalid Code';
-                          }
-                          return null;
-                        },
-                      ),
+            width: 150,
+            child: TypeAheadFormField<ModuleCode?>(
+              debounceDuration: const Duration(milliseconds: 500),
+              textFieldConfiguration: TextFieldConfiguration(
+                controller: _modController,
+                maxLength: 7,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(13),
+                  ),
+                  prefixIcon: const Icon(
+                    Icons.colorize_rounded,
+                    size: 30,
+                  ),
+                  labelText: 'Search Modules',
+                  hintText: 'Module Code',
+                  hintStyle: const TextStyle(fontSize: 13, color: Colors.grey),
+                  labelStyle: const TextStyle(fontSize: 9),
+                  counterText: '',
+                ),
+              ),
+              suggestionsCallback: getModCodes,
+              itemBuilder: (context, ModuleCode? suggestion) {
+                final modcode = suggestion!;
+                return ListTile(
+                  title: Text(modcode.modCode),
+                );
+              },
+              noItemsFoundBuilder: (context) {
+                return Center(
+                  child: Text(
+                    _modController.text = 'Module not found.',
+                    style: Theme.of(context).primaryTextTheme.bodySmall,
+                  ),
+                );
+              },
+              onSuggestionSelected: (ModuleCode? suggestion) {
+                final modcode = suggestion!;
+                ScaffoldMessenger.of(context)
+                  ..removeCurrentSnackBar()
+                  ..showSnackBar(
+                    SnackBar(
+                      content: Text('Selected mod code: ${modcode.modCode}'),
                     ),
+                  );
+                setState(() {
+                  _modController.text = modcode.modCode;
+                });
+              },
+              validator: (value) {
+                if (value == null ||
+                    value.isEmpty ||
+                    value.trim().length <= 1 ||
+                    value.trim().length > 10 ||
+                    value.trim() == 'Module not found.') {
+                  setState(() {
+                    _modController.clear();
+                    _modController.text = '';
+                  });
+                  return 'Invalid Code';
+                }
+                return null;
+              },
+            ),
+          ),
           actions: [
             TextButton(
               child: const Text('Cancel'),
@@ -202,13 +246,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
             TextButton(
               child: const Text('Add'),
               onPressed: () {
-                 // Get the user's ID
+                // Get the user's ID
                 String userId = user?.uid ?? '';
 
                 // Get the current list of modules for the user from Firestore
-                CollectionReference modulesRef = FirebaseFirestore.instance.collection('users');
+                CollectionReference modulesRef =
+                    FirebaseFirestore.instance.collection('users');
                 modulesRef.doc(userId).get().then((snapshot) {
-                  Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+                  Map<String, dynamic>? data =
+                      snapshot.data() as Map<String, dynamic>?;
 
                   // Extract the modules list from the data
                   List<dynamic>? modules = data?['modules'] as List<dynamic>?;
@@ -231,7 +277,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       },
     );
   }
-  
+
   void _showAddModuleDialogHelp(BuildContext context) {
     showDialog(
       context: context,
@@ -239,74 +285,71 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return AlertDialog(
           title: const Text('Add Module'),
           content: SizedBox(
-                      width: 150,
-                      child: TypeAheadFormField<ModuleCode?>(
-                        debounceDuration: const Duration(milliseconds: 500),
-                        textFieldConfiguration: TextFieldConfiguration(
-                          controller: _modController,
-                          maxLength: 7,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(13),
-                            ),
-                            prefixIcon: const Icon(
-                              Icons.colorize_rounded,
-                              size: 30,
-                            ),
-                            labelText: 'Search Modules',
-                            hintText: 'Module Code',
-                            hintStyle: const TextStyle(
-                                fontSize: 13, color: Colors.grey),
-                            labelStyle: const TextStyle(fontSize: 9),
-                            counterText: '',
-                          ),
-                        ),
-                        suggestionsCallback: getModCodes,
-                        itemBuilder: (context, ModuleCode? suggestion) {
-                          final modcode = suggestion!;
-                          return ListTile(
-                            title: Text(modcode.modCode),
-                          );
-                        },
-                        noItemsFoundBuilder: (context) {
-                          return Center(
-                            child: Text(
-                              _modController.text = 'Module not found.',
-                              style:
-                                  Theme.of(context).primaryTextTheme.bodySmall,
-                            ),
-                          );
-                        },
-                        onSuggestionSelected: (ModuleCode? suggestion) {
-                          final modcode = suggestion!;
-                          ScaffoldMessenger.of(context)
-                            ..removeCurrentSnackBar()
-                            ..showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                    'Selected mod code: ${modcode.modCode}'),
-                              ),
-                            );
-                          setState(() {
-                            _modController.text = modcode.modCode;
-                          });
-                        },
-                        validator: (value) {
-                          if (value == null ||
-                              value.isEmpty ||
-                              value.trim().length <= 1 ||
-                              value.trim().length > 10 ||
-                              value.trim() == 'Module not found.') {
-                            setState(() {
-                              _modController.clear();
-                              _modController.text = '';
-                            });
-                            return 'Invalid Code';
-                          }
-                          return null;
-                        },
-                      ),
+            width: 150,
+            child: TypeAheadFormField<ModuleCode?>(
+              debounceDuration: const Duration(milliseconds: 500),
+              textFieldConfiguration: TextFieldConfiguration(
+                controller: _modController,
+                maxLength: 7,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(13),
+                  ),
+                  prefixIcon: const Icon(
+                    Icons.colorize_rounded,
+                    size: 30,
+                  ),
+                  labelText: 'Search Modules',
+                  hintText: 'Module Code',
+                  hintStyle: const TextStyle(fontSize: 13, color: Colors.grey),
+                  labelStyle: const TextStyle(fontSize: 9),
+                  counterText: '',
+                ),
+              ),
+              suggestionsCallback: getModCodes,
+              itemBuilder: (context, ModuleCode? suggestion) {
+                final modcode = suggestion!;
+                return ListTile(
+                  title: Text(modcode.modCode),
+                );
+              },
+              noItemsFoundBuilder: (context) {
+                return Center(
+                  child: Text(
+                    _modController.text = 'Module not found.',
+                    style: Theme.of(context).primaryTextTheme.bodySmall,
+                  ),
+                );
+              },
+              onSuggestionSelected: (ModuleCode? suggestion) {
+                final modcode = suggestion!;
+                ScaffoldMessenger.of(context)
+                  ..removeCurrentSnackBar()
+                  ..showSnackBar(
+                    SnackBar(
+                      content: Text('Selected mod code: ${modcode.modCode}'),
                     ),
+                  );
+                setState(() {
+                  _modController.text = modcode.modCode;
+                });
+              },
+              validator: (value) {
+                if (value == null ||
+                    value.isEmpty ||
+                    value.trim().length <= 1 ||
+                    value.trim().length > 10 ||
+                    value.trim() == 'Module not found.') {
+                  setState(() {
+                    _modController.clear();
+                    _modController.text = '';
+                  });
+                  return 'Invalid Code';
+                }
+                return null;
+              },
+            ),
+          ),
           actions: [
             TextButton(
               child: const Text('Cancel'),
@@ -317,16 +360,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
             TextButton(
               child: const Text('Add'),
               onPressed: () {
-                 // Get the user's ID
+                // Get the user's ID
                 String userId = user?.uid ?? '';
 
                 // Get the current list of modules for the user from Firestore
-                CollectionReference modulesRef = FirebaseFirestore.instance.collection('users');
+                CollectionReference modulesRef =
+                    FirebaseFirestore.instance.collection('users');
                 modulesRef.doc(userId).get().then((snapshot) {
-                  Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+                  Map<String, dynamic>? data =
+                      snapshot.data() as Map<String, dynamic>?;
 
                   // Extract the modules list from the data
-                  List<dynamic>? modules = data?['modules_help'] as List<dynamic>?;
+                  List<dynamic>? modules =
+                      data?['modules_help'] as List<dynamic>?;
                   if (modules == null) {
                     modules = [];
                   }
@@ -385,7 +431,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             builder: (BuildContext context) {
               return AlertDialog(
                 title: const Text('Confirmation'),
-                content: const Text('Are you sure you want to remove this module?'),
+                content:
+                    const Text('Are you sure you want to remove this module?'),
                 actions: [
                   TextButton(
                     child: const Text('Cancel'),
@@ -399,12 +446,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       setState(() {
                         // Remove the module from the list
                         modules.removeAt(i);
-                        
+
                         // Get the user's ID
                         String userId = user?.uid ?? '';
 
                         // Update the list of modules in Firestore for the user
-                        CollectionReference modulesRef = FirebaseFirestore.instance.collection('users');
+                        CollectionReference modulesRef =
+                            FirebaseFirestore.instance.collection('users');
                         modulesRef.doc(userId).update({'modules': modules});
                       });
                       Navigator.of(context).pop();
@@ -475,7 +523,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             builder: (BuildContext context) {
               return AlertDialog(
                 title: const Text('Confirmation'),
-                content: const Text('Are you sure you want to remove this module?'),
+                content:
+                    const Text('Are you sure you want to remove this module?'),
                 actions: [
                   TextButton(
                     child: const Text('Cancel'),
@@ -489,13 +538,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       setState(() {
                         // Remove the module from the list
                         modules.removeAt(i);
-                        
+
                         // Get the user's ID
                         String userId = user?.uid ?? '';
 
                         // Update the list of modules in Firestore for the user
-                        CollectionReference modulesRef = FirebaseFirestore.instance.collection('users');
-                        modulesRef.doc(userId).update({'modules_help': modules});
+                        CollectionReference modulesRef =
+                            FirebaseFirestore.instance.collection('users');
+                        modulesRef
+                            .doc(userId)
+                            .update({'modules_help': modules});
                       });
                       Navigator.of(context).pop();
                     },
@@ -527,144 +579,164 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-@override
-Widget build(BuildContext context) {
-  // Get the user's ID
-  String userId = user?.uid ?? '';
+  @override
+  Widget build(BuildContext context) {
+    // Get the user's ID
+    String userId = user?.uid ?? '';
 
-  return Scaffold(
-    body: StreamBuilder<DocumentSnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-        if (snapshot.hasData) {
-          Map<String, dynamic>? data = snapshot.data?.data() as Map<String, dynamic>?;
+    return Scaffold(
+      body: StreamBuilder<DocumentSnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .snapshots(),
+        builder:
+            (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+          if (snapshot.hasData) {
+            Map<String, dynamic>? data =
+                snapshot.data?.data() as Map<String, dynamic>?;
 
-          // Extract the modules list from the data
-          List<dynamic>? modules = data?['modules'] as List<dynamic>?;
+            // Extract the modules list from the data
+            List<dynamic>? modules = data?['modules'] as List<dynamic>?;
 
-          if (modules == null) {
-            modules = [];
-          }
+            if (modules == null) {
+              modules = [];
+            }
 
-          List<dynamic>? modules_help = data?['modules_help'] as List<dynamic>?;
+            List<dynamic>? modules_help =
+                data?['modules_help'] as List<dynamic>?;
 
-          if (modules_help == null) {
-            modules_help = [];
-          }
+            if (modules_help == null) {
+              modules_help = [];
+            }
 
-          return Scrollbar(
-            child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(16.0, 40.0, 16.0, 8.0),
-                          child: Text(
-                            'Mentor Rank:',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 8.0),
-                          child: _mentorRank(),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(16.0, 20.0, 16.0, 9.0),
-                          child: Text(
-                            'Rating:',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 8.0),
-                            child: _ratingStars(2), // Change the score here to test
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            _settingButton(context),
-                            const SizedBox(height: 40),
-                            _qrCodeButton(context),
-                          ],
-                        ),
-                        const SizedBox(width: 20),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 16.0),
-                          child: CircleAvatar(
-                            radius: 60,
-                            backgroundImage: AssetImage(
-                              'assets/icons/profile_pic.png'), // Replace with user image from database soon
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            return Scrollbar(
+                child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _myModulesHeader(),
-                      const SizedBox(height: 10),
-                      _myModulesList(modules),
-                      const SizedBox(height: 20),
-                      _helpModulesHeader(),
-                      const SizedBox(height: 10),
-                      _helpModulesList(modules_help),
-                      const SizedBox(height: 20),
                       Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        _userUid(),
-                        _signOutButton(context),
-                      ],
-                    ),
-                  
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(
+                                16.0, 40.0, 16.0, 8.0),
+                            child: Text(
+                              'Mentor Rank:',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 8.0),
+                            child: _mentorRank(),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(
+                                20.0, 20.0, 16.0, 9.0),
+                            child: Column(
+                              children: [
+                                (data!['rater'] == 0 || data['rater'] == 1)
+                                    ? Text(
+                                        '${data['rater']} RATING',
+                                        style: TextStyle(
+                                          fontSize: 17,
+                                        ),
+                                      )
+                                    : Text(
+                                        '${data['rater']} RATINGS',
+                                        style: TextStyle(
+                                          fontSize: 17,
+                                        ),
+                                      ),
+                                Center(
+                                  child: Text(
+                                    '${data['rating']}',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 25,
+                                    ),
+                                  ),
+                                ),
+                                _ratingStars(
+                                  data['rater'],
+                                  data['rating'],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              _settingButton(context),
+                              const SizedBox(height: 40),
+                              _qrCodeButton(context),
+                            ],
+                          ),
+                          const SizedBox(width: 20),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(
+                                16.0, 24.0, 16.0, 16.0),
+                            child: CircleAvatar(
+                              radius: 60,
+                              backgroundImage: AssetImage(
+                                  'assets/icons/profile_pic.png'), // Replace with user image from database soon
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
-                ),
-              ],
-            ),
-            )
-          );
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
-    ),
-  );
-}
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _myModulesHeader(),
+                        const SizedBox(height: 10),
+                        _myModulesList(modules),
+                        const SizedBox(height: 20),
+                        _helpModulesHeader(),
+                        const SizedBox(height: 10),
+                        _helpModulesList(modules_help),
+                        const SizedBox(height: 20),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            _userUid(),
+                            _signOutButton(context),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ));
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
+      ),
+    );
+  }
 }

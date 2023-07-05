@@ -152,8 +152,7 @@ class _TabsScreenState extends State<TabsScreen> {
                         MaterialButton(
                           onPressed: () {
                             Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) =>
-                                    MentorFound(menteeID: user!.uid)));
+                                builder: (context) => MentorFound()));
                           },
                           child: const Text('Go'),
                         ),
@@ -267,8 +266,8 @@ class _TabsScreenState extends State<TabsScreen> {
                   if (dismissButton != null) {
                     dismissButton.dismiss();
                   }
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => MentorFound(menteeID: user!.uid)));
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => MentorFound()));
                 },
                 child: const Text('Go'),
               ),

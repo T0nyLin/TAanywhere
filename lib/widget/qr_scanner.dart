@@ -18,7 +18,7 @@ class QRScan extends StatefulWidget {
 }
 
 class _QRScanState extends State<QRScan> {
-  final users = FirebaseFirestore.instance.collection('users');
+  final users = FirebaseFirestore.instance.collection('user queries');
   final qrKey = GlobalKey(debugLabel: 'QR');
 
   Barcode? barcode;
@@ -99,54 +99,35 @@ class _QRScanState extends State<QRScan> {
 
   Widget verifyMentee(BuildContext context) {
     if (barcode!.code == widget.data['menteeid']) {
-      return FutureBuilder(
-        future: users.doc('${widget.data['menteeid']}').get(),
-        builder: ((context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-          if (snapshot.hasError) {
-            return Text('Something went wrong...');
-          }
-          if (snapshot.hasData && !snapshot.data!.exists) {
-            return Text('Mentee not found.');
-          }
-          if (snapshot.connectionState == ConnectionState.done) {
-            Map<String, dynamic> data =
-                snapshot.data!.data() as Map<String, dynamic>;
-            return Column(
-              children: [
-                Text(
-                  "Mentee verified: ${data['username']}",
-                  maxLines: 1,
-                  style: Theme.of(context)
-                      .primaryTextTheme
-                      .bodySmall!
-                      .copyWith(color: Colors.white),
-                ),
-                TextButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (ctx) => Countdown(
-                            time: 60,
-                            data: widget.data,
-                          ),
-                        ),
-                      );
-                    },
-                    child: Text(
-                      'Next',
-                      style: Theme.of(context)
-                          .primaryTextTheme
-                          .bodyMedium!
-                          .copyWith(color: Colors.white),
-                    )),
-              ],
-            );
-          }
-
-          return CircularProgressIndicator(
-            color: Color.fromARGB(255, 48, 97, 104),
-          );
-        }),
+      return Column(
+        children: [
+          Text(
+            "Mentee verified: ${widget.data['mentee']}",
+            maxLines: 1,
+            style: Theme.of(context)
+                .primaryTextTheme
+                .bodySmall!
+                .copyWith(color: Colors.white),
+          ),
+          TextButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (ctx) => Countdown(
+                      time: 60,
+                      data: widget.data,
+                    ),
+                  ),
+                );
+              },
+              child: Text(
+                'Next',
+                style: Theme.of(context)
+                    .primaryTextTheme
+                    .bodyMedium!
+                    .copyWith(color: Colors.white),
+              )),
+        ],
       );
     } else {
       return Text('Mentee not found.');

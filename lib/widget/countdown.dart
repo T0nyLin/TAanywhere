@@ -8,6 +8,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'package:ta_anywhere/components/auth.dart';
 import 'package:ta_anywhere/components/sendPushMessage.dart';
+import 'package:ta_anywhere/screens/browse.dart';
 import 'package:ta_anywhere/screens/mentorSelectPayment.dart';
 import 'package:ta_anywhere/widget/qr_scanner.dart';
 
@@ -307,6 +308,8 @@ class _CountdownState extends State<Countdown> {
               ElevatedButton(
                 onPressed: () {
                   sessionOver();
+                  // deleteQuery(widget.data['menteeid']);
+                  // deleteImages(widget.data['image_url']);
                 },
                 child: const Text('End Session'),
               ),
