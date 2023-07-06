@@ -297,7 +297,6 @@ class _UploadScreenState extends State<UploadScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: TextFormField(
-                    maxLines: 2,
                     maxLength: 200,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
@@ -309,7 +308,7 @@ class _UploadScreenState extends State<UploadScreen> {
                       ),
                       labelText: 'Landmark',
                       hintText:
-                          'Please describe a distinct landmark so that your mentor can find you easily.',
+                          'Please describe a distinct landmark.',
                       hintStyle:
                           const TextStyle(fontSize: 13, color: Colors.grey),
                       labelStyle: const TextStyle(fontSize: 10),

@@ -390,7 +390,6 @@ class _EditnReUploadScreenState extends State<EditnReUploadScreen> {
                   width: double.infinity,
                   child: TextFormField(
                     initialValue: widget.data['landmark'],
-                    maxLines: 2,
                     maxLength: 200,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
@@ -402,7 +401,7 @@ class _EditnReUploadScreenState extends State<EditnReUploadScreen> {
                       ),
                       labelText: 'Landmark',
                       hintText:
-                          'Please describe a distinct landmark so that your mentor can find you easily.',
+                          'Please describe a distinct landmark.',
                       hintStyle:
                           const TextStyle(fontSize: 13, color: Colors.grey),
                       labelStyle: const TextStyle(fontSize: 10),

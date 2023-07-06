@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import 'package:ta_anywhere/components/auth.dart';
 import 'package:ta_anywhere/components/reupload_del.dart';
@@ -11,6 +12,7 @@ import 'package:ta_anywhere/components/sendPushMessage.dart';
 import 'package:ta_anywhere/screens/editnreupload.dart';
 import 'package:ta_anywhere/widget/countdown.dart';
 import 'package:ta_anywhere/widget/tabs.dart';
+import 'package:ta_anywhere/widget/viewprofile.dart';
 
 class QueryInfoScreen extends StatefulWidget {
   const QueryInfoScreen({super.key, required this.data});
@@ -24,6 +26,7 @@ class QueryInfoScreen extends StatefulWidget {
 class _QueryInfoScreenState extends State<QueryInfoScreen> {
   final User? user = Auth().currentUser;
   String? myToken = '';
+  String mentorUsername = '';
   _lifetimeconversion(Map<String, dynamic> data) {
     Timestamp firstuploadtime = data['lifetime'];
     final DateTime dateConvert =
@@ -63,8 +66,8 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
           fit: BoxFit.cover,
           height: 180,
           progressIndicatorBuilder: (context, url, progress) =>
-              const CircularProgressIndicator(
-                  color: Color.fromARGB(255, 48, 97, 104)),
+              LoadingAnimationWidget.threeRotatingDots(
+                  color: Color.fromARGB(255, 48, 97, 104), size: 60),
         ),
       ],
     );
@@ -74,7 +77,7 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
         return AlertDialog(
           title: Center(
             child: Text(
-              widget.data['mentee'],
+              "${widget.data['mentee']}'s location",
               style: Theme.of(context).primaryTextTheme.bodyLarge,
             ),
           ),
@@ -86,7 +89,7 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
                 previewContent,
                 Text(
                   widget.data['location'],
-                  style: Theme.of(context).primaryTextTheme.bodySmall,
+                  style: Theme.of(context).primaryTextTheme.bodyMedium,
                 ),
               ],
             ),
@@ -185,7 +188,7 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
 
   Widget getUser() {
     String token = widget.data['token'];
-    String mentorUsername = '';
+
     CollectionReference mentor = FirebaseFirestore.instance.collection('users');
     return FutureBuilder<DocumentSnapshot>(
       future: mentor.doc(user!.uid).get(),
@@ -204,6 +207,11 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
               snapshot.data!.data() as Map<String, dynamic>;
           mentorUsername = data['username'];
           return ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(32.0)),
+              minimumSize: Size(380, 40),
+            ),
             onPressed: () {
               sendPushMessage(token, 'Congrats, ${widget.data['mentee']}!',
                   '$mentorUsername is on the way now.');
@@ -231,9 +239,8 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
             label: const Text('Accept to help?'),
           );
         }
-        return CircularProgressIndicator(
-          color: Color.fromARGB(255, 48, 97, 104),
-        );
+        return LoadingAnimationWidget.horizontalRotatingDots(
+            color: const Color.fromARGB(255, 48, 97, 104), size: 60);
       },
     );
   }
@@ -257,7 +264,6 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
         Container(
           padding: const EdgeInsets.all(25),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SizedBox(
                 height: 30,
@@ -285,8 +291,8 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
                     imageUrl: widget.data['image_url'].toString(),
                     fit: BoxFit.cover,
                     progressIndicatorBuilder: (context, url, progress) =>
-                        const CircularProgressIndicator(
-                            color: Color.fromARGB(255, 48, 97, 104)),
+                        LoadingAnimationWidget.threeArchedCircle(
+                            color: Color.fromARGB(255, 48, 97, 104), size: 60),
                     errorWidget: (context, url, error) =>
                         const Icon(Icons.error),
                     height: 50,
@@ -294,10 +300,30 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
                 ),
               ),
               Center(
-                child: Text(
-                  widget.data['query'],
-                  style: Theme.of(context).primaryTextTheme.bodyLarge,
-                  maxLines: 3,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: ((context) => ViewUserProfileScreen(
+                                  userid: widget.data['menteeid'],
+                                  username: mentorUsername,
+                                ))));
+                      },
+                      child: Text(
+                        '${widget.data['mentee']}:',
+                        style: Theme.of(context).primaryTextTheme.bodyLarge,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        widget.data['query'],
+                        style: Theme.of(context).primaryTextTheme.bodyLarge,
+                        maxLines: 3,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               TextButton.icon(
@@ -322,7 +348,6 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       mediumLabel('Module Code: '),
-                      mediumLabel('Mentee: '),
                       mediumLabel('Cost: '),
                       mediumLabel('Level: '),
                       mediumLabel('Posted: '),
@@ -332,7 +357,6 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       mediumLabel(widget.data['module Code']),
-                      mediumLabel(widget.data['mentee']),
                       mediumLabel(widget.data['cost']),
                       mediumLabel(widget.data['level']),
                       mediumLabel('$posted min ago'),
@@ -343,8 +367,7 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
               const SizedBox(
                 height: 80,
               ),
-              // if (user!.uid != widget.data['menteeid'])
-              getUser(),
+              if (user!.uid != widget.data['menteeid']) getUser(),
             ],
           ),
         ),
