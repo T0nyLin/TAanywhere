@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 import 'package:ta_anywhere/components/pushNotification.dart';
+import 'package:ta_anywhere/components/reupload_del.dart';
 import 'package:ta_anywhere/screens/browse.dart';
 import 'package:ta_anywhere/screens/map.dart';
 import 'package:ta_anywhere/screens/camera.dart';
@@ -325,7 +326,7 @@ class _TabsScreenState extends State<TabsScreen> {
                 },
                 child: const Text('Noted'),
               ),
-            if (notification.title!.startsWith('Sorry'))
+            if (notification.title!.startsWith('Sorry,'))
               MaterialButton(
                 onPressed: () {
                   OverlaySupportEntry? dismissButton =

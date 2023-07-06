@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -7,10 +6,11 @@ import 'package:overlay_support/overlay_support.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'package:ta_anywhere/components/auth.dart';
+import 'package:ta_anywhere/components/reupload_del.dart';
 import 'package:ta_anywhere/components/sendPushMessage.dart';
-import 'package:ta_anywhere/screens/browse.dart';
 import 'package:ta_anywhere/screens/mentorSelectPayment.dart';
 import 'package:ta_anywhere/widget/qr_scanner.dart';
+import 'package:ta_anywhere/widget/viewprofile.dart';
 
 class Countdown extends StatefulWidget {
   const Countdown({
@@ -30,28 +30,6 @@ class Countdown extends StatefulWidget {
 }
 
 Map<String, dynamic> somedata = {};
-DateTime timenow = DateTime.now();
-
-void deleteQuery(String menteeid) {
-  FirebaseFirestore.instance
-      .collection('user queries')
-      .doc(menteeid)
-      .delete()
-      .then((value) => debugPrint('Query removed after session.'))
-      .catchError((error) => debugPrint('Failed to delete query: $error'));
-  ;
-}
-
-void reupload(String menteeid) async {
-  await FirebaseFirestore.instance
-      .collection('user queries')
-      .doc(menteeid)
-      .update({
-    'inSession': false,
-    'uploadedTime': timenow,
-    'lifetime': timenow,
-  });
-}
 
 class _CountdownState extends State<Countdown> {
   final User? user = Auth().currentUser;
@@ -286,8 +264,24 @@ class _CountdownState extends State<Countdown> {
           children: [
             buildTime(),
             const SizedBox(
-              height: 80,
+              height: 30,
             ),
+            if (isRunning && widget.time == 10)
+              ElevatedButton.icon(
+                icon: const Icon(Icons.person),
+                label: mediumLabel("View ${widget.data['mentee']}'s Profile"),
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: ((context) => ViewUserProfileScreen(
+                            userid: widget.data['menteeid'],
+                            username: widget.data['mentee'],
+                          ))));
+                },
+              ),
+            if (isRunning && widget.time == 10)
+              const SizedBox(
+                height: 20,
+              ),
             if (isRunning && widget.time == 10)
               ElevatedButton(
                 onPressed: () {

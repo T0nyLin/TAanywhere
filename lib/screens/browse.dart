@@ -5,6 +5,7 @@ import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:ta_anywhere/components/reupload_del.dart';
 
 import 'package:ta_anywhere/widget/queryinfo.dart';
 
@@ -15,21 +16,7 @@ class BrowseScreen extends StatefulWidget {
   State<BrowseScreen> createState() => _BrowseScreenState();
 }
 
-void deleteImages(String imageurl) async {
-  String fileName = imageurl.replaceAll("%2F", "*");
-  fileName = fileName.replaceAll("?", "*");
-  fileName = fileName.split("*")[1];
-  Reference storageReferance = FirebaseStorage.instance.ref();
-  try {
-    await storageReferance
-        .child('query_images')
-        .child(fileName)
-        .delete()
-        .then((_) => debugPrint('Successfully deleted $fileName storage item'));
-  } catch (e) {
-    debugPrint('$e');
-  }
-}
+
 
 class _BrowseScreenState extends State<BrowseScreen> {
   void dispose() {

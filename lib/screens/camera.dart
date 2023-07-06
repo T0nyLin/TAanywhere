@@ -59,6 +59,7 @@ class _CameraScreenState extends State<CameraScreen> {
     super.initState();
     _cameraController = CameraController(cameras![0], ResolutionPreset.high);
     cameraValue = _cameraController.initialize();
+    _cameraController.setFlashMode(FlashMode.off);
   }
 
   @override
@@ -147,7 +148,7 @@ class _CameraScreenState extends State<CameraScreen> {
                             flash = !flash;
                           });
                           flash
-                              ? _cameraController.setFlashMode(FlashMode.torch)
+                              ? _cameraController.setFlashMode(FlashMode.always)
                               : _cameraController.setFlashMode(FlashMode.off);
                         },
                         icon: Icon(

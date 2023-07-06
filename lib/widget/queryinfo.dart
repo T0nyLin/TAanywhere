@@ -6,8 +6,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:ta_anywhere/components/auth.dart';
+import 'package:ta_anywhere/components/reupload_del.dart';
 import 'package:ta_anywhere/components/sendPushMessage.dart';
-import 'package:ta_anywhere/screens/browse.dart';
 import 'package:ta_anywhere/screens/editnreupload.dart';
 import 'package:ta_anywhere/widget/countdown.dart';
 import 'package:ta_anywhere/widget/tabs.dart';

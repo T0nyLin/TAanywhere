@@ -6,11 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import 'package:ta_anywhere/components/auth.dart';
+import 'package:ta_anywhere/components/reupload_del.dart';
 import 'package:ta_anywhere/components/sendPushMessage.dart';
-import 'package:ta_anywhere/screens/browse.dart';
-import 'package:ta_anywhere/widget/countdown.dart';
 import 'package:ta_anywhere/widget/qr_code.dart';
 import 'package:ta_anywhere/widget/tabs.dart';
+import 'package:ta_anywhere/widget/viewprofile.dart';
 
 class MentorFound extends StatelessWidget {
   const MentorFound({super.key});
@@ -93,7 +93,6 @@ class MentorFound extends StatelessWidget {
           Map<String, dynamic> data =
               snapshot.data!.data() as Map<String, dynamic>;
           mentorID = data['mentorid'];
-          print(mentorID);
           return WillPopScope(
             onWillPop: () async => false,
             child: Scaffold(
@@ -128,13 +127,16 @@ class MentorFound extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        TextButton.icon(
+                        ElevatedButton.icon(
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: ((context) => TabsScreen())));
+                                  builder: ((context) => ViewUserProfileScreen(
+                                        userid: data['mentorid'],
+                                        username: mentorName,
+                                      ))));
                             },
-                            icon: Icon(Icons.home_rounded),
-                            label: mediumLabel('Return Home')),
+                            icon: Icon(Icons.person),
+                            label: Text("View $mentorName's Profile")),
                         ElevatedButton.icon(
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
@@ -144,13 +146,28 @@ class MentorFound extends StatelessWidget {
                             label: Text('Ready QR')),
                       ],
                     ),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    TextButton.icon(
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: ((context) => TabsScreen())));
+                        },
+                        icon: Icon(Icons.home_rounded),
+                        label: mediumLabel('Return Home')),
+                    SizedBox(
+                      height: 60,
+                    ),
                     TextButton(
                       onPressed: () {
                         showDialog(
                             context: context,
                             builder: (context) => AlertDialog(
-                                  title: mediumLabel('Are you sure you want to cancel meet?'),
-                                  content: smallLabel('Note: your query will be reuploaded.'),
+                                  title: mediumLabel(
+                                      'Are you sure you want to cancel meet?'),
+                                  content: smallLabel(
+                                      'Note: your query will be reuploaded.'),
                                   actions: [
                                     MaterialButton(
                                       onPressed: () {
@@ -160,18 +177,17 @@ class MentorFound extends StatelessWidget {
                                     ),
                                     MaterialButton(
                                       onPressed: () {
+                                        reupload(user.uid);
                                         sendPushMessage(
                                             data['mentorToken'],
                                             'Sorry, $mentorName.',
-                                            '${data['mentee']} has chosen to cancel the meet. Sorry for the inconvenience.');
-                                        reupload(user.uid);
+                                            '${data['mentee']} has chosen to cancel the meet. Apologies for the inconvenience.');
                                         Navigator.of(context)
                                             .pushAndRemoveUntil(
-                                          MaterialPageRoute<void>(
-                                            builder: (BuildContext context) =>
-                                                const BrowseScreen(),
-                                          ),
-                                          ModalRoute.withName('/'),
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  TabsScreen()),
+                                          (route) => false,
                                         );
                                       },
                                       child: Text('Yes'),
