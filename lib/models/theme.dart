@@ -65,6 +65,11 @@ ThemeData lightTheme(BuildContext context) {
       unselectedIconTheme:
           IconThemeData(color: Color.fromARGB(255, 198, 248, 244), size: 25),
     ),
+    dialogTheme: DialogTheme(
+      backgroundColor: Color.fromARGB(255, 188, 234, 238),
+      titleTextStyle: TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold,),
+      contentTextStyle: TextStyle(fontSize: 13, color: Colors.black),
+    ),
     canvasColor: const Color.fromARGB(255, 128, 222, 234),
     iconTheme: const IconThemeData(color: textColorLightTheme),
     dividerColor: secondaryColor5LightTheme,

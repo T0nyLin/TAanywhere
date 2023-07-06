@@ -33,13 +33,13 @@ Map<String, dynamic> somedata = {};
 DateTime timenow = DateTime.now();
 
 void deleteQuery(String menteeid) {
-  FirebaseFirestore.instance.collection('user queries').doc(menteeid).delete();
   FirebaseFirestore.instance
       .collection('user queries')
       .doc(menteeid)
-      .collection('mentor Info')
-      .doc(menteeid)
-      .delete();
+      .delete()
+      .then((value) => debugPrint('Query removed after session.'))
+      .catchError((error) => debugPrint('Failed to delete query: $error'));
+  ;
 }
 
 void reupload(String menteeid) async {
@@ -198,6 +198,8 @@ class _CountdownState extends State<Countdown> {
           MaterialButton(
             onPressed: () {
               timer?.cancel();
+              deleteQuery(widget.data['menteeid']);
+              deleteImages(widget.data['image_url']);
               OverlaySupportEntry? dismissButton =
                   OverlaySupportEntry.of(context);
               if (dismissButton != null) {
@@ -308,8 +310,6 @@ class _CountdownState extends State<Countdown> {
               ElevatedButton(
                 onPressed: () {
                   sessionOver();
-                  // deleteQuery(widget.data['menteeid']);
-                  // deleteImages(widget.data['image_url']);
                 },
                 child: const Text('End Session'),
               ),

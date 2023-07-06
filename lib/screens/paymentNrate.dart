@@ -25,23 +25,52 @@ List<String> options = ['Receive Payment'];
 class _PaymentAndRateScreenState extends State<PaymentAndRateScreen> {
   int rater = 0;
   double rating = 0;
+  double newrating = 0;
   final User? user = Auth().currentUser;
 
+  Widget mediumLabel(String data) {
+    return Text(
+      data,
+      style: Theme.of(context).primaryTextTheme.bodyMedium,
+    );
+  }
+
   void updateRating() async {
-    CollectionReference modulesRef =
-        FirebaseFirestore.instance.collection('users');
-    await modulesRef.doc(widget.mentorID).get().then((snapshot) {
-      Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
-      rater = data?['rater'] + 1;
-      rating = data?['rating'] + rating;
-    });
     await FirebaseFirestore.instance
         .collection('users')
         .doc(widget.mentorID)
         .update({
       'rater': rater,
-      'rating': rating,
+      'rating': newrating,
     });
+  }
+
+  Widget getUser(BuildContext context) {
+    CollectionReference userRef =
+        FirebaseFirestore.instance.collection('users');
+    return FutureBuilder<DocumentSnapshot>(
+      future: userRef.doc(user!.uid).get(),
+      builder:
+          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return mediumLabel('Something went wrong');
+        }
+
+        if (snapshot.hasData && !snapshot.data!.exists) {
+          return mediumLabel('Mentor does not exist');
+        }
+
+        if (snapshot.connectionState == ConnectionState.done) {
+          Map<String, dynamic> data =
+              snapshot.data!.data() as Map<String, dynamic>;
+          rater = data['rater'] + 1;
+          newrating = data['rating'] + rating;
+          return Container();
+        }
+
+        return Container();
+      },
+    );
   }
 
   @override
@@ -49,7 +78,6 @@ class _PaymentAndRateScreenState extends State<PaymentAndRateScreen> {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
-        appBar: AppBar(),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -72,9 +100,11 @@ class _PaymentAndRateScreenState extends State<PaymentAndRateScreen> {
                 'Rate your mentor: $rating',
                 style: Theme.of(context).primaryTextTheme.bodyLarge,
               ),
+              getUser(context),
               if (widget.title.contains('Free'))
                 ElevatedButton.icon(
                     onPressed: () {
+                      updateRating();
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(builder: (context) => TabsScreen()),
                         (route) => false,
@@ -86,9 +116,12 @@ class _PaymentAndRateScreenState extends State<PaymentAndRateScreen> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      'Please pay your mentor via PayLah! or other payment applications. Thank You.',
-                      style: Theme.of(context).primaryTextTheme.bodyMedium,
+                    Center(
+                      child: Text(
+                        'Please pay your mentor via PayLah! or other payment applications. Thank You.',
+                        style: Theme.of(context).primaryTextTheme.bodyMedium,
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                     ElevatedButton.icon(
                         onPressed: () async {
@@ -111,7 +144,7 @@ class _PaymentAndRateScreenState extends State<PaymentAndRateScreen> {
                             );
                         },
                         icon: Icon(Icons.home_rounded),
-                        label: Text('Open App')),
+                        label: Text('Submit &\nOpen App')),
                   ],
                 ),
             ],

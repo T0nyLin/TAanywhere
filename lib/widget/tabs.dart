@@ -325,6 +325,21 @@ class _TabsScreenState extends State<TabsScreen> {
                 },
                 child: const Text('Noted'),
               ),
+            if (notification.title!.startsWith('Sorry'))
+              MaterialButton(
+                onPressed: () {
+                  OverlaySupportEntry? dismissButton =
+                      OverlaySupportEntry.of(context);
+                  if (dismissButton != null) {
+                    dismissButton.dismiss();
+                  }
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => TabsScreen()),
+                    (route) => false,
+                  );
+                },
+                child: const Text('Dismiss'),
+              ),
             if (notification.title!.startsWith("Time's up!"))
               MaterialButton(
                 onPressed: () {
@@ -370,7 +385,7 @@ class _TabsScreenState extends State<TabsScreen> {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => PaymentAndRateScreen(
                             title: notification.title.toString(),
-                            mentorID: notification.body.toString(),
+                            mentorID: notification.body!,
                           )));
                 },
                 child: const Text('Proceed to payment & rate'),
@@ -386,7 +401,7 @@ class _TabsScreenState extends State<TabsScreen> {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => PaymentAndRateScreen(
                             title: notification.title.toString(),
-                            mentorID: notification.body.toString(),
+                            mentorID: notification.body!,
                           )));
                 },
                 child: const Text('Proceed to rate'),

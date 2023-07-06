@@ -20,6 +20,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final User? user = Auth().currentUser;
   final _modController = TextEditingController();
+  double avg = 0;
 
   Future<void> signOut() async {
     await Auth().signOut();
@@ -118,7 +119,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         },
       );
     }
-    double avg = rating / rater;
+
+    avg = rating / rater;
     return RatingBar(
       ratingWidget: RatingWidget(
         full: Icon(
@@ -610,6 +612,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               modules_help = [];
             }
 
+            avg = data!['rating'] / data['rater'];
+
             return Scrollbar(
                 child: SingleChildScrollView(
               child: Column(
@@ -643,7 +647,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 20.0, 20.0, 16.0, 9.0),
                             child: Column(
                               children: [
-                                (data!['rater'] == 0 || data['rater'] == 1)
+                                (data['rater'] == 0 || data['rater'] == 1)
                                     ? Text(
                                         '${data['rater']} RATING',
                                         style: TextStyle(
@@ -658,7 +662,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       ),
                                 Center(
                                   child: Text(
-                                    '${data['rating']}',
+                                    '${avg.toStringAsFixed(1)}',
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 25,

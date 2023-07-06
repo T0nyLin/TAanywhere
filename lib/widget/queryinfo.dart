@@ -186,7 +186,6 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
   Widget getUser() {
     String token = widget.data['token'];
     String mentorUsername = '';
-    String mentorGender = '';
     CollectionReference mentor = FirebaseFirestore.instance.collection('users');
     return FutureBuilder<DocumentSnapshot>(
       future: mentor.doc(user!.uid).get(),
@@ -204,7 +203,6 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
           Map<String, dynamic> data =
               snapshot.data!.data() as Map<String, dynamic>;
           mentorUsername = data['username'];
-          mentorGender = data['gender'];
           return ElevatedButton.icon(
             onPressed: () {
               sendPushMessage(token, 'Congrats, ${widget.data['mentee']}!',

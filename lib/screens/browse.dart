@@ -254,16 +254,6 @@ class _BrowseScreenState extends State<BrowseScreen> {
                                   debugPrint('Purged data after 60min'))
                               .catchError((error) =>
                                   debugPrint('Failed to delete query: $error'));
-                          queries
-                              .doc(queriesSnapshots.data!.docs[index].id
-                                  .toString())
-                              .collection('mentor Info')
-                              .doc(queriesSnapshots.data!.docs[index].id)
-                              .delete()
-                              .then((value) =>
-                                  debugPrint('Purged data after 60min'))
-                              .catchError((error) =>
-                                  debugPrint('Failed to delete query: $error'));
                           deleteImages(data['image_url']); //del image in FirebaseStorage too
                         }
                         if (code.trim().isEmpty) {
