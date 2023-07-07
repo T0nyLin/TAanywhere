@@ -11,7 +11,6 @@ import 'package:ta_anywhere/components/reupload_del.dart';
 import 'package:ta_anywhere/components/sendPushMessage.dart';
 import 'package:ta_anywhere/screens/editnreupload.dart';
 import 'package:ta_anywhere/widget/countdown.dart';
-import 'package:ta_anywhere/widget/tabs.dart';
 import 'package:ta_anywhere/widget/viewprofile.dart';
 
 class QueryInfoScreen extends StatefulWidget {
@@ -147,10 +146,6 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
                     ..showSnackBar(SnackBar(
                       content: Text('Query removed successfully'),
                     ));
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => TabsScreen()),
-                    (route) => false,
-                  );
                 },
                 icon: Icon(
                   Icons.delete_rounded,
@@ -251,7 +246,8 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
 
     return Stack(
       children: [
-        if (user!.uid == widget.data['menteeid'])
+        if (user!.uid == widget.data['menteeid'] &&
+            widget.data['inSession'] == false)
           Positioned(
             top: 10,
             right: 35,
@@ -299,32 +295,32 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
                   ),
                 ),
               ),
-              Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: ((context) => ViewUserProfileScreen(
-                                  userid: widget.data['menteeid'],
-                                  username: mentorUsername,
-                                ))));
-                      },
-                      child: Text(
-                        '${widget.data['mentee']}:',
-                        style: Theme.of(context).primaryTextTheme.bodyLarge,
-                      ),
+              Row(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: ((context) => ViewUserProfileScreen(
+                                userid: widget.data['menteeid'],
+                                username: mentorUsername,
+                              ))));
+                    },
+                    child: Text(
+                      '${widget.data['mentee']}:',
+                      style: Theme.of(context).primaryTextTheme.bodyLarge!,
                     ),
-                    Expanded(
-                      child: Text(
-                        widget.data['query'],
-                        style: Theme.of(context).primaryTextTheme.bodyLarge,
-                        maxLines: 3,
-                      ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      widget.data['query'],
+                      style: Theme.of(context)
+                          .primaryTextTheme
+                          .bodyLarge!
+                          .copyWith(fontWeight: FontWeight.normal),
+                      maxLines: 3,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
               TextButton.icon(
                 icon: const Icon(Icons.location_on_rounded),
@@ -368,6 +364,9 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
                 height: 80,
               ),
               if (user!.uid != widget.data['menteeid']) getUser(),
+              if (user!.uid != widget.data['menteeid'])
+                smallLabel(
+                    '*Before accepting, please ensure that you can reach the destination in 10 minutes.'),
             ],
           ),
         ),

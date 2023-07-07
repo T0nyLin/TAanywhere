@@ -157,6 +157,11 @@ class MentorFound extends StatelessWidget {
                 TextButton(
                   onPressed: () {
                     cancelAlert(data);
+                    ScaffoldMessenger.of(context)
+                    ..removeCurrentSnackBar()
+                    ..showSnackBar(SnackBar(
+                      content: Text('Meet cancelled'),
+                    ));
                   },
                   child: Text('Cancel Meet'),
                 ),

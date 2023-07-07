@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+
 import 'package:ta_anywhere/components/auth.dart';
+import 'package:ta_anywhere/components/queryTile.dart';
 import 'package:ta_anywhere/screens/setting.dart';
 import 'package:ta_anywhere/widget/qr_code.dart';
 import 'package:ta_anywhere/widget/widget_tree.dart';
 import 'package:ta_anywhere/components/modulecode.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class ProfileScreen extends StatefulWidget {
   ProfileScreen({Key? key}) : super(key: key);
@@ -400,11 +402,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       children: [
         Text(
           'My Modules this Sem:',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
+          style: Theme.of(context).primaryTextTheme.bodyLarge,
         ),
         const SizedBox(width: 10),
         ElevatedButton(
@@ -492,11 +490,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       children: [
         Text(
           'Modules I can help with:',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
+          style: Theme.of(context).primaryTextTheme.bodyLarge,
         ),
         const SizedBox(width: 10),
         ElevatedButton(
@@ -581,6 +575,55 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Widget mediumLabel(String data) {
+    return Text(
+      data,
+      style: Theme.of(context).primaryTextTheme.bodyMedium,
+      textAlign: TextAlign.center,
+    );
+  }
+
+  Widget getQuery(BuildContext context) {
+    return StreamBuilder<DocumentSnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('user queries')
+            .doc(user!.uid)
+            .snapshots(),
+        builder: (ctx, usersnapshot) {
+          if (usersnapshot.connectionState == ConnectionState.waiting) {
+            return Container();
+          }
+          if (!usersnapshot.hasData || !usersnapshot.data!.exists) {
+            return Container();
+          }
+          if (usersnapshot.hasError) {
+            return const Center(
+              child: Text('Something went wrong...'),
+            );
+          }
+          var data2 = usersnapshot.data!.data() as Map<String, dynamic>;
+          var lifetime = lifetimeconversion(data2['lifetime']);
+
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  'My upload:',
+                  style: Theme.of(context).primaryTextTheme.bodyLarge,
+                ),
+                Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(width: 1, color: Colors.black26),
+                        borderRadius: BorderRadius.circular(8)),
+                    child: itemTile(context, data2, lifetime)),
+              ],
+            ),
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     // Get the user's ID
@@ -630,11 +673,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 16.0, 40.0, 16.0, 8.0),
                             child: Text(
                               'Mentor Rank:',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
+                              style:
+                                  Theme.of(context).primaryTextTheme.bodyLarge,
                             ),
                           ),
                           Padding(
@@ -729,6 +769,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ],
                     ),
                   ),
+                  getQuery(context),
                 ],
               ),
             ));

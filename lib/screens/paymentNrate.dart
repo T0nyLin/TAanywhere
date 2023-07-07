@@ -49,7 +49,7 @@ class _PaymentAndRateScreenState extends State<PaymentAndRateScreen> {
     CollectionReference userRef =
         FirebaseFirestore.instance.collection('users');
     return FutureBuilder<DocumentSnapshot>(
-      future: userRef.doc(user!.uid).get(),
+      future: userRef.doc(widget.mentorID).get(),
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (snapshot.hasError) {
