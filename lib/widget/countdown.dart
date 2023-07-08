@@ -9,6 +9,7 @@ import 'package:ta_anywhere/components/auth.dart';
 import 'package:ta_anywhere/components/reupload_del.dart';
 import 'package:ta_anywhere/components/sendPushMessage.dart';
 import 'package:ta_anywhere/screens/mentorSelectPayment.dart';
+import 'package:ta_anywhere/widget/mentormap.dart';
 import 'package:ta_anywhere/widget/qr_scanner.dart';
 import 'package:ta_anywhere/widget/viewprofile.dart';
 
@@ -298,7 +299,14 @@ class _CountdownState extends State<Countdown> {
               TextButton.icon(
                 icon: const Icon(Icons.location_on_rounded),
                 label: mediumLabel(widget.data['location']),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: ((context) => MentorMapScreen(
+                        username: widget.data['mentee'],
+                        x_coordinate: widget.data['x-coordinate'],
+                        y_coordinate: widget.data['y-coordinate'],
+                      ))));
+                },
               ),
             if (isRunning && (widget.time == 60 || widget.time == 30))
               ElevatedButton(

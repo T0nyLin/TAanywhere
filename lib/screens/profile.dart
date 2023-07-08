@@ -409,7 +409,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           onPressed: () {
             _showAddModuleDialog(context);
           },
-          child: const Text('Add Module'),
+          child: Icon(Icons.add),
         ),
       ],
     );
@@ -497,7 +497,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           onPressed: () {
             _showAddModuleDialogHelp(context);
           },
-          child: const Text('Add Module'),
+          child: Icon(Icons.add),
         ),
       ],
     );
