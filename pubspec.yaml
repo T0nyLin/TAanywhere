@@ -47,6 +47,7 @@ dependencies:
   overlay_support: ^2.1.0
   flutter_spinkit: ^5.2.0
   external_app_launcher: ^3.1.0
+  flutter_polyline_points: ^1.0.0
 
   #camera/image
   camera: ^0.10.5+1
