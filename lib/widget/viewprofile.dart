@@ -245,7 +245,9 @@ class _ViewUserProfileScreenState extends State<ViewUserProfileScreen> {
             if (modules_help == null) {
               modules_help = [];
             }
-            avg = data['rating'] / data['rater'];
+            data['rater'] == 0
+                ? avg = 0
+                : avg = data['rating'] / data['rater'];
 
             return Scrollbar(
               child: SingleChildScrollView(

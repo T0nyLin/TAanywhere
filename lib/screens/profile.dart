@@ -271,6 +271,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                   // Update the list of modules in Firestore for the user
                   modulesRef.doc(userId).update({'modules': modules});
+                  _modController.text = '';
                 });
 
                 Navigator.of(context).pop();
@@ -406,10 +407,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         const SizedBox(width: 10),
         IconButton(
-            onPressed: () {
-              _showAddModuleDialog(context);
-            },
-            icon: Icon(Icons.add))
+          onPressed: () {
+            _showAddModuleDialog(context);
+          },
+          icon: Icon(Icons.add_circle_rounded),
+          color: Color.fromARGB(255, 92, 169, 179),
+          iconSize: 40,
+        )
       ],
     );
   }
@@ -496,7 +500,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           onPressed: () {
             _showAddModuleDialogHelp(context);
           },
-          icon: Icon(Icons.add),
+          icon: Icon(Icons.add_circle_rounded),
+          color: Color.fromARGB(255, 92, 169, 179),
+          iconSize: 40,
         )
       ],
     );
@@ -654,7 +660,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               modules_help = [];
             }
 
-            avg = data!['rating'] / data['rater'];
+            data!['rater'] == 0
+                ? avg = 0
+                : avg = data['rating'] / data['rater'];
 
             return Scrollbar(
                 child: SingleChildScrollView(
