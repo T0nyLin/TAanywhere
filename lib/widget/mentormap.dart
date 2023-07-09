@@ -1,8 +1,9 @@
 import 'dart:async';
-import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class MentorMapScreen extends StatefulWidget {
   const MentorMapScreen({super.key, required this.username, required this.x_coordinate, required this.y_coordinate});
@@ -25,15 +26,8 @@ class _MentorMapScreenState extends State<MentorMapScreen> {
   );
  
   // on below line we have created the list of markers
-  final List<Marker> _markers = <Marker>[
-    Marker(
-        markerId: MarkerId('1'),
-        position: LatLng(1.2971365,103.7775268),
-        infoWindow: InfoWindow(
-          title: "Test",
-        )
-      ),
-  ];
+  final Set<Marker> _markers = {};
+  final Set<Polyline> _polylines = {};
  
   // created method for getting user current location
   Future<Position> getUserCurrentLocation() async {
@@ -43,6 +37,35 @@ class _MentorMapScreenState extends State<MentorMapScreen> {
       debugPrint("ERROR${error.toString()}");
     });
     return await Geolocator.getCurrentPosition();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    final mentorMarker = Marker(
+      markerId: MarkerId('1'),
+      position: LatLng(widget.y_coordinate, widget.x_coordinate),
+      infoWindow: InfoWindow(
+        title: "Mentee",
+      ),
+    );
+    _markers.add(mentorMarker);
+
+    getUserCurrentLocation().then((userLocation) {
+      final polyline = Polyline(
+        polylineId: PolylineId('route'),
+        color: Colors.blue,
+        points: [
+          LatLng(userLocation.latitude, userLocation.longitude), // Start point (user's current location)
+          LatLng(widget.y_coordinate, widget.x_coordinate), // End point (mentee's position)
+        ],
+      );
+
+      setState(() {
+        _polylines.add(polyline);
+      });
+    });
   }
  
   @override
@@ -59,7 +82,8 @@ class _MentorMapScreenState extends State<MentorMapScreen> {
             // on below line setting camera position
             initialCameraPosition: _kGoogle,
             // on below line we are setting markers on the map
-            markers: Set<Marker>.of(_markers),
+            markers: _markers,
+            polylines: _polylines,
             // on below line specifying map type.
             mapType: MapType.normal,
             // on below line setting user location enabled.
