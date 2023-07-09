@@ -405,12 +405,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           style: Theme.of(context).primaryTextTheme.bodyLarge,
         ),
         const SizedBox(width: 10),
-        ElevatedButton(
-          onPressed: () {
-            _showAddModuleDialog(context);
-          },
-          child: Icon(Icons.add),
-        ),
+        IconButton(
+            onPressed: () {
+              _showAddModuleDialog(context);
+            },
+            icon: Icon(Icons.add))
       ],
     );
   }
@@ -493,12 +492,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           style: Theme.of(context).primaryTextTheme.bodyLarge,
         ),
         const SizedBox(width: 10),
-        ElevatedButton(
+        IconButton(
           onPressed: () {
             _showAddModuleDialogHelp(context);
           },
-          child: Icon(Icons.add),
-        ),
+          icon: Icon(Icons.add),
+        )
       ],
     );
   }
