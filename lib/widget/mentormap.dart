@@ -22,7 +22,7 @@ class _MentorMapScreenState extends State<MentorMapScreen> {
   // on below line we have specified camera position
   static const CameraPosition _kGoogle = CameraPosition(
     target: LatLng(1.2971365,103.7775268),
-    zoom: 7,
+    zoom: 20,
   );
  
   // on below line we have created the list of markers
