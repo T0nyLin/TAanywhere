@@ -404,7 +404,6 @@ class _TabsScreenState extends State<TabsScreen> {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => PaymentAndRateScreen(
                             title: notification.title.toString(),
-                            mentorID: notification.body!,
                           )));
                 },
                 child: const Text('Proceed to payment & rate'),
@@ -420,7 +419,6 @@ class _TabsScreenState extends State<TabsScreen> {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => PaymentAndRateScreen(
                             title: notification.title.toString(),
-                            mentorID: notification.body!,
                           )));
                 },
                 child: const Text('Proceed to rate'),
