@@ -18,7 +18,7 @@ class CameraScreen extends StatefulWidget {
 class _CameraScreenState extends State<CameraScreen> {
   late CameraController _cameraController;
   late Future<void> cameraValue;
-  bool flash = false;
+  FlashMode flashMode = FlashMode.off;
   bool isCameraFront = true;
   double transform = 0;
   XFile? imageFile;
@@ -40,6 +40,7 @@ class _CameraScreenState extends State<CameraScreen> {
   void _cropImage(filePath) async {
     CroppedFile? croppedImage = await ImageCropper()
         .cropImage(sourcePath: filePath, maxHeight: 1080, maxWidth: 1080);
+    ImageCropper.platform;
 
     if (croppedImage != null) {
       imageFile = XFile(croppedImage.path);
@@ -100,7 +101,6 @@ class _CameraScreenState extends State<CameraScreen> {
                   Padding(
                     padding: const EdgeInsets.only(top: 48),
                     child: Row(
-                      // mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         IconButton(
@@ -145,16 +145,19 @@ class _CameraScreenState extends State<CameraScreen> {
                       IconButton(
                         onPressed: () {
                           setState(() {
-                            flash = !flash;
+                            if (flashMode == FlashMode.off) {
+                              _cameraController.setFlashMode(FlashMode.always);
+                              flashMode = FlashMode.always;
+                            } else {
+                              _cameraController.setFlashMode(FlashMode.off);
+                              flashMode = FlashMode.off;
+                            }
                           });
-                          flash
-                              ? _cameraController.setFlashMode(FlashMode.always)
-                              : _cameraController.setFlashMode(FlashMode.off);
                         },
                         icon: Icon(
-                          flash
-                              ? Icons.flash_on_outlined
-                              : Icons.flash_off_outlined,
+                          flashMode == FlashMode.off
+                              ? Icons.flash_off_outlined
+                              : Icons.flash_on_outlined,
                           color: Colors.white,
                           size: 30,
                         ),
