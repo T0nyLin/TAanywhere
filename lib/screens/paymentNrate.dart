@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:external_app_launcher/external_app_launcher.dart';
 import 'package:ta_anywhere/components/auth.dart';
+import 'package:ta_anywhere/components/reupload_del.dart';
 
 import 'package:ta_anywhere/widget/tabs.dart';
 
@@ -33,16 +34,6 @@ class _PaymentAndRateScreenState extends State<PaymentAndRateScreen> {
       data,
       style: Theme.of(context).primaryTextTheme.bodyMedium,
     );
-  }
-
-  void updateRating() async {
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.mentorID)
-        .update({
-      'rater': rater,
-      'rating': newrating,
-    });
   }
 
   Widget getUser(BuildContext context) {
@@ -104,7 +95,7 @@ class _PaymentAndRateScreenState extends State<PaymentAndRateScreen> {
               if (widget.title.contains('Free'))
                 ElevatedButton.icon(
                     onPressed: () {
-                      updateRating();
+                      updateRating(widget.mentorID, rater, newrating);
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(builder: (context) => TabsScreen()),
                         (route) => false,
@@ -125,7 +116,7 @@ class _PaymentAndRateScreenState extends State<PaymentAndRateScreen> {
                     ),
                     ElevatedButton.icon(
                         onPressed: () async {
-                          updateRating();
+                          updateRating(widget.mentorID, rater, newrating);
                           Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(
                                 builder: (context) => TabsScreen()),
