@@ -784,7 +784,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             return Text('Error: ${snapshot.error}');
           } else {
             return Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(
+                color: Color.fromARGB(255, 48, 97, 104),
+              ),
             );
           }
         },

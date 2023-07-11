@@ -24,21 +24,25 @@ class SettingScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-              "Settings",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-            ),
+          "Settings",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(8.0),
         children: [
           ListTile(
-            title: ElevatedButton(
-              onPressed: () => _navigateToEditProfile(context),
-              child: Text("Edit Profile"),
-            ),
+            title: Text("Edit Profile"),
+            leading: Icon(Icons.person_outline_rounded),
+            onTap: () {
+              _navigateToEditProfile(context);
+            },
+            trailing: Icon(Icons.arrow_forward_ios),
           ),
           ListTile(
             title: Text("Change Password"),
+            leading: Icon(Icons.edit),
+            trailing: Icon(Icons.arrow_forward_ios),
           ),
           Divider(
             color: Colors.black,
@@ -48,12 +52,17 @@ class SettingScreen extends StatelessWidget {
               "Help and Support",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
+            trailing: Icon(Icons.arrow_forward_ios),
           ),
           ListTile(
             title: Text("FAQ"),
+            leading: Icon(Icons.question_mark_rounded),
+            trailing: Icon(Icons.arrow_forward_ios),
           ),
           ListTile(
             title: Text("Contact us"),
+            leading: Icon(Icons.phone_iphone_rounded),
+            trailing: Icon(Icons.arrow_forward_ios),
           ),
           Divider(
             color: Colors.black,
