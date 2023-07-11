@@ -19,7 +19,7 @@ ThemeData lightTheme(BuildContext context) {
         shadows: <Shadow>[
           Shadow(
             color: Color.fromARGB(255, 39, 68, 72),
-            blurRadius: 2.0,
+            // blurRadius: 2.0,
           ),
         ],
       ),

@@ -46,3 +46,12 @@ void reupload(String menteeid) async {
       .catchError((error) => debugPrint('Failed to reupload: $error'));
   ;
 }
+void updateRating(String mentorID, int rater, double newrating) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(mentorID)
+        .update({
+      'rater': rater,
+      'rating': newrating,
+    });
+  }

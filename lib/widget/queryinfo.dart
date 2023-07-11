@@ -245,7 +245,19 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
     var posted = _lifetimeconversion(widget.data);
 
     return Stack(
+      alignment: AlignmentDirectional.topCenter,
+      clipBehavior: Clip.none,
       children: [
+        Positioned(
+          child: Container(
+            width: 60,
+            height: 7,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5),
+              color: Colors.white54,
+            ),
+          ),
+        ),
         if (user!.uid == widget.data['menteeid'] &&
             widget.data['inSession'] == false)
           Positioned(

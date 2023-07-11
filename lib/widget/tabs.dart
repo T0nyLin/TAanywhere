@@ -34,6 +34,8 @@ class _TabsScreenState extends State<TabsScreen> {
   Offset offset = const Offset(20, 60);
   final User? user = Auth().currentUser;
   String? myToken = '';
+  bool _visible = true;
+  bool _isShowNoti = false;
 
   void _selectpage(int index) {
     setState(() {
@@ -79,6 +81,14 @@ class _TabsScreenState extends State<TabsScreen> {
     requestPermission();
     super.initState();
     getToken();
+    Future.delayed(const Duration(minutes: 10), () {
+      if (this.mounted) {
+        setState(() {
+          _visible = false;
+        });
+      }
+      ;
+    });
   }
 
   void displose() {
@@ -117,6 +127,7 @@ class _TabsScreenState extends State<TabsScreen> {
   }
 
   void _showNoti() {
+    _isShowNoti = true;
     entry = OverlayEntry(
       builder: (context) => Positioned(
         left: offset.dx,
@@ -126,44 +137,49 @@ class _TabsScreenState extends State<TabsScreen> {
             offset += details.delta;
             entry!.markNeedsBuild();
           },
-          child: IconButton(
-            iconSize: 40,
-            color: const Color.fromARGB(255, 194, 68, 51),
-            onPressed: () {
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: Center(
-                        child: Text(
-                          _notificationInfo!.title!,
-                          style: Theme.of(context).primaryTextTheme.bodyLarge,
+          child: Visibility(
+            visible: _visible,
+            child: IconButton(
+              iconSize: 40,
+              color: const Color.fromARGB(255, 194, 68, 51),
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Center(
+                          child: Text(
+                            _notificationInfo!.title!,
+                            style: Theme.of(context).primaryTextTheme.bodyLarge,
+                          ),
                         ),
-                      ),
-                      content: Text(_notificationInfo!.body!),
-                      actions: [
-                        MaterialButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            entry?.remove();
-                            _showNoti();
-                          },
-                          child: const Text('Dismiss'),
-                        ),
-                        MaterialButton(
-                          onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => MentorFound()));
-                          },
-                          child: const Text('Go'),
-                        ),
-                      ],
-                    );
-                  });
-              entry?.remove();
-              entry = null;
-            },
-            icon: const Icon(Icons.notifications_active_sharp),
+                        content: Text(_notificationInfo!.body!),
+                        actions: [
+                          MaterialButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              entry?.remove();
+                              _showNoti();
+                              _isShowNoti = false;
+                            },
+                            child: const Text('Dismiss'),
+                          ),
+                          MaterialButton(
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => MentorFound()));
+                              _isShowNoti = false;
+                            },
+                            child: const Text('Go'),
+                          ),
+                        ],
+                      );
+                    });
+                entry?.remove();
+                entry = null;
+              },
+              icon: const Icon(Icons.notifications_active_sharp),
+            ),
           ),
         ),
       ),
@@ -255,7 +271,9 @@ class _TabsScreenState extends State<TabsScreen> {
                   if (dismissButton != null) {
                     dismissButton.dismiss();
                   }
-                  _showNoti();
+                  if (_isShowNoti == false) {
+                    _showNoti();
+                  }
                 },
                 child: const Text('Dismiss'),
               ),

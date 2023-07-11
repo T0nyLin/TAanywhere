@@ -177,8 +177,8 @@ class _CountdownState extends State<Countdown> {
           MaterialButton(
             onPressed: () {
               timer?.cancel();
-              deleteQuery(widget.data['menteeid']);
-              deleteImages(widget.data['image_url']);
+              // deleteQuery(widget.data['menteeid']);
+              // deleteImages(widget.data['image_url']);
               OverlaySupportEntry? dismissButton =
                   OverlaySupportEntry.of(context);
               if (dismissButton != null) {

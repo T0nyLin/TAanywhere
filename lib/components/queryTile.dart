@@ -99,8 +99,6 @@ Widget itemTile(BuildContext context, Map<String, dynamic> data, int posted) {
 void showAModalBottomSheet(BuildContext context, Map<String, dynamic> data) {
   showModalBottomSheet(
     isDismissible: true,
-    showDragHandle: true,
-    enableDrag: true,
     backgroundColor: const Color.fromARGB(255, 165, 228, 234),
     context: context,
     isScrollControlled: true,
