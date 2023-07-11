@@ -48,10 +48,8 @@ class _MentorSelectReceiveModeScreenState
               snapshot.data!.data() as Map<String, dynamic>;
           return ElevatedButton.icon(
             onPressed: () {
-              sendPushMessage(
-                  widget.data['token'],
-                  'Well Done! Session over! ${data['username']} has chosen: $currentOption.',
-                  user!.uid.toString());
+              sendPushMessage(widget.data['token'], 'Well Done! Session over!',
+                  '${data['username']} has chosen: $currentOption.');
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => TabsScreen()),
                 (route) => false,

@@ -6,7 +6,6 @@ import 'package:overlay_support/overlay_support.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'package:ta_anywhere/components/auth.dart';
-import 'package:ta_anywhere/components/reupload_del.dart';
 import 'package:ta_anywhere/components/sendPushMessage.dart';
 import 'package:ta_anywhere/screens/mentorSelectPayment.dart';
 import 'package:ta_anywhere/widget/mentormap.dart';
