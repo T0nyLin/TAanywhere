@@ -74,25 +74,6 @@ class _QRScanState extends State<QRScan> {
                     maxLines: 1,
                     style: Theme.of(context).primaryTextTheme.bodySmall,
                   ),
-            TextButton(
-                onPressed: () {
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(
-                      builder: (ctx) => Countdown(
-                        time: 1,
-                        data: widget.data,
-                      ),
-                    ),
-                    (route) => false,
-                  );
-                },
-                child: Text(
-                  'Next',
-                  style: Theme.of(context)
-                      .primaryTextTheme
-                      .bodyMedium!
-                      .copyWith(color: Colors.white),
-                )),
           ],
         ),
       );
@@ -114,7 +95,7 @@ class _QRScanState extends State<QRScan> {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (ctx) => Countdown(
-                      time: 1,
+                      time: 60,
                       data: widget.data,
                     ),
                   ),

@@ -22,6 +22,7 @@ class PickLocation extends StatefulWidget {
 class _PickLocationState extends State<PickLocation> {
   PlaceLocation? _pickedLocation;
   var _isGettingLocation = false;
+  Location location = Location();
 
   String get locationImage {
     if (_pickedLocation == null) {
@@ -51,12 +52,15 @@ class _PickLocationState extends State<PickLocation> {
     widget.onSelectLocation(_pickedLocation!);
   }
 
-  void _getCurrentLocation() async {
-    Location location = Location();
+  @override
+  void initState() {
+    super.initState();
+    requestLocation();
+  }
 
+  void requestLocation() async {
     bool serviceEnabled;
     PermissionStatus permissionGranted;
-    LocationData locationData;
 
     serviceEnabled = await location.serviceEnabled();
     if (!serviceEnabled) {
@@ -73,6 +77,11 @@ class _PickLocationState extends State<PickLocation> {
         return;
       }
     }
+  }
+
+  void _getCurrentLocation() async {
+    LocationData locationData;
+
     setState(() {
       _isGettingLocation = true;
     });
