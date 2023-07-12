@@ -91,11 +91,6 @@ class _TabsScreenState extends State<TabsScreen> {
     });
   }
 
-  void displose() {
-    _showNoti();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,7 +122,6 @@ class _TabsScreenState extends State<TabsScreen> {
   }
 
   void _showNoti() {
-    _isShowNoti = true;
     entry = OverlayEntry(
       builder: (context) => Positioned(
         left: offset.dx,
@@ -159,8 +153,9 @@ class _TabsScreenState extends State<TabsScreen> {
                             onPressed: () {
                               Navigator.pop(context);
                               entry?.remove();
-                              _showNoti();
-                              _isShowNoti = false;
+                              if (_isShowNoti == true) {
+                                _showNoti();
+                              }
                             },
                             child: const Text('Dismiss'),
                           ),
@@ -168,7 +163,9 @@ class _TabsScreenState extends State<TabsScreen> {
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) => MentorFound()));
-                              _isShowNoti = false;
+                              setState(() {
+                                _isShowNoti = !_isShowNoti;
+                              });
                             },
                             child: const Text('Go'),
                           ),
@@ -272,6 +269,9 @@ class _TabsScreenState extends State<TabsScreen> {
                   if (_isShowNoti == false) {
                     _showNoti();
                   }
+                  setState(() {
+                    _isShowNoti = !_isShowNoti;
+                  });
                 },
                 child: const Text('Dismiss'),
               ),
@@ -283,11 +283,11 @@ class _TabsScreenState extends State<TabsScreen> {
                   if (dismissButton != null) {
                     dismissButton.dismiss();
                   }
-                  if (_isShowNoti == false) {
-                    _showNoti();
-                  }
                   Navigator.of(context).push(
                       MaterialPageRoute(builder: (context) => MentorFound()));
+                  setState(() {
+                    _isShowNoti = true;
+                  });
                 },
                 child: const Text('Go'),
               ),
@@ -359,6 +359,21 @@ class _TabsScreenState extends State<TabsScreen> {
                   );
                 },
                 child: const Text('Dismiss'),
+              ),
+            if (notification.title! == ('Verified!'))
+              MaterialButton(
+                onPressed: () {
+                  OverlaySupportEntry? dismissButton =
+                      OverlaySupportEntry.of(context);
+                  if (dismissButton != null) {
+                    dismissButton.dismiss();
+                  }
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => TabsScreen()),
+                    (route) => false,
+                  );
+                },
+                child: const Text('Noted'),
               ),
             if (notification.title!.startsWith("Time's up!"))
               MaterialButton(

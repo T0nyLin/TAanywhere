@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:ta_anywhere/components/sendPushMessage.dart';
 import 'package:ta_anywhere/widget/countdown.dart';
 
 class QRScan extends StatefulWidget {
@@ -74,25 +75,6 @@ class _QRScanState extends State<QRScan> {
                     maxLines: 1,
                     style: Theme.of(context).primaryTextTheme.bodySmall,
                   ),
-            TextButton(
-                onPressed: () {
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(
-                      builder: (ctx) => Countdown(
-                        time: 1,
-                        data: widget.data,
-                      ),
-                    ),
-                    (route) => false,
-                  );
-                },
-                child: Text(
-                  'Next',
-                  style: Theme.of(context)
-                      .primaryTextTheme
-                      .bodyMedium!
-                      .copyWith(color: Colors.white),
-                )),
           ],
         ),
       );
@@ -111,10 +93,12 @@ class _QRScanState extends State<QRScan> {
           ),
           TextButton(
               onPressed: () {
+                sendPushMessage(widget.data['token'], 'Verified!',
+                    'This is to notify that mentor has verified you. Session will begin now.');
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (ctx) => Countdown(
-                      time: 1,
+                      time: 60,
                       data: widget.data,
                     ),
                   ),

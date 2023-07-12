@@ -41,7 +41,10 @@ class MentorFound extends StatelessWidget {
       showDialog(
           context: context,
           builder: (context) => AlertDialog(
-                title: mediumLabel('Are you sure you want to cancel meet?'),
+                title: Text(
+                  'Are you sure you want to cancel meet?',
+                  style: Theme.of(context).primaryTextTheme.bodyLarge,
+                ),
                 content: smallLabel('Note: your query will be reuploaded.'),
                 actions: [
                   MaterialButton(
@@ -158,10 +161,10 @@ class MentorFound extends StatelessWidget {
                   onPressed: () {
                     cancelAlert(data);
                     ScaffoldMessenger.of(context)
-                    ..removeCurrentSnackBar()
-                    ..showSnackBar(SnackBar(
-                      content: Text('Meet cancelled'),
-                    ));
+                      ..removeCurrentSnackBar()
+                      ..showSnackBar(SnackBar(
+                        content: Text('Meet cancelled'),
+                      ));
                   },
                   child: Text('Cancel Meet'),
                 ),

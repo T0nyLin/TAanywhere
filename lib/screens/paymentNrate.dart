@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +54,7 @@ class _PaymentAndRateScreenState extends State<PaymentAndRateScreen> {
               snapshot.data!.data() as Map<String, dynamic>;
           mentorID = data['mentorid'];
           image_url = data['image_url'];
-          return Container();
+          return getUser(context, mentorID);
         }
         return Container();
       },
@@ -119,11 +117,12 @@ class _PaymentAndRateScreenState extends State<PaymentAndRateScreen> {
                 style: Theme.of(context).primaryTextTheme.bodyLarge,
               ),
               getQuery(context),
-              getUser(context, mentorID),
               if (widget.body.contains('Free'))
                 ElevatedButton.icon(
                     onPressed: () {
                       updateRating(mentorID, rater, newrating);
+                      deleteQuery(user!.uid);
+                      deleteImages(image_url);
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(builder: (context) => TabsScreen()),
                         (route) => false,
@@ -152,17 +151,12 @@ class _PaymentAndRateScreenState extends State<PaymentAndRateScreen> {
                                 builder: (context) => TabsScreen()),
                             (route) => false,
                           );
-                          if (Platform.isIOS)
-                            await LaunchApp.openApp(
-                              appStoreLink:
-                                  'https://apps.apple.com/sg/app/dbs-paylah/id878528688',
-                              iosUrlScheme: 'dbspaylah://',
-                            );
-                          if (Platform.isAndroid)
-                            await LaunchApp.openApp(
-                              androidPackageName: 'com.dbs.dbspaylah',
-                              openStore: false,
-                            );
+                          await LaunchApp.openApp(
+                            androidPackageName: 'com.dbs.dbspaylah',
+                            openStore: false,
+                            appStoreLink:
+                                'https://apps.apple.com/sg/app/dbs-paylah/id878528688',
+                          );
                         },
                         icon: Icon(Icons.home_rounded),
                         label: Text('Submit &\nOpen App')),
