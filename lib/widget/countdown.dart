@@ -299,10 +299,10 @@ class _CountdownState extends State<Countdown> {
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: ((context) => MentorMapScreen(
-                        username: widget.data['mentee'],
-                        x_coordinate: widget.data['x-coordinate'],
-                        y_coordinate: widget.data['y-coordinate'],
-                      ))));
+                            username: widget.data['mentee'],
+                            x_coordinate: widget.data['x-coordinate'],
+                            y_coordinate: widget.data['y-coordinate'],
+                          ))));
                 },
               ),
             if (isRunning && (widget.time == 60 || widget.time == 30))

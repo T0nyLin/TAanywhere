@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:ta_anywhere/components/sendPushMessage.dart';
 import 'package:ta_anywhere/widget/countdown.dart';
 
 class QRScan extends StatefulWidget {
@@ -92,6 +93,8 @@ class _QRScanState extends State<QRScan> {
           ),
           TextButton(
               onPressed: () {
+                sendPushMessage(widget.data['token'], 'Verified!',
+                    'This is to notify that mentor has verified you. Session will begin now.');
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (ctx) => Countdown(
