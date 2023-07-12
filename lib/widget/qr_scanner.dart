@@ -79,7 +79,7 @@ class _QRScanState extends State<QRScan> {
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(
                       builder: (ctx) => Countdown(
-                        time: 60,
+                        time: 1,
                         data: widget.data,
                       ),
                     ),
@@ -114,7 +114,7 @@ class _QRScanState extends State<QRScan> {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (ctx) => Countdown(
-                      time: 60,
+                      time: 1,
                       data: widget.data,
                     ),
                   ),

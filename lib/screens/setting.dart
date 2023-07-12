@@ -52,7 +52,6 @@ class SettingScreen extends StatelessWidget {
               "Help and Support",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
-            trailing: Icon(Icons.arrow_forward_ios),
           ),
           ListTile(
             title: Text("FAQ"),

@@ -109,7 +109,6 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
   void _showModalBottomSheet(BuildContext context) {
     showModalBottomSheet(
       isDismissible: true,
-      showDragHandle: true,
       backgroundColor: const Color.fromARGB(255, 165, 228, 234),
       context: context,
       isScrollControlled: true,
@@ -120,46 +119,53 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
       builder: (context) => DraggableScrollableSheet(
         expand: false,
         initialChildSize: 0.2,
-        maxChildSize: 0.3,
+        maxChildSize: 0.2,
         minChildSize: 0.1,
         builder: (context, scrollController) => SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => EditnReUploadScreen(data: widget.data)));
-                },
-                icon: Icon(Icons.edit),
-                label: Text(
-                  'Edit',
-                  style: Theme.of(context).primaryTextTheme.bodyLarge!,
+          child: Container(
+            padding: EdgeInsets.all(25),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (_) =>
+                            EditnReUploadScreen(data: widget.data)));
+                  },
+                  icon: Icon(Icons.edit),
+                  label: Text(
+                    'Edit',
+                    style: Theme.of(context).primaryTextTheme.bodyLarge!,
+                  ),
                 ),
-              ),
-              ElevatedButton.icon(
-                onPressed: () {
-                  deleteQuery(widget.data['menteeid']);
-                  deleteImages(widget.data['image_url']);
-                  ScaffoldMessenger.of(context)
-                    ..removeCurrentSnackBar()
-                    ..showSnackBar(SnackBar(
-                      content: Text('Query removed successfully'),
-                    ));
-                },
-                icon: Icon(
-                  Icons.delete_rounded,
-                  color: Colors.red,
+                ElevatedButton.icon(
+                  onPressed: () {
+                    deleteQuery(widget.data['menteeid']);
+                    deleteImages(widget.data['image_url']);
+                    ScaffoldMessenger.of(context)
+                      ..removeCurrentSnackBar()
+                      ..showSnackBar(SnackBar(
+                        content: Text('Query removed successfully'),
+                      ));
+                    Navigator.of(context)
+                      ..pop()
+                      ..pop();
+                  },
+                  icon: Icon(
+                    Icons.delete_rounded,
+                    color: Colors.red,
+                  ),
+                  label: Text(
+                    'Remove Query',
+                    style: Theme.of(context)
+                        .primaryTextTheme
+                        .bodyLarge!
+                        .copyWith(color: Colors.red),
+                  ),
                 ),
-                label: Text(
-                  'Remove Query',
-                  style: Theme.of(context)
-                      .primaryTextTheme
-                      .bodyLarge!
-                      .copyWith(color: Colors.red),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
           controller: scrollController,
         ),
@@ -249,12 +255,13 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
       clipBehavior: Clip.none,
       children: [
         Positioned(
+          top: 5,
           child: Container(
             width: 60,
             height: 7,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(5),
-              color: Colors.white54,
+              color: const Color.fromARGB(255, 115, 111, 111),
             ),
           ),
         ),
@@ -314,7 +321,7 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: ((context) => ViewUserProfileScreen(
                                 userid: widget.data['menteeid'],
-                                username: mentorUsername,
+                                username: widget.data['mentee'],
                               ))));
                     },
                     child: Text(

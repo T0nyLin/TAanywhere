@@ -56,7 +56,7 @@ class _CountdownState extends State<Countdown> {
               'Your mentor did not reach on time! Your meet has been cancelled.\nDo you want to reupload your query?');
           sendPushMessage(myToken!, 'Oops!',
               'You did not reach your mentee on time. Your meet has been cancelled.');
-        } else if (seconds < 0 && (widget.time == 60 || widget.time == 30)) {
+        } else if (seconds < 0 && (widget.time == 1 || widget.time == 30)) {
           timer?.cancel();
           sendPushMessage(myToken!, "Time's up!", 'Do you need more time?');
         }
@@ -176,8 +176,6 @@ class _CountdownState extends State<Countdown> {
           MaterialButton(
             onPressed: () {
               timer?.cancel();
-              // deleteQuery(widget.data['menteeid']);
-              // deleteImages(widget.data['image_url']);
               OverlaySupportEntry? dismissButton =
                   OverlaySupportEntry.of(context);
               if (dismissButton != null) {
@@ -307,7 +305,7 @@ class _CountdownState extends State<Countdown> {
                       ))));
                 },
               ),
-            if (isRunning && (widget.time == 60 || widget.time == 30))
+            if (isRunning && (widget.time == 1 || widget.time == 30))
               ElevatedButton(
                 onPressed: () {
                   sessionOver();
