@@ -222,7 +222,8 @@ class _UploadScreenState extends State<UploadScreen> {
                         },
                       ),
                     ),
-                    const Text('  ......................  '),
+                    Icon(Icons.keyboard_double_arrow_right_rounded),
+                    Icon(Icons.keyboard_double_arrow_right_rounded),
                     Container(
                       decoration: BoxDecoration(
                         border: Border.all(

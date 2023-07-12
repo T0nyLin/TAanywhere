@@ -259,9 +259,7 @@ class _TabsScreenState extends State<TabsScreen> {
               style: Theme.of(context).primaryTextTheme.bodyLarge,
             ),
           ),
-          content: !notification.title!.startsWith('Well Done!')
-              ? Text(notification.body!)
-              : null,
+          content: Text(notification.body!),
           actions: [
             if (notification.title!.startsWith('Congrats,'))
               MaterialButton(
@@ -284,6 +282,9 @@ class _TabsScreenState extends State<TabsScreen> {
                       OverlaySupportEntry.of(context);
                   if (dismissButton != null) {
                     dismissButton.dismiss();
+                  }
+                  if (_isShowNoti == false) {
+                    _showNoti();
                   }
                   Navigator.of(context).push(
                       MaterialPageRoute(builder: (context) => MentorFound()));
@@ -393,7 +394,7 @@ class _TabsScreenState extends State<TabsScreen> {
                 },
                 child: const Text('Yes!'),
               ),
-            if (notification.title!.contains('Payment'))
+            if (notification.body!.contains('Payment'))
               MaterialButton(
                 onPressed: () {
                   OverlaySupportEntry? dismissButton =
@@ -403,12 +404,12 @@ class _TabsScreenState extends State<TabsScreen> {
                   }
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => PaymentAndRateScreen(
-                            title: notification.title.toString(),
+                            body: notification.body.toString(),
                           )));
                 },
                 child: const Text('Proceed to payment & rate'),
               ),
-            if (notification.title!.contains('Free'))
+            if (notification.body!.contains('Free'))
               MaterialButton(
                 onPressed: () {
                   OverlaySupportEntry? dismissButton =
@@ -418,7 +419,7 @@ class _TabsScreenState extends State<TabsScreen> {
                   }
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => PaymentAndRateScreen(
-                            title: notification.title.toString(),
+                            body: notification.body.toString(),
                           )));
                 },
                 child: const Text('Proceed to rate'),
