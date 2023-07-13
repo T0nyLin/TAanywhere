@@ -7,9 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import 'package:ta_anywhere/components/auth.dart';
-import 'package:ta_anywhere/components/reupload_del.dart';
 import 'package:ta_anywhere/components/sendPushMessage.dart';
-import 'package:ta_anywhere/screens/editnreupload.dart';
 import 'package:ta_anywhere/widget/countdown.dart';
 import 'package:ta_anywhere/widget/viewprofile.dart';
 
@@ -106,70 +104,6 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
     );
   }
 
-  void _showModalBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      isDismissible: true,
-      backgroundColor: const Color.fromARGB(255, 165, 228, 234),
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-        top: Radius.circular(30),
-      )),
-      builder: (context) => DraggableScrollableSheet(
-        expand: false,
-        initialChildSize: 0.18,
-        maxChildSize: 0.18,
-        minChildSize: 0.18,
-        builder: (context, scrollController) => Container(
-            padding: EdgeInsets.all(25),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (_) =>
-                            EditnReUploadScreen(data: widget.data)));
-                  },
-                  icon: Icon(Icons.edit),
-                  label: Text(
-                    'Edit',
-                    style: Theme.of(context).primaryTextTheme.bodyLarge!,
-                  ),
-                ),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    deleteQuery(widget.data['menteeid']);
-                    deleteImages(widget.data['image_url']);
-                    ScaffoldMessenger.of(context)
-                      ..removeCurrentSnackBar()
-                      ..showSnackBar(SnackBar(
-                        content: Text('Query removed successfully'),
-                      ));
-                    Navigator.of(context)
-                      ..pop()
-                      ..pop();
-                  },
-                  icon: Icon(
-                    Icons.delete_rounded,
-                    color: Colors.red,
-                  ),
-                  label: Text(
-                    'Remove Query',
-                    style: Theme.of(context)
-                        .primaryTextTheme
-                        .bodyLarge!
-                        .copyWith(color: Colors.red),
-                  ),
-                ),
-              ],
-            ),
-          ),
-      ),
-    );
-  }
-
   Widget mediumLabel(String data) {
     return Text(
       data,
@@ -246,134 +180,110 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
   @override
   Widget build(BuildContext context) {
     var posted = _lifetimeconversion(widget.data);
-
-    return Stack(
-      children: [
-        if (user!.uid == widget.data['menteeid'] &&
-            widget.data['inSession'] == false)
-          Positioned(
-            top: 10,
-            right: 35,
-            child: IconButton(
-                onPressed: () {
-                  _showModalBottomSheet(context);
-                },
-                icon: Icon(Icons.more_horiz)),
+    return Container(
+      padding: const EdgeInsets.all(25),
+      child: Column(
+        children: [
+          GestureDetector(
+            onTap: () {
+              showImageViewer(
+                context,
+                CachedNetworkImageProvider(widget.data['image_url']),
+                swipeDismissible: true,
+                doubleTapZoomable: true,
+              );
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(width: 1, color: Colors.black),
+              ),
+              width: double.infinity,
+              height: 300,
+              child: CachedNetworkImage(
+                imageUrl: widget.data['image_url'].toString(),
+                fit: BoxFit.cover,
+                progressIndicatorBuilder: (context, url, progress) =>
+                    LoadingAnimationWidget.threeArchedCircle(
+                        color: Color.fromARGB(255, 48, 97, 104), size: 60),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+                height: 50,
+              ),
+            ),
           ),
-        Container(
-          padding: const EdgeInsets.all(25),
-          child: Column(
+          Row(
             children: [
-              SizedBox(
-                height: 30,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [],
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  showImageViewer(
-                    context,
-                    CachedNetworkImageProvider(widget.data['image_url']),
-                    swipeDismissible: true,
-                    doubleTapZoomable: true,
-                  );
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: ((context) => ViewUserProfileScreen(
+                            userid: widget.data['menteeid'],
+                            username: widget.data['mentee'],
+                          ))));
                 },
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(width: 1, color: Colors.black),
-                  ),
-                  width: double.infinity,
-                  height: 300,
-                  child: CachedNetworkImage(
-                    imageUrl: widget.data['image_url'].toString(),
-                    fit: BoxFit.cover,
-                    progressIndicatorBuilder: (context, url, progress) =>
-                        LoadingAnimationWidget.threeArchedCircle(
-                            color: Color.fromARGB(255, 48, 97, 104), size: 60),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
-                    height: 50,
-                  ),
+                child: Text(
+                  '${widget.data['mentee']}:',
+                  style: Theme.of(context).primaryTextTheme.bodyLarge!,
                 ),
               ),
-              Row(
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: ((context) => ViewUserProfileScreen(
-                                userid: widget.data['menteeid'],
-                                username: widget.data['mentee'],
-                              ))));
-                    },
-                    child: Text(
-                      '${widget.data['mentee']}:',
-                      style: Theme.of(context).primaryTextTheme.bodyLarge!,
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      widget.data['query'],
-                      style: Theme.of(context)
-                          .primaryTextTheme
-                          .bodyLarge!
-                          .copyWith(fontWeight: FontWeight.normal),
-                      maxLines: 3,
-                    ),
-                  ),
-                ],
+              Expanded(
+                child: Text(
+                  widget.data['query'],
+                  style: Theme.of(context)
+                      .primaryTextTheme
+                      .bodyLarge!
+                      .copyWith(fontWeight: FontWeight.normal),
+                  maxLines: 3,
+                ),
               ),
-              TextButton.icon(
-                icon: const Icon(Icons.location_on_rounded),
-                label: mediumLabel(widget.data['location']),
-                onPressed: _previewMap,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  smallLabel('Landmark: '),
-                  smallLabel(widget.data['landmark']),
-                ],
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      mediumLabel('Module Code: '),
-                      mediumLabel('Cost: '),
-                      mediumLabel('Level: '),
-                      mediumLabel('Posted: '),
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      mediumLabel(widget.data['module Code']),
-                      mediumLabel(widget.data['cost']),
-                      mediumLabel(widget.data['level']),
-                      mediumLabel('$posted min ago'),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 80,
-              ),
-              if (user!.uid != widget.data['menteeid']) getUser(),
-              if (user!.uid != widget.data['menteeid'])
-                smallLabel(
-                    '*Before accepting, please ensure that you can reach the destination in 10 minutes.'),
             ],
           ),
-        ),
-      ],
+          TextButton.icon(
+            icon: const Icon(Icons.location_on_rounded),
+            label: mediumLabel(widget.data['location']),
+            onPressed: _previewMap,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              smallLabel('Landmark: '),
+              smallLabel(widget.data['landmark']),
+            ],
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  mediumLabel('Module Code: '),
+                  mediumLabel('Cost: '),
+                  mediumLabel('Level: '),
+                  mediumLabel('Posted: '),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  mediumLabel(widget.data['module Code']),
+                  mediumLabel(widget.data['cost']),
+                  mediumLabel(widget.data['level']),
+                  mediumLabel('$posted min ago'),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 60,
+          ),
+          if (user!.uid != widget.data['menteeid']) getUser(),
+          if (user!.uid != widget.data['menteeid'])
+            smallLabel(
+                '*Before accepting, please ensure that you can reach the destination in 10 minutes.'),
+        ],
+      ),
     );
   }
 }

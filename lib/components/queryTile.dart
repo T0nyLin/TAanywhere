@@ -1,8 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:ta_anywhere/components/auth.dart';
 
+import 'package:ta_anywhere/components/reupload_del.dart';
+import 'package:ta_anywhere/screens/editnreupload.dart';
 import 'package:ta_anywhere/widget/queryinfo.dart';
 
 uploadtimeconversion(Timestamp lifetime) {
@@ -94,10 +98,73 @@ Widget itemTile(BuildContext context, Map<String, dynamic> data, int posted) {
       onTap: () => showAModalBottomSheet(context, data),
     ),
   );
-  
+}
+
+void showeditndeletebuttons(BuildContext context, Map<String, dynamic> data) {
+  showModalBottomSheet(
+    isDismissible: true,
+    backgroundColor: const Color.fromARGB(255, 165, 228, 234),
+    context: context,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+      top: Radius.circular(30),
+    )),
+    builder: (context) => DraggableScrollableSheet(
+      expand: false,
+      initialChildSize: 0.18,
+      maxChildSize: 0.18,
+      minChildSize: 0.18,
+      builder: (context, scrollController) => Container(
+        padding: EdgeInsets.all(25),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (_) => EditnReUploadScreen(data: data)));
+              },
+              icon: Icon(Icons.edit),
+              label: Text(
+                'Edit',
+                style: Theme.of(context).primaryTextTheme.bodyLarge!,
+              ),
+            ),
+            ElevatedButton.icon(
+              onPressed: () {
+                deleteQuery(data['menteeid']);
+                deleteImages(data['image_url']);
+                ScaffoldMessenger.of(context)
+                  ..removeCurrentSnackBar()
+                  ..showSnackBar(SnackBar(
+                    content: Text('Query removed successfully'),
+                  ));
+                Navigator.of(context)
+                  ..pop()
+                  ..pop();
+              },
+              icon: Icon(
+                Icons.delete_rounded,
+                color: Colors.red,
+              ),
+              label: Text(
+                'Remove Query',
+                style: Theme.of(context)
+                    .primaryTextTheme
+                    .bodyLarge!
+                    .copyWith(color: Colors.red),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }
 
 void showAModalBottomSheet(BuildContext context, Map<String, dynamic> data) {
+  final User? user = Auth().currentUser;
   showModalBottomSheet(
     isDismissible: true,
     backgroundColor: const Color.fromARGB(255, 165, 228, 234),
@@ -127,10 +194,23 @@ void showAModalBottomSheet(BuildContext context, Map<String, dynamic> data) {
               ),
             ),
           ),
-          SingleChildScrollView(
-            controller: scrollController,
-            child: QueryInfoScreen(data: data),
+          Padding(
+            padding: const EdgeInsets.only(top:30.0),
+            child: SingleChildScrollView(
+              controller: scrollController,
+              child: QueryInfoScreen(data: data),
+            ),
           ),
+          if (user!.uid == data['menteeid'] && data['inSession'] == false)
+            Positioned(
+              top: 10,
+              right: 35,
+              child: IconButton(
+                  onPressed: () {
+                    showeditndeletebuttons(context, data);
+                  },
+                  icon: Icon(Icons.more_horiz)),
+            ),
         ],
       ),
     ),
