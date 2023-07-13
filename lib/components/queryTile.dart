@@ -94,6 +94,7 @@ Widget itemTile(BuildContext context, Map<String, dynamic> data, int posted) {
       onTap: () => showAModalBottomSheet(context, data),
     ),
   );
+  
 }
 
 void showAModalBottomSheet(BuildContext context, Map<String, dynamic> data) {
@@ -111,9 +112,26 @@ void showAModalBottomSheet(BuildContext context, Map<String, dynamic> data) {
       initialChildSize: 0.7,
       maxChildSize: 0.8,
       minChildSize: 0.45,
-      builder: (context, scrollController) => SingleChildScrollView(
-        controller: scrollController,
-        child: QueryInfoScreen(data: data),
+      builder: (context, scrollController) => Stack(
+        alignment: AlignmentDirectional.topCenter,
+        clipBehavior: Clip.none,
+        children: [
+          Positioned(
+            top: 5,
+            child: Container(
+              width: 60,
+              height: 7,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                color: const Color.fromARGB(255, 115, 111, 111),
+              ),
+            ),
+          ),
+          SingleChildScrollView(
+            controller: scrollController,
+            child: QueryInfoScreen(data: data),
+          ),
+        ],
       ),
     ),
   );

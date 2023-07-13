@@ -58,7 +58,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
         springAnimationDurationInMilliseconds: 20,
         showChildOpacityTransition: false,
         animSpeedFactor: 2,
-        height: 50,
+        height: 30,
         backgroundColor: const Color.fromARGB(255, 48, 97, 104),
         color: const Color.fromARGB(255, 128, 222, 234),
         onRefresh: _refreshBrowse,
@@ -91,51 +91,57 @@ class _BrowseScreenState extends State<BrowseScreen> {
             return CustomScrollView(
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               slivers: <Widget>[
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    childCount: queriesSnapshots.data!.docs.length,
-                    (BuildContext context, int index) {
-                      var data = queriesSnapshots.data!.docs[index].data()
-                          as Map<String, dynamic>;
-                      if (data['inSession'] == false) {
-                        var posted = uploadtimeconversion(data['uploadedTime']);
-                        if (posted >= 10) {
-                          queries
-                              .doc(queriesSnapshots.data!.docs[index].id
-                                  .toString())
-                              .update({'uploadedTime': DateTime.now()})
-                              .then((value) =>
-                                  debugPrint('Updated uploadTime field'))
-                              .catchError((error) =>
-                                  debugPrint('Failed to update: $error'));
-                        }
-                        //auto purge after 60min
-                        var lifetime = lifetimeconversion(data['lifetime']);
-                        if (lifetime >= 60) {
-                          queries
-                              .doc(queriesSnapshots.data!.docs[index].id
-                                  .toString())
-                              .delete()
-                              .then((value) =>
-                                  debugPrint('Purged data after 60min'))
-                              .catchError((error) =>
-                                  debugPrint('Failed to delete query: $error'));
-                          deleteImages(data[
-                              'image_url']); //del image in FirebaseStorage too
-                        }
-                        if (code.trim().isEmpty) {
-                          return itemTile(context, data, lifetime);
-                        }
-                        if (data['module Code']
-                                .toString()
-                                .toLowerCase()
-                                .contains(code.toLowerCase()) ||
-                            data['cost'].toString().contains(filtercost)) {
-                          return itemTile(context, data, lifetime);
-                        }
+                SliverList.separated(
+                  itemCount: queriesSnapshots.data!.docs.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    var data = queriesSnapshots.data!.docs[index].data()
+                        as Map<String, dynamic>;
+                    if (data['inSession'] == false) {
+                      var posted = uploadtimeconversion(data['uploadedTime']);
+                      if (posted >= 10) {
+                        queries
+                            .doc(queriesSnapshots.data!.docs[index].id
+                                .toString())
+                            .update({'uploadedTime': DateTime.now()})
+                            .then((value) =>
+                                debugPrint('Updated uploadTime field'))
+                            .catchError((error) =>
+                                debugPrint('Failed to update: $error'));
                       }
-                      return Container();
-                    },
+                      //auto purge after 60min
+                      var lifetime = lifetimeconversion(data['lifetime']);
+                      if (lifetime >= 60) {
+                        queries
+                            .doc(queriesSnapshots.data!.docs[index].id
+                                .toString())
+                            .delete()
+                            .then((value) =>
+                                debugPrint('Purged data after 60min'))
+                            .catchError((error) =>
+                                debugPrint('Failed to delete query: $error'));
+                        deleteImages(data[
+                            'image_url']); //del image in FirebaseStorage too
+                      }
+                      if (code.trim().isEmpty) {
+                        return itemTile(context, data, lifetime);
+                      }
+                      if (data['module Code']
+                              .toString()
+                              .toLowerCase()
+                              .contains(code.toLowerCase()) ||
+                          data['cost'].toString().contains(filtercost)) {
+                        return itemTile(context, data, lifetime);
+                      }
+                    }
+                    return Container();
+                  },
+                  separatorBuilder: (BuildContext context, index) =>
+                      const Divider(
+                    indent: 15,
+                    endIndent: 15,
+                    height: 10,
+                    thickness: 1.4,
+                    color: Color.fromARGB(255, 48, 97, 104),
                   ),
                 ),
               ],

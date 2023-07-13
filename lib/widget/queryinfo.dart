@@ -118,11 +118,10 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
       )),
       builder: (context) => DraggableScrollableSheet(
         expand: false,
-        initialChildSize: 0.2,
-        maxChildSize: 0.2,
-        minChildSize: 0.1,
-        builder: (context, scrollController) => SingleChildScrollView(
-          child: Container(
+        initialChildSize: 0.18,
+        maxChildSize: 0.18,
+        minChildSize: 0.18,
+        builder: (context, scrollController) => Container(
             padding: EdgeInsets.all(25),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -167,8 +166,6 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
               ],
             ),
           ),
-          controller: scrollController,
-        ),
       ),
     );
   }
@@ -251,20 +248,7 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
     var posted = _lifetimeconversion(widget.data);
 
     return Stack(
-      alignment: AlignmentDirectional.topCenter,
-      clipBehavior: Clip.none,
       children: [
-        Positioned(
-          top: 5,
-          child: Container(
-            width: 60,
-            height: 7,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
-              color: const Color.fromARGB(255, 115, 111, 111),
-            ),
-          ),
-        ),
         if (user!.uid == widget.data['menteeid'] &&
             widget.data['inSession'] == false)
           Positioned(
