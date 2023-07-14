@@ -158,7 +158,39 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
-
+  Widget _buildGenderDropdown() {
+    return Container(
+        child: DropdownButtonFormField<String>(
+          decoration: const InputDecoration(
+            border: InputBorder.none,
+            labelText: "Gender",
+            labelStyle: TextStyle(
+              color: Colors.black, // Set the label text color to black
+            ),
+          ),
+          value: _gender,
+          onChanged: (value) {
+            setState(() {
+              _gender = value!;
+            });
+          },
+          items: const [
+            DropdownMenuItem(
+              value: 'Male',
+              child: Text('Male'),
+            ),
+            DropdownMenuItem(
+              value: 'Female',
+              child: Text('Female'),
+            ),
+            DropdownMenuItem(
+              value: 'Prefer not to tell',
+              child: Text('Prefer not to tell'),
+            ),
+          ],
+        ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -180,6 +212,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     controller: _emailController,
                     decoration: InputDecoration(
                       labelText: "Email",
+                      labelStyle: TextStyle(
+                        color: Colors.black, // Set the label text color to black
+                      ),
                     ),
                   ),
                 ),
@@ -197,6 +232,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
               controller: _usernameController,
               decoration: InputDecoration(
                 labelText: "Username",
+                labelStyle: TextStyle(
+                  color: Colors.black, // Set the label text color to black
+                ),
               ),
             ),
             SizedBox(height: 16.0),
@@ -206,18 +244,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             //     labelText: "Gender",
             //   ),
             // ),
-            TextButton(
-              onPressed: () {
-                showGenderMenu(context);
-              },
-              child: TextFormField(
-                enabled: false,
-                controller: TextEditingController(text: _gender),
-                decoration: InputDecoration(
-                  labelText: 'Gender',
-                ),
-              ),
-            ),
+            _buildGenderDropdown(),
             SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: _saveChanges,
