@@ -40,6 +40,7 @@ void reupload(String menteeid) async {
         'uploadedTime': timenow,
         'mentorid': '',
         'mentorToken': '',
+        'timer': 0,
 
       })
       .then((value) => debugPrint('Query reupload.'))

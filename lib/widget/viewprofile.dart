@@ -203,7 +203,7 @@ class _ViewUserProfileScreenState extends State<ViewUserProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("${widget.username}'s Profile"),
+        title: largeLabel("${widget.username}'s Profile", context),
       ),
       body: StreamBuilder<DocumentSnapshot>(
           stream: FirebaseFirestore.instance
@@ -243,9 +243,7 @@ class _ViewUserProfileScreenState extends State<ViewUserProfileScreen> {
             if (modules_help == null) {
               modules_help = [];
             }
-            data['rater'] == 0
-                ? avg = 0
-                : avg = data['rating'] / data['rater'];
+            data['rater'] == 0 ? avg = 0 : avg = data['rating'] / data['rater'];
 
             return Scrollbar(
               child: SingleChildScrollView(
@@ -253,7 +251,7 @@ class _ViewUserProfileScreenState extends State<ViewUserProfileScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Padding(
                           padding:
@@ -270,7 +268,9 @@ class _ViewUserProfileScreenState extends State<ViewUserProfileScreen> {
                                 ),
                               ),
                               _mentorRank(),
-                              SizedBox(height: 20,),
+                              SizedBox(
+                                height: 20,
+                              ),
                               (data['rater'] == 0 || data['rater'] == 1)
                                   ? Text(
                                       '${data['rater']} RATING',
@@ -300,13 +300,10 @@ class _ViewUserProfileScreenState extends State<ViewUserProfileScreen> {
                             ],
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 30),
-                          child: CircleAvatar(
-                            radius: 80,
-                            backgroundImage: AssetImage(
-                                'assets/icons/profile_pic.png'), // Replace with user image from database soon
-                          ),
+                        CircleAvatar(
+                          radius: 80,
+                          backgroundImage: AssetImage(
+                              'assets/icons/profile_pic.png'), // Replace with user image from database soon
                         ),
                       ],
                     ),

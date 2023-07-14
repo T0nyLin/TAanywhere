@@ -52,34 +52,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _settingButton(BuildContext context) {
-    return Container(
-      width: 40,
-      height: 40,
-      child: IconButton(
-        icon: const Icon(Icons.settings),
-        iconSize: 40,
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => SettingScreen()),
-          );
-        },
-      ),
+    return IconButton(
+      icon: const Icon(Icons.settings),
+      iconSize: 40,
+      color: Colors.black,
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => SettingScreen()),
+        );
+      },
     );
   }
 
   Widget _qrCodeButton(BuildContext context) {
-    return Container(
-      width: 40,
-      height: 40,
-      child: IconButton(
-        icon: const Icon(Icons.qr_code),
-        iconSize: 40,
-        onPressed: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: ((context) => QRcode())));
-        },
-      ),
+    return IconButton(
+      icon: const Icon(Icons.qr_code),
+      iconSize: 40,
+      color: Colors.black,
+      onPressed: () {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: ((context) => QRcode())));
+      },
     );
   }
 
@@ -206,7 +200,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
               noItemsFoundBuilder: (context) {
                 return Center(
-                  child: smallLabel(_modController.text = 'Module not found.', context),
+                  child: smallLabel(
+                      _modController.text = 'Module not found.', context),
                 );
               },
               onSuggestionSelected: (ModuleCode? suggestion) {
@@ -614,6 +609,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     String userId = user?.uid ?? '';
 
     return Scaffold(
+      appBar: AppBar(
+        title: largeLabel('My Rank', context),
+        actions: [_qrCodeButton(context), _settingButton(context)],
+      ),
       body: StreamBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance
             .collection('users')
@@ -649,81 +648,59 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(
-                                16.0, 40.0, 16.0, 8.0),
-                            child: largeLabel('Mentor Rank:', context),
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 8.0),
-                            child: _mentorRank(),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(
-                                20.0, 20.0, 16.0, 9.0),
-                            child: Column(
-                              children: [
-                                (data['rater'] == 0 || data['rater'] == 1)
-                                    ? Text(
-                                        '${data['rater']} RATING',
-                                        style: TextStyle(
-                                          fontSize: 17,
-                                        ),
-                                      )
-                                    : Text(
-                                        '${data['rater']} RATINGS',
-                                        style: TextStyle(
-                                          fontSize: 17,
-                                        ),
-                                      ),
-                                Center(
-                                  child: Text(
-                                    '${avg.toStringAsFixed(1)}',
+                      Padding(
+                        padding:
+                            const EdgeInsets.fromLTRB(16.0, 20.0, 16.0, 8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Mentor Rank:',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                            _mentorRank(),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            (data['rater'] == 0 || data['rater'] == 1)
+                                ? Text(
+                                    '${data['rater']} RATING',
                                     style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 25,
+                                      fontSize: 17,
+                                    ),
+                                  )
+                                : Text(
+                                    '${data['rater']} RATINGS',
+                                    style: TextStyle(
+                                      fontSize: 17,
                                     ),
                                   ),
+                            Center(
+                              child: Text(
+                                '${avg.toStringAsFixed(1)}',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 25,
                                 ),
-                                _ratingStars(
-                                  data['rater'],
-                                  data['rating'],
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ],
+                            _ratingStars(
+                              data['rater'],
+                              data['rating'],
+                            ),
+                          ],
+                        ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              _settingButton(context),
-                              const SizedBox(height: 40),
-                              _qrCodeButton(context),
-                            ],
-                          ),
-                          const SizedBox(width: 20),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(
-                                16.0, 24.0, 16.0, 16.0),
-                            child: CircleAvatar(
-                              radius: 60,
-                              backgroundImage: AssetImage(
-                                  'assets/icons/profile_pic.png'), // Replace with user image from database soon
-                            ),
-                          ),
-                        ],
+                      CircleAvatar(
+                        radius: 80,
+                        backgroundImage: AssetImage(
+                            'assets/icons/profile_pic.png'), // Replace with user image from database soon
                       ),
                     ],
                   ),
@@ -740,6 +717,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(height: 10),
                         _helpModulesList(modules_help),
                         const SizedBox(height: 20),
+                        getQuery(context),
+                        const SizedBox(height: 20),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -751,7 +730,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ],
                     ),
                   ),
-                  getQuery(context),
                 ],
               ),
             ));

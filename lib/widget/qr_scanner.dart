@@ -98,6 +98,15 @@ class _QRScanState extends State<QRScan> {
               onPressed: () {
                 sendPushMessage(widget.data['token'], 'Verified!',
                     'This is to notify that mentor has verified you. Session will begin now.');
+                FirebaseFirestore.instance
+                    .collection('user queries')
+                    .doc('${widget.data['menteeid']}')
+                    .update({
+                      'timer': 60,
+                    })
+                    .then((value) => debugPrint('60min session'))
+                    .catchError((error) =>
+                        debugPrint('Failed to add new data: $error'));
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (ctx) => Countdown(
