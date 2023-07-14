@@ -115,48 +115,51 @@ void showeditndeletebuttons(BuildContext context, Map<String, dynamic> data) {
       initialChildSize: 0.18,
       maxChildSize: 0.18,
       minChildSize: 0.18,
-      builder: (context, scrollController) => Container(
-        padding: EdgeInsets.all(25),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            ElevatedButton.icon(
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) => EditnReUploadScreen(data: data)));
-              },
-              icon: Icon(Icons.edit),
-              label: Text(
-                'Edit',
-                style: Theme.of(context).primaryTextTheme.bodyLarge!,
+      builder: (context, scrollController) => SingleChildScrollView(
+        controller: scrollController,
+        child: Container(
+          padding: EdgeInsets.all(25),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (_) => EditnReUploadScreen(data: data)));
+                },
+                icon: Icon(Icons.edit),
+                label: Text(
+                  'Edit',
+                  style: Theme.of(context).primaryTextTheme.bodyLarge!,
+                ),
               ),
-            ),
-            ElevatedButton.icon(
-              onPressed: () {
-                deleteQuery(data['menteeid']);
-                deleteImages(data['image_url']);
-                ScaffoldMessenger.of(context)
-                  ..removeCurrentSnackBar()
-                  ..showSnackBar(SnackBar(
-                    content: Text('Query removed successfully'),
-                  ));
-                Navigator.of(context)
-                  ..pop()
-                  ..pop();
-              },
-              icon: Icon(
-                Icons.delete_rounded,
-                color: Colors.red,
+              ElevatedButton.icon(
+                onPressed: () {
+                  deleteQuery(data['menteeid']);
+                  deleteImages(data['image_url']);
+                  ScaffoldMessenger.of(context)
+                    ..removeCurrentSnackBar()
+                    ..showSnackBar(SnackBar(
+                      content: Text('Query removed successfully'),
+                    ));
+                  Navigator.of(context)
+                    ..pop()
+                    ..pop();
+                },
+                icon: Icon(
+                  Icons.delete_rounded,
+                  color: Colors.red,
+                ),
+                label: Text(
+                  'Remove Query',
+                  style: Theme.of(context)
+                      .primaryTextTheme
+                      .bodyLarge!
+                      .copyWith(color: Colors.red),
+                ),
               ),
-              label: Text(
-                'Remove Query',
-                style: Theme.of(context)
-                    .primaryTextTheme
-                    .bodyLarge!
-                    .copyWith(color: Colors.red),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     ),

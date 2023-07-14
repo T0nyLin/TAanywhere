@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import 'package:ta_anywhere/components/auth.dart';
+import 'package:ta_anywhere/components/reupload_del.dart';
 import 'package:ta_anywhere/components/sendPushMessage.dart';
 import 'package:ta_anywhere/components/textSize.dart';
 import 'package:ta_anywhere/widget/countdown.dart';
@@ -24,7 +25,6 @@ class QueryInfoScreen extends StatefulWidget {
 class _QueryInfoScreenState extends State<QueryInfoScreen> {
   final User? user = Auth().currentUser;
   String? myToken = '';
-  String mentorUsername = '';
   _lifetimeconversion(Map<String, dynamic> data) {
     Timestamp firstuploadtime = data['lifetime'];
     final DateTime dateConvert =
@@ -104,6 +104,7 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
 
   Widget getUser() {
     String token = widget.data['token'];
+    String mentorUsername = '';
 
     CollectionReference mentor = FirebaseFirestore.instance.collection('users');
     return FutureBuilder<DocumentSnapshot>(
@@ -122,39 +123,47 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
           Map<String, dynamic> data =
               snapshot.data!.data() as Map<String, dynamic>;
           mentorUsername = data['username'];
-          return ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(32.0)),
-              minimumSize: Size(380, 40),
-            ),
-            onPressed: () {
-              sendPushMessage(
-                  token,
-                  'Congrats, ${widget.data['mentee']}! Mentor found!',
-                  '$mentorUsername is on the way now.');
-              FirebaseFirestore.instance
-                  .collection('user queries')
-                  .doc('${widget.data['menteeid']}')
-                  .update({
-                    'inSession': true,
-                    'mentorToken': myToken,
-                    'mentorid': user!.uid,
-                  })
-                  .then((value) => debugPrint('in session'))
-                  .catchError(
-                      (error) => debugPrint('Failed to add new data: $error'));
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (ctx) => Countdown(
-                    time: 10,
-                    data: widget.data,
-                  ),
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(32.0)),
+                  minimumSize: Size(380, 40),
                 ),
-              );
-            },
-            icon: const Icon(Icons.assignment_turned_in_rounded),
-            label: const Text('Accept to help?'),
+                onPressed: () {
+                  sendPushMessage(
+                      token,
+                      'Congrats, ${widget.data['mentee']}! Mentor found!',
+                      '$mentorUsername is on the way now.');
+                  FirebaseFirestore.instance
+                      .collection('user queries')
+                      .doc('${widget.data['menteeid']}')
+                      .update({
+                        'inSession': true,
+                        'mentorToken': myToken,
+                        'mentorid': user!.uid,
+                      })
+                      .then((value) => debugPrint('in session'))
+                      .catchError((error) =>
+                          debugPrint('Failed to add new data: $error'));
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (ctx) => Countdown(
+                        time: 10,
+                        data: widget.data,
+                      ),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.assignment_turned_in_rounded),
+                label: const Text('Accept to help?'),
+              ),
+              smallLabel(
+                  '*Before accepting, please ensure that you can reach the destination in 10 minutes.',
+                  context),
+            ],
           );
         }
         return LoadingAnimationWidget.horizontalRotatingDots(
@@ -262,9 +271,24 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
             height: 60,
           ),
           if (user!.uid != widget.data['menteeid']) getUser(),
-          if (user!.uid != widget.data['menteeid'])
+          if (user!.uid == widget.data['menteeid'] &&
+              widget.data['timer'] == 60)
+            ElevatedButton(
+                onPressed: () {
+                  reupload(widget.data['menteeid']);
+                  Navigator.of(context).pop();
+                },
+                child: Text('RESET',
+                    style: Theme.of(context)
+                        .primaryTextTheme
+                        .bodyLarge!
+                        .copyWith(
+                            color: const Color.fromARGB(255, 116, 18, 11)))),
+          if (user!.uid == widget.data['menteeid'] &&
+              widget.data['timer'] == 60)
             smallLabel(
-                '*Before accepting, please ensure that you can reach the destination in 10 minutes.', context),
+                '*Please only press this button if your mentor got removed from the 60 minute Countdown Screen.\nThank You.',
+                context),
         ],
       ),
     );
