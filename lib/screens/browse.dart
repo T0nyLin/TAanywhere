@@ -5,6 +5,7 @@ import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:ta_anywhere/components/queryTile.dart';
 import 'package:ta_anywhere/components/reupload_del.dart';
+import 'package:ta_anywhere/components/textSize.dart';
 
 class BrowseScreen extends StatefulWidget {
   const BrowseScreen({super.key});
@@ -77,10 +78,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
             if (!queriesSnapshots.hasData ||
                 queriesSnapshots.data!.docs.isEmpty) {
               return Center(
-                child: Text(
-                  'No queries posted.',
-                  style: Theme.of(context).primaryTextTheme.bodyMedium,
-                ),
+                child: mediumLabel('No queries posted.', context),
               );
             }
             if (queriesSnapshots.hasError) {

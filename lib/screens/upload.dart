@@ -6,6 +6,7 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 
 import 'package:ta_anywhere/components/modulecode.dart';
+import 'package:ta_anywhere/components/textSize.dart';
 import 'package:ta_anywhere/screens/confirm_upload.dart';
 import 'package:ta_anywhere/widget/picklocation.dart';
 
@@ -185,11 +186,9 @@ class _UploadScreenState extends State<UploadScreen> {
                         },
                         noItemsFoundBuilder: (context) {
                           return Center(
-                            child: Text(
-                              _modController.text = 'Module not found.',
-                              style:
-                                  Theme.of(context).primaryTextTheme.bodySmall,
-                            ),
+                            child: smallLabel(
+                                _modController.text = 'Module not found.',
+                                context),
                           );
                         },
                         onSuggestionSelected: (ModuleCode? suggestion) {
@@ -308,8 +307,7 @@ class _UploadScreenState extends State<UploadScreen> {
                         size: 30,
                       ),
                       labelText: 'Landmark',
-                      hintText:
-                          'Please describe a distinct landmark.',
+                      hintText: 'Please describe a distinct landmark.',
                       hintStyle:
                           const TextStyle(fontSize: 13, color: Colors.grey),
                       labelStyle: const TextStyle(fontSize: 10),
@@ -337,10 +335,7 @@ class _UploadScreenState extends State<UploadScreen> {
                     _saveQuery(context);
                   },
                   icon: const Icon(Icons.arrow_circle_right_outlined),
-                  label: Text(
-                    'Next',
-                    style: Theme.of(context).primaryTextTheme.bodyLarge,
-                  ),
+                  label: largeLabel('Next', context),
                 ),
               ],
             ),

@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 import 'package:ta_anywhere/components/auth.dart';
+import 'package:ta_anywhere/components/textSize.dart';
 import 'package:ta_anywhere/screens/search_mentor.dart';
 
 class ConfirmUploadScreen extends StatefulWidget {
@@ -97,13 +98,6 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
     isUploading = false;
   }
 
-  Widget mediumLabel(String data) {
-    return Text(
-      data,
-      style: Theme.of(context).primaryTextTheme.bodyMedium,
-    );
-  }
-
   Widget getUserInfo(BuildContext context) {
     return FutureBuilder<DocumentSnapshot>(
       future:
@@ -111,11 +105,11 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (snapshot.hasError) {
-          return mediumLabel('Something went wrong');
+          return mediumLabel('Something went wrong', context);
         }
 
         if (snapshot.hasData && !snapshot.data!.exists) {
-          return mediumLabel('Current user does not exists.');
+          return mediumLabel('Current user does not exists.', context);
         }
 
         if (snapshot.connectionState == ConnectionState.done) {
@@ -156,7 +150,7 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (snapshot.hasError) {
-          return mediumLabel('Something went wrong');
+          return mediumLabel('Something went wrong', context);
         }
 
         if (snapshot.hasData && !snapshot.data!.exists) {
@@ -189,7 +183,7 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
               style: Theme.of(context).primaryTextTheme.bodyLarge,
             ),
           ),
-          content: mediumLabel('You can only upload one query at a time!'),
+          content: mediumLabel('You can only upload one query at a time!', context),
           actions: [
             MaterialButton(
               onPressed: () {
@@ -252,9 +246,9 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
                   widget.query,
                   style: Theme.of(context).primaryTextTheme.bodyLarge,
                 ),
-                mediumLabel('Module Code: ${widget.modcode}'),
-                mediumLabel('Cost: $cost'),
-                mediumLabel('Level: $level'),
+                mediumLabel('Module Code: ${widget.modcode}', context),
+                mediumLabel('Cost: $cost', context),
+                mediumLabel('Level: $level', context),
               ],
             ),
             const SizedBox(
@@ -262,7 +256,7 @@ class _ConfirmUploadScreenState extends State<ConfirmUploadScreen> {
             ),
             Text(widget.location,
                 style: const TextStyle(color: Colors.black, fontSize: 19)),
-            mediumLabel('Landmark: ${widget.landmark}'),
+            mediumLabel('Landmark: ${widget.landmark}', context),
             const SizedBox(
               height: 30,
             ),

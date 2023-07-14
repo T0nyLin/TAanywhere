@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:ta_anywhere/components/auth.dart';
+import 'package:ta_anywhere/components/textSize.dart';
 
 class ViewUserProfileScreen extends StatefulWidget {
   const ViewUserProfileScreen(
@@ -218,10 +219,7 @@ class _ViewUserProfileScreenState extends State<ViewUserProfileScreen> {
             }
             if (!usersnapshot.hasData || !usersnapshot.data!.exists) {
               return Center(
-                child: Text(
-                  'No queries posted.',
-                  style: Theme.of(context).primaryTextTheme.bodyMedium,
-                ),
+                child: mediumLabel('No queries posted.', context),
               );
             }
             if (usersnapshot.hasError) {

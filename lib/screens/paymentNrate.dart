@@ -6,6 +6,7 @@ import 'package:external_app_launcher/external_app_launcher.dart';
 
 import 'package:ta_anywhere/components/auth.dart';
 import 'package:ta_anywhere/components/reupload_del.dart';
+import 'package:ta_anywhere/components/textSize.dart';
 import 'package:ta_anywhere/widget/tabs.dart';
 
 class PaymentAndRateScreen extends StatefulWidget {
@@ -27,13 +28,6 @@ class _PaymentAndRateScreenState extends State<PaymentAndRateScreen> {
   final User? user = Auth().currentUser;
   String image_url = '';
 
-  Widget mediumLabel(String data) {
-    return Text(
-      data,
-      style: Theme.of(context).primaryTextTheme.bodyMedium,
-    );
-  }
-
   Widget getQuery(BuildContext context) {
     CollectionReference mentorRef =
         FirebaseFirestore.instance.collection('user queries');
@@ -42,11 +36,11 @@ class _PaymentAndRateScreenState extends State<PaymentAndRateScreen> {
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (snapshot.hasError) {
-          return mediumLabel('Something went wrong');
+          return mediumLabel('Something went wrong', context);
         }
 
         if (snapshot.hasData && !snapshot.data!.exists) {
-          return mediumLabel('Query does not exist');
+          return mediumLabel('Query does not exist', context);
         }
 
         if (snapshot.connectionState == ConnectionState.done) {
@@ -69,11 +63,11 @@ class _PaymentAndRateScreenState extends State<PaymentAndRateScreen> {
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (snapshot.hasError) {
-          return mediumLabel('Something went wrong');
+          return mediumLabel('Something went wrong', context);
         }
 
         if (snapshot.hasData && !snapshot.data!.exists) {
-          return mediumLabel('Mentor does not exist');
+          return mediumLabel('Mentor does not exist', context);
         }
 
         if (snapshot.connectionState == ConnectionState.done) {
@@ -112,10 +106,7 @@ class _PaymentAndRateScreenState extends State<PaymentAndRateScreen> {
                   onRatingUpdate: (rating) => setState(() {
                         this.rating = rating;
                       })),
-              Text(
-                'Rate your mentor: $rating',
-                style: Theme.of(context).primaryTextTheme.bodyLarge,
-              ),
+              largeLabel('Rate your mentor: $rating', context),
               getQuery(context),
               if (widget.body.contains('Free'))
                 ElevatedButton.icon(

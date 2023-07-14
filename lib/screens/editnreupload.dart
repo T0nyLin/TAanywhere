@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:ta_anywhere/components/auth.dart';
 
 import 'package:ta_anywhere/components/modulecode.dart';
+import 'package:ta_anywhere/components/textSize.dart';
 import 'package:ta_anywhere/widget/picklocation.dart';
 import 'package:ta_anywhere/widget/tabs.dart';
 
@@ -115,13 +116,6 @@ class _EditnReUploadScreenState extends State<EditnReUploadScreen> {
     FocusScope.of(context).unfocus(); //close keyboard
   }
 
-  Widget mediumLabel(String data) {
-    return Text(
-      data,
-      style: Theme.of(context).primaryTextTheme.bodyMedium,
-    );
-  }
-
   Widget getUserInfo(BuildContext context) {
     return FutureBuilder<DocumentSnapshot>(
       future:
@@ -129,11 +123,11 @@ class _EditnReUploadScreenState extends State<EditnReUploadScreen> {
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (snapshot.hasError) {
-          return mediumLabel('Something went wrong');
+          return mediumLabel('Something went wrong', context);
         }
 
         if (snapshot.hasData && !snapshot.data!.exists) {
-          return mediumLabel('Current user does not exists.');
+          return mediumLabel('Current user does not exists.', context);
         }
 
         if (snapshot.connectionState == ConnectionState.done) {
@@ -149,10 +143,7 @@ class _EditnReUploadScreenState extends State<EditnReUploadScreen> {
                 ? CircularProgressIndicator(
                     color: Color.fromARGB(255, 48, 97, 104),
                   )
-                : Text(
-                    'Re-Upload',
-                    style: Theme.of(context).primaryTextTheme.bodyLarge,
-                  ),
+                : largeLabel('Re-Upload', context),
           );
         }
 
@@ -277,11 +268,9 @@ class _EditnReUploadScreenState extends State<EditnReUploadScreen> {
                         },
                         noItemsFoundBuilder: (context) {
                           return Center(
-                            child: Text(
-                              _modController.text = 'Module not found.',
-                              style:
-                                  Theme.of(context).primaryTextTheme.bodySmall,
-                            ),
+                            child: smallLabel(
+                                _modController.text = 'Module not found.',
+                                context),
                           );
                         },
                         onSuggestionSelected: (ModuleCode? suggestion) {
@@ -400,8 +389,7 @@ class _EditnReUploadScreenState extends State<EditnReUploadScreen> {
                         size: 30,
                       ),
                       labelText: 'Landmark',
-                      hintText:
-                          'Please describe a distinct landmark.',
+                      hintText: 'Please describe a distinct landmark.',
                       hintStyle:
                           const TextStyle(fontSize: 13, color: Colors.grey),
                       labelStyle: const TextStyle(fontSize: 10),

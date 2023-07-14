@@ -6,6 +6,7 @@ import 'package:overlay_support/overlay_support.dart';
 
 import 'package:ta_anywhere/components/pushNotification.dart';
 import 'package:ta_anywhere/components/reupload_del.dart';
+import 'package:ta_anywhere/components/textSize.dart';
 import 'package:ta_anywhere/screens/browse.dart';
 import 'package:ta_anywhere/screens/map.dart';
 import 'package:ta_anywhere/screens/camera.dart';
@@ -142,10 +143,7 @@ class _TabsScreenState extends State<TabsScreen> {
                     builder: (context) {
                       return AlertDialog(
                         title: Center(
-                          child: Text(
-                            _notificationInfo!.title!,
-                            style: Theme.of(context).primaryTextTheme.bodyLarge,
-                          ),
+                          child: largeLabel(_notificationInfo!.title!, context),
                         ),
                         content: Text(_notificationInfo!.body!),
                         actions: [
@@ -251,10 +249,7 @@ class _TabsScreenState extends State<TabsScreen> {
         duration: const Duration(minutes: 5),
         (context, progress) => AlertDialog(
           title: Center(
-            child: Text(
-              notification.title!,
-              style: Theme.of(context).primaryTextTheme.bodyLarge,
-            ),
+            child: largeLabel(notification.title!, context),
           ),
           content: Text(notification.body!),
           actions: [
