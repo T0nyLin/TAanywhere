@@ -7,6 +7,7 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 import 'package:ta_anywhere/components/auth.dart';
 import 'package:ta_anywhere/components/queryTile.dart';
+import 'package:ta_anywhere/components/textSize.dart';
 import 'package:ta_anywhere/screens/setting.dart';
 import 'package:ta_anywhere/widget/qr_code.dart';
 import 'package:ta_anywhere/widget/widget_tree.dart';
@@ -205,10 +206,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
               noItemsFoundBuilder: (context) {
                 return Center(
-                  child: Text(
-                    _modController.text = 'Module not found.',
-                    style: Theme.of(context).primaryTextTheme.bodySmall,
-                  ),
+                  child: smallLabel(_modController.text = 'Module not found.', context),
                 );
               },
               onSuggestionSelected: (ModuleCode? suggestion) {
@@ -320,10 +318,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
               noItemsFoundBuilder: (context) {
                 return Center(
-                  child: Text(
-                    _modController.text = 'Module not found.',
-                    style: Theme.of(context).primaryTextTheme.bodySmall,
-                  ),
+                  child: smallLabel(
+                      _modController.text = 'Module not found.', context),
                 );
               },
               onSuggestionSelected: (ModuleCode? suggestion) {
@@ -401,10 +397,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _myModulesHeader() {
     return Row(
       children: [
-        Text(
-          'My Modules this Sem:',
-          style: Theme.of(context).primaryTextTheme.bodyLarge,
-        ),
+        largeLabel('My Modules this Sem:', context),
         const SizedBox(width: 10),
         IconButton(
           onPressed: () {
@@ -491,10 +484,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _helpModulesHeader() {
     return Row(
       children: [
-        Text(
-          'Modules I can help with:',
-          style: Theme.of(context).primaryTextTheme.bodyLarge,
-        ),
+        largeLabel('Modules I can help with:', context),
         const SizedBox(width: 10),
         IconButton(
           onPressed: () {
@@ -580,14 +570,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget mediumLabel(String data) {
-    return Text(
-      data,
-      style: Theme.of(context).primaryTextTheme.bodyMedium,
-      textAlign: TextAlign.center,
-    );
-  }
-
   Widget getQuery(BuildContext context) {
     return StreamBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance
@@ -614,10 +596,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Text(
-                  'My upload:',
-                  style: Theme.of(context).primaryTextTheme.bodyLarge,
-                ),
+                largeLabel('My upload:', context),
                 Container(
                     decoration: BoxDecoration(
                         border: Border.all(width: 1, color: Colors.black26),
@@ -678,11 +657,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Padding(
                             padding: const EdgeInsets.fromLTRB(
                                 16.0, 40.0, 16.0, 8.0),
-                            child: Text(
-                              'Mentor Rank:',
-                              style:
-                                  Theme.of(context).primaryTextTheme.bodyLarge,
-                            ),
+                            child: largeLabel('Mentor Rank:', context),
                           ),
                           Padding(
                             padding:

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:ta_anywhere/components/textSize.dart';
 
 import 'package:ta_anywhere/widget/tabs.dart';
 
@@ -20,13 +21,10 @@ class SearchMentorScreen extends StatelessWidget {
             const SizedBox(
               height: 15,
             ),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  'Searching for mentor...',
-                  style: TextStyle(fontSize: 30),
-                ),
+                largeLabel('Searching for mentor...', context),
                 Icon(
                   Icons.search_rounded,
                   color: Colors.white,

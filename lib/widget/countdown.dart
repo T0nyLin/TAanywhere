@@ -7,6 +7,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'package:ta_anywhere/components/auth.dart';
 import 'package:ta_anywhere/components/sendPushMessage.dart';
+import 'package:ta_anywhere/components/textSize.dart';
 import 'package:ta_anywhere/screens/mentorSelectPayment.dart';
 import 'package:ta_anywhere/widget/mentormap.dart';
 import 'package:ta_anywhere/widget/qr_scanner.dart';
@@ -115,10 +116,7 @@ class _CountdownState extends State<Countdown> {
       duration: const Duration(seconds: 10),
       (context, progress) => AlertDialog(
         title: Center(
-          child: Text(
-            'Are you with your mentee?',
-            style: Theme.of(context).primaryTextTheme.bodyLarge,
-          ),
+          child: largeLabel('Are you with your mentee?', context),
         ),
         content: Text('You cannot come back to this screen later.'),
         actions: [
@@ -157,10 +155,7 @@ class _CountdownState extends State<Countdown> {
       duration: const Duration(seconds: 10),
       (context, progress) => AlertDialog(
         title: Center(
-          child: Text(
-            'Stop session now?',
-            style: Theme.of(context).primaryTextTheme.bodyLarge,
-          ),
+          child: largeLabel('Stop session now?', context),
         ),
         actions: [
           MaterialButton(
@@ -243,13 +238,6 @@ class _CountdownState extends State<Countdown> {
     );
   }
 
-  Widget mediumLabel(String data) {
-    return Text(
-      data,
-      style: Theme.of(context).primaryTextTheme.bodyMedium,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final isRunning = timer == null ? false : timer!.isActive;
@@ -267,7 +255,7 @@ class _CountdownState extends State<Countdown> {
             if (isRunning && widget.time == 10)
               ElevatedButton.icon(
                 icon: const Icon(Icons.person),
-                label: mediumLabel("View ${widget.data['mentee']}'s Profile"),
+                label: mediumLabel("View ${widget.data['mentee']}'s Profile", context),
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: ((context) => ViewUserProfileScreen(
@@ -291,11 +279,11 @@ class _CountdownState extends State<Countdown> {
               height: 40,
             ),
             if (isRunning && widget.time == 10)
-              mediumLabel('See Location on Map:'),
+              mediumLabel('See Location on Map:', context),
             if (isRunning && widget.time == 10)
               TextButton.icon(
                 icon: const Icon(Icons.location_on_rounded),
-                label: mediumLabel(widget.data['location']),
+                label: mediumLabel(widget.data['location'], context),
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: ((context) => MentorMapScreen(

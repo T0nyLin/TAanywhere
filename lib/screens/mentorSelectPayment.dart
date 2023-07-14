@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:ta_anywhere/components/auth.dart';
 
 import 'package:ta_anywhere/components/sendPushMessage.dart';
+import 'package:ta_anywhere/components/textSize.dart';
 import 'package:ta_anywhere/widget/tabs.dart';
 
 class MentorSelectReceiveModeScreen extends StatefulWidget {
@@ -23,12 +24,6 @@ class _MentorSelectReceiveModeScreenState
   String currentOption = options[0];
   final User? user = Auth().currentUser;
   CollectionReference userRef = FirebaseFirestore.instance.collection('users');
-  Widget mediumLabel(String data) {
-    return Text(
-      data,
-      style: Theme.of(context).primaryTextTheme.bodyMedium,
-    );
-  }
 
   Widget getUser(BuildContext context) {
     return FutureBuilder<DocumentSnapshot>(
@@ -36,11 +31,11 @@ class _MentorSelectReceiveModeScreenState
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (snapshot.hasError) {
-          return mediumLabel('Something went wrong');
+          return mediumLabel('Something went wrong', context);
         }
 
         if (snapshot.hasData && !snapshot.data!.exists) {
-          return mediumLabel('Mentor does not exist');
+          return mediumLabel('Mentor does not exist', context);
         }
 
         if (snapshot.connectionState == ConnectionState.done) {
@@ -78,18 +73,12 @@ class _MentorSelectReceiveModeScreenState
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                'Choose what you would like to receive',
-                style: Theme.of(context).primaryTextTheme.bodyLarge,
-              ),
+              largeLabel('Choose what you would like to receive', context),
               SizedBox(
                 height: 50,
               ),
               RadioListTile(
-                title: Text(
-                  'Receive Payment of ${widget.data['cost']}',
-                  style: Theme.of(context).primaryTextTheme.bodyMedium,
-                ),
+                title: mediumLabel('Receive Payment of ${widget.data['cost']}', context),
                 value: options[0],
                 groupValue: currentOption,
                 onChanged: (value) {
@@ -99,10 +88,7 @@ class _MentorSelectReceiveModeScreenState
                 },
               ),
               RadioListTile(
-                title: Text(
-                  'Free of Charge',
-                  style: Theme.of(context).primaryTextTheme.bodyMedium,
-                ),
+                title: mediumLabel('Free of Charge', context),
                 value: options[1],
                 groupValue: currentOption,
                 onChanged: (value) {

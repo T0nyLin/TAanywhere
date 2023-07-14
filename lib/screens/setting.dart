@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ta_anywhere/components/auth.dart';
 import 'package:ta_anywhere/screens/editProfile.dart';
+import 'package:ta_anywhere/screens/faq.dart';
 
 class SettingScreen extends StatelessWidget {
   SettingScreen({Key? key});
@@ -56,6 +57,12 @@ class SettingScreen extends StatelessWidget {
           ListTile(
             title: Text("FAQ"),
             leading: Icon(Icons.question_mark_rounded),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => FAQscreen()),
+              );
+            },
             trailing: Icon(Icons.arrow_forward_ios),
           ),
           ListTile(

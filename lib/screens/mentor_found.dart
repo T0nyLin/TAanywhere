@@ -8,6 +8,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:ta_anywhere/components/auth.dart';
 import 'package:ta_anywhere/components/reupload_del.dart';
 import 'package:ta_anywhere/components/sendPushMessage.dart';
+import 'package:ta_anywhere/components/textSize.dart';
 import 'package:ta_anywhere/widget/qr_code.dart';
 import 'package:ta_anywhere/widget/tabs.dart';
 import 'package:ta_anywhere/widget/viewprofile.dart';
@@ -21,31 +22,12 @@ class MentorFound extends StatelessWidget {
     String mentorID = '';
     String mentorName = '';
 
-    Widget mediumLabel(String data) {
-      return Text(
-        data,
-        style: Theme.of(context).primaryTextTheme.bodyMedium,
-        textAlign: TextAlign.center,
-      );
-    }
-
-    Widget smallLabel(String data) {
-      return Text(
-        data,
-        style: Theme.of(context).primaryTextTheme.bodySmall,
-        textAlign: TextAlign.center,
-      );
-    }
-
     void cancelAlert(Map<String, dynamic> data) {
       showDialog(
           context: context,
           builder: (context) => AlertDialog(
-                title: Text(
-                  'Are you sure you want to cancel meet?',
-                  style: Theme.of(context).primaryTextTheme.bodyLarge,
-                ),
-                content: smallLabel('Note: your query will be reuploaded.'),
+                title: largeLabel('Are you sure you want to cancel meet?', context),
+                content: smallLabel('Note: your query will be reuploaded.', context),
                 actions: [
                   MaterialButton(
                     onPressed: () {
@@ -81,11 +63,11 @@ class MentorFound extends StatelessWidget {
         builder:
             (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
           if (snapshot.hasError) {
-            return mediumLabel('Something went wrong');
+            return mediumLabel('Something went wrong', context);
           }
 
           if (snapshot.hasData && !snapshot.data!.exists) {
-            return mediumLabel('Mentor does not exist');
+            return mediumLabel('Mentor does not exist', context);
           }
 
           if (snapshot.connectionState == ConnectionState.done) {
@@ -109,16 +91,16 @@ class MentorFound extends StatelessWidget {
                 ),
                 Center(
                   child: mediumLabel(
-                      '$mentorName has accepted to mentor you. $gender will be arriving your location in 10 minutes.'),
+                      '$mentorName has accepted to mentor you. $gender will be arriving your location in 10 minutes.', context),
                 ),
                 smallLabel(
-                    '(Else the meet will be cancelled and the query can be reuploaded.)'),
+                    '(Else the meet will be cancelled and the query can be reuploaded.)', context),
                 Transform.rotate(
                     angle: -90 * pi / 180,
                     child: LoadingAnimationWidget.prograssiveDots(
                         color: Color.fromARGB(255, 48, 97, 104), size: 50)),
                 mediumLabel(
-                    'Do not change your location and make sure to help them locate you.'),
+                    'Do not change your location and make sure to help them locate you.', context),
                 SizedBox(
                   height: 50,
                 ),
@@ -153,7 +135,7 @@ class MentorFound extends StatelessWidget {
                           builder: ((context) => TabsScreen())));
                     },
                     icon: Icon(Icons.home_rounded),
-                    label: mediumLabel('Return Home')),
+                    label: mediumLabel('Return Home', context)),
                 SizedBox(
                   height: 60,
                 ),
@@ -187,11 +169,11 @@ class MentorFound extends StatelessWidget {
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (snapshot.hasError) {
-          return mediumLabel('Something went wrong');
+          return mediumLabel('Something went wrong', context);
         }
 
         if (snapshot.hasData && !snapshot.data!.exists) {
-          return mediumLabel('Query does not exist');
+          return mediumLabel('Query does not exist', context);
         }
 
         if (snapshot.connectionState == ConnectionState.done) {

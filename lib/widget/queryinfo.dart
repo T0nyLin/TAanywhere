@@ -8,6 +8,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import 'package:ta_anywhere/components/auth.dart';
 import 'package:ta_anywhere/components/sendPushMessage.dart';
+import 'package:ta_anywhere/components/textSize.dart';
 import 'package:ta_anywhere/widget/countdown.dart';
 import 'package:ta_anywhere/widget/viewprofile.dart';
 
@@ -73,10 +74,7 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
       builder: (context) {
         return AlertDialog(
           title: Center(
-            child: Text(
-              "${widget.data['mentee']}'s location",
-              style: Theme.of(context).primaryTextTheme.bodyLarge,
-            ),
+            child: largeLabel("${widget.data['mentee']}'s location", context),
           ),
           content: SizedBox(
             height: 220,
@@ -104,20 +102,6 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
     );
   }
 
-  Widget mediumLabel(String data) {
-    return Text(
-      data,
-      style: Theme.of(context).primaryTextTheme.bodyMedium,
-    );
-  }
-
-  Widget smallLabel(String data) {
-    return Text(
-      data,
-      style: Theme.of(context).primaryTextTheme.bodySmall,
-    );
-  }
-
   Widget getUser() {
     String token = widget.data['token'];
 
@@ -127,11 +111,11 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (snapshot.hasError) {
-          return mediumLabel('Something went wrong');
+          return mediumLabel('Something went wrong', context);
         }
 
         if (snapshot.hasData && !snapshot.data!.exists) {
-          return mediumLabel('Mentor does not exist');
+          return mediumLabel('Mentor does not exist', context);
         }
 
         if (snapshot.connectionState == ConnectionState.done) {
@@ -145,7 +129,9 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
               minimumSize: Size(380, 40),
             ),
             onPressed: () {
-              sendPushMessage(token, 'Congrats, ${widget.data['mentee']}!',
+              sendPushMessage(
+                  token,
+                  'Congrats, ${widget.data['mentee']}! Mentor found!',
                   '$mentorUsername is on the way now.');
               FirebaseFirestore.instance
                   .collection('user queries')
@@ -220,10 +206,7 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
                             username: widget.data['mentee'],
                           ))));
                 },
-                child: Text(
-                  '${widget.data['mentee']}:',
-                  style: Theme.of(context).primaryTextTheme.bodyLarge!,
-                ),
+                child: largeLabel('${widget.data['mentee']}:', context),
               ),
               Expanded(
                 child: Text(
@@ -239,14 +222,14 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
           ),
           TextButton.icon(
             icon: const Icon(Icons.location_on_rounded),
-            label: mediumLabel(widget.data['location']),
+            label: mediumLabel(widget.data['location'], context),
             onPressed: _previewMap,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              smallLabel('Landmark: '),
-              smallLabel(widget.data['landmark']),
+              smallLabel('Landmark: ', context),
+              smallLabel(widget.data['landmark'], context),
             ],
           ),
           const SizedBox(
@@ -258,19 +241,19 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  mediumLabel('Module Code: '),
-                  mediumLabel('Cost: '),
-                  mediumLabel('Level: '),
-                  mediumLabel('Posted: '),
+                  mediumLabel('Module Code: ', context),
+                  mediumLabel('Cost: ', context),
+                  mediumLabel('Level: ', context),
+                  mediumLabel('Posted: ', context),
                 ],
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  mediumLabel(widget.data['module Code']),
-                  mediumLabel(widget.data['cost']),
-                  mediumLabel(widget.data['level']),
-                  mediumLabel('$posted min ago'),
+                  mediumLabel(widget.data['module Code'], context),
+                  mediumLabel(widget.data['cost'], context),
+                  mediumLabel(widget.data['level'], context),
+                  mediumLabel('$posted min ago', context),
                 ],
               ),
             ],
@@ -281,7 +264,7 @@ class _QueryInfoScreenState extends State<QueryInfoScreen> {
           if (user!.uid != widget.data['menteeid']) getUser(),
           if (user!.uid != widget.data['menteeid'])
             smallLabel(
-                '*Before accepting, please ensure that you can reach the destination in 10 minutes.'),
+                '*Before accepting, please ensure that you can reach the destination in 10 minutes.', context),
         ],
       ),
     );

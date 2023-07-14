@@ -73,7 +73,10 @@ class _QRScanState extends State<QRScan> {
                 : Text(
                     'Scan Mentee',
                     maxLines: 1,
-                    style: Theme.of(context).primaryTextTheme.bodySmall,
+                    style: Theme.of(context)
+                        .primaryTextTheme
+                        .bodySmall!
+                        .copyWith(color: Colors.white),
                   ),
           ],
         ),
