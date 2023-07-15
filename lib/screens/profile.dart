@@ -631,6 +631,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     });
   }
+
+  Widget _editButton(BuildContext context) {
+    return Positioned(
+      bottom: 20,
+      right: 20,
+      child: GestureDetector(
+        onTap: () {
+          _pickImage(); // Activate the image picker
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.grey.withOpacity(0.8),
+            shape: BoxShape.circle,
+          ),
+          padding: EdgeInsets.all(8),
+          child: Icon(
+            Icons.edit,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -728,16 +751,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ],
                         ),
                       ),
-                      GestureDetector(
-                        onTap: _pickImage,
-                        child: CircleAvatar(
-                          radius: 80,
-                          backgroundImage: base64Image != null
-                            ?  MemoryImage(base64Decode(base64Image)) as ImageProvider<Object>
-                            :  AssetImage('assets/icons/profile_pic.png'),
-                          // _imageFile != null ? FileImage(_imageFile!) as ImageProvider<Object> : AssetImage('assets/icons/profile_pic.png'),
+                      Stack(
+                          children: [
+                            CircleAvatar(
+                              radius: 80,
+                              backgroundImage: base64Image != null
+                                  ? MemoryImage(base64Decode(base64Image)) as ImageProvider<Object>
+                                  : AssetImage('assets/icons/profile_pic.png'),
+                            ),
+                            _editButton(context),
+                          ],
                         ),
-                      ),
                     ],
                   ),
                   Padding(
