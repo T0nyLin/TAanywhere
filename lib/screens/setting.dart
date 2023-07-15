@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ta_anywhere/components/auth.dart';
 import 'package:ta_anywhere/screens/editProfile.dart';
+import 'package:ta_anywhere/screens/editPassword.dart';
 import 'package:ta_anywhere/screens/faq.dart';
 
 class SettingScreen extends StatelessWidget {
@@ -17,6 +18,13 @@ class SettingScreen extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => EditProfilePage()),
+    );
+  }
+
+  void _navigateToEditPassword(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EditPasswordPage()),
     );
   }
 
@@ -43,6 +51,9 @@ class SettingScreen extends StatelessWidget {
           ListTile(
             title: Text("Change Password"),
             leading: Icon(Icons.edit),
+            onTap: () {
+              _navigateToEditPassword(context);
+            },
             trailing: Icon(Icons.arrow_forward_ios),
           ),
           Divider(

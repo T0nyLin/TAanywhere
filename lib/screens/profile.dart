@@ -4,6 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'dart:convert';
 
 import 'package:ta_anywhere/components/auth.dart';
 import 'package:ta_anywhere/components/queryTile.dart';
@@ -24,6 +27,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final User? user = Auth().currentUser;
   final _modController = TextEditingController();
   double avg = 0;
+  File? _imageFile = null;
 
   Future<void> signOut() async {
     await Auth().signOut();
@@ -603,6 +607,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
   }
 
+  Future<void> _pickImage() async {
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    setState(() {
+      if (pickedFile != null) {
+        _imageFile = File(pickedFile.path);
+
+        // Read the image file as bytes
+        List<int> imageBytes = _imageFile!.readAsBytesSync();
+
+        // Encode the image bytes as a base64 string
+        String base64Image = base64Encode(imageBytes);
+
+        // Get the user's ID
+        String userId = user?.uid ?? '';
+
+        // Update the user's document in Firestore with the base64 image string
+        CollectionReference usersRef =
+            FirebaseFirestore.instance.collection('users');
+        usersRef.doc(userId).update({'profile_pic': base64Image});
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+  
   @override
   Widget build(BuildContext context) {
     // Get the user's ID
@@ -641,6 +670,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             data!['rater'] == 0
                 ? avg = 0
                 : avg = data['rating'] / data['rater'];
+
+            String? base64Image = data['profile_pic'];
 
             return Scrollbar(
                 child: SingleChildScrollView(
@@ -697,10 +728,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ],
                         ),
                       ),
-                      CircleAvatar(
-                        radius: 80,
-                        backgroundImage: AssetImage(
-                            'assets/icons/profile_pic.png'), // Replace with user image from database soon
+                      GestureDetector(
+                        onTap: _pickImage,
+                        child: CircleAvatar(
+                          radius: 80,
+                          backgroundImage: base64Image != null
+                            ?  MemoryImage(base64Decode(base64Image)) as ImageProvider<Object>
+                            :  AssetImage('assets/icons/profile_pic.png'),
+                          // _imageFile != null ? FileImage(_imageFile!) as ImageProvider<Object> : AssetImage('assets/icons/profile_pic.png'),
+                        ),
                       ),
                     ],
                   ),
