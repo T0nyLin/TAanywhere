@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:ta_anywhere/components/auth.dart';
@@ -99,7 +100,7 @@ class SettingScreen extends StatelessWidget {
                               '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
                           .join('&');
                     }
-          
+
                     final Uri emailUri = Uri(
                       scheme: 'mailto',
                       path: 'taanywhere@gmail.com',
@@ -115,6 +116,19 @@ class SettingScreen extends StatelessWidget {
                       debugPrint(e.toString());
                     }
                   },
+                  onLongPress: () {
+                    Clipboard.setData(
+                            ClipboardData(text: 'taanywhere@gmail.com'))
+                        .then((value) {
+                      ScaffoldMessenger.of(context)
+                        ..removeCurrentSnackBar()
+                        ..showSnackBar(SnackBar(
+                          content: Text('Copied to Clipboard'),
+                        ));
+                    });
+                  },
+                  subtitle: smallLabel(
+                      'Please choose Outlook to send message to us.', context),
                   trailing: Icon(
                     Icons.touch_app,
                   ),
