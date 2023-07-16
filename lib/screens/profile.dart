@@ -632,6 +632,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         // Generate a unique filename for the image
         String fileName = userId + '_' + path.basename(_imageFile!.path);
 
+        // Call the existing _deleteProfilePic function to delete the previous profile picture
+        _deleteProfilePic();
+
         // Upload the image file to Firebase Storage
         Reference storageRef =
             FirebaseStorage.instance.ref().child('profile_pictures').child(fileName);
@@ -653,28 +656,106 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
+  Future<void> _deleteProfilePic() async {
+    // Get the user's ID
+    String userId = user?.uid ?? '';
+
+    // Get the current profile picture URL from Firestore
+    CollectionReference usersRef =
+        FirebaseFirestore.instance.collection('users');
+    DocumentSnapshot userSnapshot = await usersRef.doc(userId).get();
+    Map<String, dynamic>? userData = userSnapshot.data() as Map<String, dynamic>?;
+
+    // Check if the user data and profile picture URL exist
+    if (userData != null && userData.containsKey('profile_pic')) {
+      String? profilePicUrl = userData['profile_pic'];
+
+      // Delete the profile picture file from Firebase Storage
+      if (profilePicUrl != null) {
+        Reference storageRef = FirebaseStorage.instance.refFromURL(profilePicUrl);
+        await storageRef.delete();
+      }
+    }
+
+    // Update the user's document in Firestore to remove the profile picture URL
+    usersRef.doc(userId).update({'profile_pic': null});
+
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Changed Successfully'),
+    ));
+  }
+
+
+
   Widget _editButton(BuildContext context) {
     return Positioned(
       bottom: 20,
-      right: 20,
-      child: GestureDetector(
-        onTap: () {
-          _pickImage(); // Activate the image picker
-        },
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.grey.withOpacity(0.8),
-            shape: BoxShape.circle,
+      right: 0,
+      left: 0,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          GestureDetector(
+            onTap: () {
+              _pickImage(); // Activate the image picker
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(0.8),
+                shape: BoxShape.circle,
+              ),
+              padding: EdgeInsets.all(8),
+              child: Icon(
+                Icons.edit,
+                color: Colors.white,
+              ),
+            ),
           ),
-          padding: EdgeInsets.all(8),
-          child: Icon(
-            Icons.edit,
-            color: Colors.white,
+          SizedBox(width: 10),
+          GestureDetector(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Confirmation'),
+                    content: Text('Are you sure you want to remove the profile picture?'),
+                    actions: [
+                      TextButton(
+                        child: Text('Cancel'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      TextButton(
+                        child: Text('Remove'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          _deleteProfilePic(); // Delete the profile picture
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(0.8),
+                shape: BoxShape.circle,
+              ),
+              padding: EdgeInsets.all(8),
+              child: Icon(
+                Icons.delete,
+                color: Colors.white,
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
