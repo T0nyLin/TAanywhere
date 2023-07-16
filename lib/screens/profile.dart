@@ -81,15 +81,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _mentorRank() {
-    return const Text(
-      'Year 2',
-      style: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: Colors.black,
-      ),
-    );
+  Widget _mentorRank(num rater) {
+    String rank = '';
+    if (rater <= 2) {
+      rank = 'Newcomer';
+    } else if (rater <= 5) {
+      rank = 'Beginner';
+    } else if (rater <= 10) {
+      rank = 'Average';
+    } else if (rater <= 20) {
+      rank = 'Talented';
+    } else if (rater <= 35) {
+      rank = 'Competent';
+    } else if (rater <= 60) {
+      rank = 'Proficient';
+    } else if (rater <= 80) {
+      rank = 'Master';
+    } else {
+      rank = 'Grand Master';
+    }
+    return largeLabel(rank, context);
   }
 
   Widget _ratingStars(num rater, num rating) {
@@ -608,7 +619,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     setState(() {
       if (pickedFile != null) {
         _imageFile = File(pickedFile.path);
@@ -654,7 +666,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     // Get the user's ID
@@ -710,15 +722,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text(
-                              'Mentor Rank:',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
-                            _mentorRank(),
+                            largeLabel('Rank:', context),
+                            _mentorRank(data['rater']),
                             SizedBox(
                               height: 20,
                             ),
@@ -730,7 +735,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ),
                                   )
                                 : Text(
-                                    '${data['rater']} RATINGS',
+                                    '${data['rater']} RATINGS', //PLURAL ratings
                                     style: TextStyle(
                                       fontSize: 17,
                                     ),
@@ -752,16 +757,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                       Stack(
-                          children: [
-                            CircleAvatar(
-                              radius: 80,
-                              backgroundImage: base64Image != null
-                                  ? MemoryImage(base64Decode(base64Image)) as ImageProvider<Object>
-                                  : AssetImage('assets/icons/profile_pic.png'),
-                            ),
-                            _editButton(context),
-                          ],
-                        ),
+                        children: [
+                          CircleAvatar(
+                            radius: 80,
+                            backgroundImage: base64Image != null
+                                ? MemoryImage(base64Decode(base64Image))
+                                    as ImageProvider<Object>
+                                : AssetImage('assets/icons/profile_pic.png'),
+                          ),
+                          _editButton(context),
+                        ],
+                      ),
                     ],
                   ),
                   Padding(

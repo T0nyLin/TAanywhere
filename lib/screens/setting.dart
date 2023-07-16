@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import 'package:ta_anywhere/components/auth.dart';
+import 'package:ta_anywhere/components/textSize.dart';
 import 'package:ta_anywhere/screens/editProfile.dart';
 import 'package:ta_anywhere/screens/editPassword.dart';
 import 'package:ta_anywhere/screens/faq.dart';
@@ -76,10 +79,48 @@ class SettingScreen extends StatelessWidget {
             },
             trailing: Icon(Icons.arrow_forward_ios),
           ),
-          ListTile(
-            title: Text("Contact us"),
-            leading: Icon(Icons.phone_iphone_rounded),
-            trailing: Icon(Icons.arrow_forward_ios),
+          Theme(
+            data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+            child: ExpansionTile(
+              title: Text("Contact us"),
+              leading: Icon(
+                Icons.mail,
+                color: Color(0xFF585858),
+              ),
+              iconColor: Color.fromARGB(255, 69, 69, 69),
+              trailing: Icon(Icons.arrow_forward_ios),
+              children: [
+                ListTile(
+                  title: mediumLabel('taanywhere@gmail.com', context),
+                  onTap: () async {
+                    String? encodeQueryParameters(Map<String, String> params) {
+                      return params.entries
+                          .map((MapEntry<String, String> e) =>
+                              '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+                          .join('&');
+                    }
+          
+                    final Uri emailUri = Uri(
+                      scheme: 'mailto',
+                      path: 'taanywhere@gmail.com',
+                      query: encodeQueryParameters(<String, String>{
+                        'subject': '',
+                        'body': '',
+                      }),
+                    );
+                    launchUrl(emailUri);
+                    try {
+                      await launchUrl(emailUri);
+                    } catch (e) {
+                      debugPrint(e.toString());
+                    }
+                  },
+                  trailing: Icon(
+                    Icons.touch_app,
+                  ),
+                )
+              ],
+            ),
           ),
           Divider(
             color: Colors.black,

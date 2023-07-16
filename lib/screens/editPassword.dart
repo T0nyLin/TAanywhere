@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ta_anywhere/components/textSize.dart';
 
 class EditPasswordPage extends StatefulWidget {
   EditPasswordPage({Key? key}) : super(key: key);
@@ -91,10 +92,7 @@ class _EditPasswordPageState extends State<EditPasswordPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "Edit Password",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-        ),
+        title: largeLabel('Change Password', context),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
