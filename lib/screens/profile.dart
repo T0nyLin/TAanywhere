@@ -6,7 +6,6 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'dart:convert';
 
 import 'package:ta_anywhere/components/auth.dart';
 import 'package:ta_anywhere/components/queryTile.dart';
@@ -15,6 +14,8 @@ import 'package:ta_anywhere/screens/setting.dart';
 import 'package:ta_anywhere/widget/qr_code.dart';
 import 'package:ta_anywhere/widget/widget_tree.dart';
 import 'package:ta_anywhere/components/modulecode.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart' as path;
 
 class ProfileScreen extends StatefulWidget {
   ProfileScreen({Key? key}) : super(key: key);
@@ -28,6 +29,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _modController = TextEditingController();
   double avg = 0;
   File? _imageFile = null;
+  String? _profilePicUrl;
 
   Future<void> signOut() async {
     await Auth().signOut();
@@ -619,25 +621,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _pickImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
     setState(() {
       if (pickedFile != null) {
         _imageFile = File(pickedFile.path);
 
-        // Read the image file as bytes
-        List<int> imageBytes = _imageFile!.readAsBytesSync();
-
-        // Encode the image bytes as a base64 string
-        String base64Image = base64Encode(imageBytes);
-
         // Get the user's ID
         String userId = user?.uid ?? '';
 
-        // Update the user's document in Firestore with the base64 image string
-        CollectionReference usersRef =
-            FirebaseFirestore.instance.collection('users');
-        usersRef.doc(userId).update({'profile_pic': base64Image});
+        // Generate a unique filename for the image
+        String fileName = userId + '_' + path.basename(_imageFile!.path);
+
+        // Upload the image file to Firebase Storage
+        Reference storageRef =
+            FirebaseStorage.instance.ref().child('profile_pictures').child(fileName);
+        UploadTask uploadTask = storageRef.putFile(_imageFile!);
+
+        // Monitor the upload task to get the download URL
+        uploadTask.whenComplete(() {
+          if (uploadTask.snapshot.state == TaskState.success) {
+            storageRef.getDownloadURL().then((imageUrl) {
+              // Update the user's document in Firestore with the download URL of the image
+              CollectionReference usersRef = FirebaseFirestore.instance.collection('users');
+              usersRef.doc(userId).update({'profile_pic': imageUrl});
+            });
+          }
+        });
       } else {
         print('No image selected.');
       }
@@ -706,7 +715,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ? avg = 0
                 : avg = data['rating'] / data['rater'];
 
-            String? base64Image = data['profile_pic'];
+            _profilePicUrl = data['profile_pic']; // Update the profile picture URL
 
             return Scrollbar(
                 child: SingleChildScrollView(
@@ -760,8 +769,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         children: [
                           CircleAvatar(
                             radius: 80,
-                            backgroundImage: base64Image != null
-                                ? MemoryImage(base64Decode(base64Image))
+                            backgroundImage: _profilePicUrl != null
+                                ? NetworkImage(_profilePicUrl!)
                                     as ImageProvider<Object>
                                 : AssetImage('assets/icons/profile_pic.png'),
                           ),
