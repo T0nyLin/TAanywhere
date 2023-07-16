@@ -21,15 +21,26 @@ class _ViewUserProfileScreenState extends State<ViewUserProfileScreen> {
   final User? user = Auth().currentUser;
   double avg = 0;
 
-  Widget _mentorRank() {
-    return const Text(
-      'Year 2',
-      style: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: Colors.black,
-      ),
-    );
+  Widget _mentorRank(num rater) {
+    String rank = '';
+    if (rater <= 2) {
+      rank = 'Newcomer';
+    } else if (rater <= 5) {
+      rank = 'Beginner';
+    } else if (rater <= 10) {
+      rank = 'Average';
+    } else if (rater <= 20) {
+      rank = 'Talented';
+    } else if (rater <= 35) {
+      rank = 'Competent';
+    } else if (rater <= 60) {
+      rank = 'Proficient';
+    } else if (rater <= 80) {
+      rank = 'Master';
+    } else {
+      rank = 'Grand Master';
+    }
+    return largeLabel(rank, context);
   }
 
   Widget _ratingStars(num rater, num rating) {
@@ -267,7 +278,7 @@ class _ViewUserProfileScreenState extends State<ViewUserProfileScreen> {
                                   color: Colors.black,
                                 ),
                               ),
-                              _mentorRank(),
+                              _mentorRank(data['rater']),
                               SizedBox(
                                 height: 20,
                               ),

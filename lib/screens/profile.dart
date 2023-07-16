@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 import 'package:ta_anywhere/components/auth.dart';
 import 'package:ta_anywhere/components/queryTile.dart';
@@ -12,6 +14,8 @@ import 'package:ta_anywhere/screens/setting.dart';
 import 'package:ta_anywhere/widget/qr_code.dart';
 import 'package:ta_anywhere/widget/widget_tree.dart';
 import 'package:ta_anywhere/components/modulecode.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart' as path;
 
 class ProfileScreen extends StatefulWidget {
   ProfileScreen({Key? key}) : super(key: key);
@@ -24,6 +28,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final User? user = Auth().currentUser;
   final _modController = TextEditingController();
   double avg = 0;
+  File? _imageFile = null;
+  String? _profilePicUrl;
 
   Future<void> signOut() async {
     await Auth().signOut();
@@ -77,15 +83,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _mentorRank() {
-    return const Text(
-      'Year 2',
-      style: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: Colors.black,
-      ),
-    );
+  Widget _mentorRank(num rater) {
+    String rank = '';
+    if (rater <= 2) {
+      rank = 'Newcomer';
+    } else if (rater <= 5) {
+      rank = 'Beginner';
+    } else if (rater <= 10) {
+      rank = 'Average';
+    } else if (rater <= 20) {
+      rank = 'Talented';
+    } else if (rater <= 35) {
+      rank = 'Competent';
+    } else if (rater <= 60) {
+      rank = 'Proficient';
+    } else if (rater <= 80) {
+      rank = 'Master';
+    } else {
+      rank = 'Grand Master';
+    }
+    return largeLabel(rank, context);
   }
 
   Widget _ratingStars(num rater, num rating) {
@@ -603,6 +620,143 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
   }
 
+  Future<void> _pickImage() async {
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    setState(() {
+      if (pickedFile != null) {
+        _imageFile = File(pickedFile.path);
+
+        // Get the user's ID
+        String userId = user?.uid ?? '';
+
+        // Generate a unique filename for the image
+        String fileName = userId + '_' + path.basename(_imageFile!.path);
+
+        // Call the existing _deleteProfilePic function to delete the previous profile picture
+        _deleteProfilePic();
+
+        // Upload the image file to Firebase Storage
+        Reference storageRef =
+            FirebaseStorage.instance.ref().child('profile_pictures').child(fileName);
+        UploadTask uploadTask = storageRef.putFile(_imageFile!);
+
+        // Monitor the upload task to get the download URL
+        uploadTask.whenComplete(() {
+          if (uploadTask.snapshot.state == TaskState.success) {
+            storageRef.getDownloadURL().then((imageUrl) {
+              // Update the user's document in Firestore with the download URL of the image
+              CollectionReference usersRef = FirebaseFirestore.instance.collection('users');
+              usersRef.doc(userId).update({'profile_pic': imageUrl});
+            });
+          }
+        });
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  Future<void> _deleteProfilePic() async {
+    // Get the user's ID
+    String userId = user?.uid ?? '';
+
+    // Get the current profile picture URL from Firestore
+    CollectionReference usersRef =
+        FirebaseFirestore.instance.collection('users');
+    DocumentSnapshot userSnapshot = await usersRef.doc(userId).get();
+    Map<String, dynamic>? userData = userSnapshot.data() as Map<String, dynamic>?;
+
+    // Check if the user data and profile picture URL exist
+    if (userData != null && userData.containsKey('profile_pic')) {
+      String? profilePicUrl = userData['profile_pic'];
+
+      // Delete the profile picture file from Firebase Storage
+      if (profilePicUrl != null) {
+        Reference storageRef = FirebaseStorage.instance.refFromURL(profilePicUrl);
+        await storageRef.delete();
+      }
+    }
+
+    // Update the user's document in Firestore to remove the profile picture URL
+    usersRef.doc(userId).update({'profile_pic': null});
+
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Changed Successfully'),
+    ));
+  }
+
+
+
+  Widget _editButton(BuildContext context) {
+    return Positioned(
+      bottom: 20,
+      right: 0,
+      left: 0,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          GestureDetector(
+            onTap: () {
+              _pickImage(); // Activate the image picker
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(0.8),
+                shape: BoxShape.circle,
+              ),
+              padding: EdgeInsets.all(8),
+              child: Icon(
+                Icons.edit,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          SizedBox(width: 10),
+          GestureDetector(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Confirmation'),
+                    content: Text('Are you sure you want to remove the profile picture?'),
+                    actions: [
+                      TextButton(
+                        child: Text('Cancel'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      TextButton(
+                        child: Text('Remove'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          _deleteProfilePic(); // Delete the profile picture
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(0.8),
+                shape: BoxShape.circle,
+              ),
+              padding: EdgeInsets.all(8),
+              child: Icon(
+                Icons.delete,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     // Get the user's ID
@@ -642,6 +796,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ? avg = 0
                 : avg = data['rating'] / data['rater'];
 
+            _profilePicUrl = data['profile_pic']; // Update the profile picture URL
+
             return Scrollbar(
                 child: SingleChildScrollView(
               child: Column(
@@ -656,15 +812,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text(
-                              'Mentor Rank:',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
-                            _mentorRank(),
+                            largeLabel('Rank:', context),
+                            _mentorRank(data['rater']),
                             SizedBox(
                               height: 20,
                             ),
@@ -676,7 +825,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ),
                                   )
                                 : Text(
-                                    '${data['rater']} RATINGS',
+                                    '${data['rater']} RATINGS', //PLURAL ratings
                                     style: TextStyle(
                                       fontSize: 17,
                                     ),
@@ -697,10 +846,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ],
                         ),
                       ),
-                      CircleAvatar(
-                        radius: 80,
-                        backgroundImage: AssetImage(
-                            'assets/icons/profile_pic.png'), // Replace with user image from database soon
+                      Stack(
+                        children: [
+                          CircleAvatar(
+                            radius: 80,
+                            backgroundImage: _profilePicUrl != null
+                                ? NetworkImage(_profilePicUrl!)
+                                    as ImageProvider<Object>
+                                : AssetImage('assets/icons/profile_pic.png'),
+                          ),
+                          _editButton(context),
+                        ],
                       ),
                     ],
                   ),

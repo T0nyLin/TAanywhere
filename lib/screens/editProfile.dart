@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ta_anywhere/components/auth.dart';
+import 'package:flutter/cupertino.dart';
 
 class EditProfilePage extends StatefulWidget {
   EditProfilePage({Key? key}) : super(key: key);
@@ -16,6 +17,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _genderController = TextEditingController();
   TextEditingController _usernameController = TextEditingController();
+  String _gender = '';
 
   @override
   void initState() {
@@ -44,7 +46,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
       if (data != null) {
         setState(() {
           _emailController.text = data['email'] ?? '';
-           _genderController.text = data['gender'] ?? '';
+          //  _genderController.text = data['gender'] ?? '';
+           _gender = data['gender'] ?? '';
           _usernameController.text = data['username'] ?? '';
         });
       }
@@ -52,7 +55,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   void _saveChanges() async {
-    String gender =  _genderController.text;
+    // String gender =  _genderController.text;
+    String gender = _gender;
     String username = _usernameController.text;
 
     // Update the user profile data in Firestore
@@ -78,12 +82,124 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
   }
 
+  void showGenderPicker() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 200.0,
+          child: CupertinoPicker(
+            itemExtent: 40.0,
+            onSelectedItemChanged: (int index) {
+              setState(() {
+                if (index == 0) {
+                  _gender = 'Male';
+                } else if (index == 1) {
+                  _gender = 'Female';
+                } else if (index == 2) {
+                  _gender = 'Prefer Not To Tell';
+                }
+              });
+            },
+            children: [
+              Text('Male'),
+              Text('Female'),
+              Text('Prefer Not To Tell'),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void showGenderMenu(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(16.0),
+          topRight: Radius.circular(16.0),
+        ),
+      ),
+      builder: (BuildContext context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: const Text('Male'),
+              onTap: () {
+                setState(() {
+                  _gender = 'Male';
+                });
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text('Female'),
+              onTap: () {
+                setState(() {
+                  _gender = 'Female';
+                });
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text('Prefer Not To Tell'),
+              onTap: () {
+                setState(() {
+                  _gender = 'Prefer Not To Tell';
+                });
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildGenderDropdown() {
+    return Container(
+        child: DropdownButtonFormField<String>(
+          decoration: const InputDecoration(
+            border: InputBorder.none,
+            labelText: "Gender",
+            labelStyle: TextStyle(
+              color: Colors.black, // Set the label text color to black
+            ),
+          ),
+          value: _gender,
+          onChanged: (value) {
+            setState(() {
+              _gender = value!;
+            });
+          },
+          items: const [
+            DropdownMenuItem(
+              value: 'Male',
+              child: Text('Male'),
+            ),
+            DropdownMenuItem(
+              value: 'Female',
+              child: Text('Female'),
+            ),
+            DropdownMenuItem(
+              value: 'Prefer not to tell',
+              child: Text('Prefer not to tell'),
+            ),
+          ],
+        ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Edit Profile"),
+        title: Text(
+          "Edit Profile",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -99,6 +215,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     controller: _emailController,
                     decoration: InputDecoration(
                       labelText: "Email",
+                      labelStyle: TextStyle(
+                        color: Colors.black, // Set the label text color to black
+                      ),
                     ),
                   ),
                 ),
@@ -116,15 +235,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
               controller: _usernameController,
               decoration: InputDecoration(
                 labelText: "Username",
+                labelStyle: TextStyle(
+                  color: Colors.black, // Set the label text color to black
+                ),
               ),
             ),
             SizedBox(height: 16.0),
-            TextField(
-              controller: _genderController,
-              decoration: InputDecoration(
-                labelText: "Gender",
-              ),
-            ),
+            // TextField(
+            //   controller: _genderController,
+            //   decoration: InputDecoration(
+            //     labelText: "Gender",
+            //   ),
+            // ),
+            _buildGenderDropdown(),
             SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: _saveChanges,
