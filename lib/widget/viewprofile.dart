@@ -317,33 +317,25 @@ class _ViewUserProfileScreenState extends State<ViewUserProfileScreen> {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () {
-                            showImageViewer(
-                                context,
-                                CachedNetworkImageProvider(
-                                    _profilePicUrl.toString()),
-                                swipeDismissible: true,
-                                doubleTapZoomable: true);
-                          },
-                          child: CircleAvatar(
-                            radius: 80,
-                            backgroundImage: _profilePicUrl != null
-                                ? CachedNetworkImage(
-                                    imageUrl: _profilePicUrl.toString(),
-                                    fit: BoxFit.cover,
-                                    progressIndicatorBuilder:
-                                        (context, url, progress) =>
-                                            LoadingAnimationWidget
-                                                .threeArchedCircle(
-                                                    color: Color.fromARGB(
-                                                        255, 48, 97, 104),
-                                                    size: 60),
-                                    errorWidget: (context, url, error) =>
-                                        const Icon(Icons.error),
-                                  ) as ImageProvider<Object>
-                                : AssetImage('assets/icons/profile_pic.png'),
+                            onTap: () {
+                              if (_profilePicUrl != null) {
+                                showImageViewer(
+                                    context,
+                                    CachedNetworkImageProvider(
+                                        _profilePicUrl.toString()),
+                                    swipeDismissible: true,
+                                    doubleTapZoomable: true);
+                              }
+                            },
+                            child: CircleAvatar(
+                              radius: 80,
+                              backgroundImage: _profilePicUrl != null
+                                  ? CachedNetworkImageProvider(
+                                          _profilePicUrl.toString())
+                                      as ImageProvider<Object>
+                                  : AssetImage('assets/icons/profile_pic.png'),
+                            ),
                           ),
-                        ),
                       ],
                     ),
                     Padding(

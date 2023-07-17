@@ -1,6 +1,8 @@
 import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -21,13 +23,16 @@ class MentorFound extends StatelessWidget {
     final User? user = Auth().currentUser;
     String mentorID = '';
     String mentorName = '';
+    String? _profilePicUrl;
 
     void cancelAlert(Map<String, dynamic> data) {
       showDialog(
           context: context,
           builder: (context) => AlertDialog(
-                title: largeLabel('Are you sure you want to cancel meet?', context),
-                content: smallLabel('Note: your query will be reuploaded.', context),
+                title: largeLabel(
+                    'Are you sure you want to cancel meet?', context),
+                content:
+                    smallLabel('Note: your query will be reuploaded.', context),
                 actions: [
                   MaterialButton(
                     onPressed: () {
@@ -81,26 +86,42 @@ class MentorFound extends StatelessWidget {
               gender = 'They';
             }
             mentorName = data2['username'];
+            _profilePicUrl = data2['profile_pic'];
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                CircleAvatar(
-                  backgroundImage: AssetImage("assets/icons/profile_pic.png"),
-                  radius: 60,
+                GestureDetector(
+                  onTap: () {
+                    if (_profilePicUrl != null) {
+                      showImageViewer(context,
+                          CachedNetworkImageProvider(_profilePicUrl.toString()),
+                          swipeDismissible: true, doubleTapZoomable: true);
+                    }
+                  },
+                  child: CircleAvatar(
+                    radius: 80,
+                    backgroundImage: _profilePicUrl != null
+                        ? CachedNetworkImageProvider(_profilePicUrl.toString())
+                            as ImageProvider<Object>
+                        : AssetImage('assets/icons/profile_pic.png'),
+                  ),
                 ),
                 Center(
                   child: mediumLabel(
-                      '$mentorName has accepted to mentor you. $gender will be arriving your location in 10 minutes.', context),
+                      '$mentorName has accepted to mentor you. $gender will be arriving your location in 10 minutes.',
+                      context),
                 ),
                 smallLabel(
-                    '(Else the meet will be cancelled and the query can be reuploaded.)', context),
+                    '(Else the meet will be cancelled and the query can be reuploaded.)',
+                    context),
                 Transform.rotate(
                     angle: -90 * pi / 180,
                     child: LoadingAnimationWidget.prograssiveDots(
                         color: Color.fromARGB(255, 48, 97, 104), size: 50)),
                 mediumLabel(
-                    'Do not change your location and make sure to help them locate you.', context),
+                    'Do not change your location and make sure to help them locate you.',
+                    context),
                 SizedBox(
                   height: 50,
                 ),
