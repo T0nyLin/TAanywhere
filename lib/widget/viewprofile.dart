@@ -1,4 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -20,6 +22,7 @@ class ViewUserProfileScreen extends StatefulWidget {
 class _ViewUserProfileScreenState extends State<ViewUserProfileScreen> {
   final User? user = Auth().currentUser;
   double avg = 0;
+  String? _profilePicUrl;
 
   Widget _mentorRank(num rater) {
     String rank = '';
@@ -256,6 +259,8 @@ class _ViewUserProfileScreenState extends State<ViewUserProfileScreen> {
             }
             data['rater'] == 0 ? avg = 0 : avg = data['rating'] / data['rater'];
 
+            _profilePicUrl = data['profile_pic'];
+
             return Scrollbar(
               child: SingleChildScrollView(
                 child: Column(
@@ -311,10 +316,33 @@ class _ViewUserProfileScreenState extends State<ViewUserProfileScreen> {
                             ],
                           ),
                         ),
-                        CircleAvatar(
-                          radius: 80,
-                          backgroundImage: AssetImage(
-                              'assets/icons/profile_pic.png'), // Replace with user image from database soon
+                        GestureDetector(
+                          onTap: () {
+                            showImageViewer(
+                                context,
+                                CachedNetworkImageProvider(
+                                    _profilePicUrl.toString()),
+                                swipeDismissible: true,
+                                doubleTapZoomable: true);
+                          },
+                          child: CircleAvatar(
+                            radius: 80,
+                            backgroundImage: _profilePicUrl != null
+                                ? CachedNetworkImage(
+                                    imageUrl: _profilePicUrl.toString(),
+                                    fit: BoxFit.cover,
+                                    progressIndicatorBuilder:
+                                        (context, url, progress) =>
+                                            LoadingAnimationWidget
+                                                .threeArchedCircle(
+                                                    color: Color.fromARGB(
+                                                        255, 48, 97, 104),
+                                                    size: 60),
+                                    errorWidget: (context, url, error) =>
+                                        const Icon(Icons.error),
+                                  ) as ImageProvider<Object>
+                                : AssetImage('assets/icons/profile_pic.png'),
+                          ),
                         ),
                       ],
                     ),
