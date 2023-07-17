@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'dart:io';
 
 import 'package:ta_anywhere/components/auth.dart';
@@ -621,7 +624,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     setState(() {
       if (pickedFile != null) {
         _imageFile = File(pickedFile.path);
@@ -636,8 +640,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _deleteProfilePic();
 
         // Upload the image file to Firebase Storage
-        Reference storageRef =
-            FirebaseStorage.instance.ref().child('profile_pictures').child(fileName);
+        Reference storageRef = FirebaseStorage.instance
+            .ref()
+            .child('profile_pictures')
+            .child(fileName);
         UploadTask uploadTask = storageRef.putFile(_imageFile!);
 
         // Monitor the upload task to get the download URL
@@ -645,7 +651,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           if (uploadTask.snapshot.state == TaskState.success) {
             storageRef.getDownloadURL().then((imageUrl) {
               // Update the user's document in Firestore with the download URL of the image
-              CollectionReference usersRef = FirebaseFirestore.instance.collection('users');
+              CollectionReference usersRef =
+                  FirebaseFirestore.instance.collection('users');
               usersRef.doc(userId).update({'profile_pic': imageUrl});
             });
           }
@@ -664,7 +671,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     CollectionReference usersRef =
         FirebaseFirestore.instance.collection('users');
     DocumentSnapshot userSnapshot = await usersRef.doc(userId).get();
-    Map<String, dynamic>? userData = userSnapshot.data() as Map<String, dynamic>?;
+    Map<String, dynamic>? userData =
+        userSnapshot.data() as Map<String, dynamic>?;
 
     // Check if the user data and profile picture URL exist
     if (userData != null && userData.containsKey('profile_pic')) {
@@ -672,7 +680,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       // Delete the profile picture file from Firebase Storage
       if (profilePicUrl != null) {
-        Reference storageRef = FirebaseStorage.instance.refFromURL(profilePicUrl);
+        Reference storageRef =
+            FirebaseStorage.instance.refFromURL(profilePicUrl);
         await storageRef.delete();
       }
     }
@@ -684,8 +693,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       content: Text('Changed Successfully'),
     ));
   }
-
-
 
   Widget _editButton(BuildContext context) {
     return Positioned(
@@ -714,30 +721,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
           SizedBox(width: 10),
           GestureDetector(
             onTap: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text('Confirmation'),
-                    content: Text('Are you sure you want to remove the profile picture?'),
-                    actions: [
-                      TextButton(
-                        child: Text('Cancel'),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                      TextButton(
-                        child: Text('Remove'),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          _deleteProfilePic(); // Delete the profile picture
-                        },
-                      ),
-                    ],
-                  );
-                },
-              );
+              if (_profilePicUrl != null) {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text('Confirmation'),
+                      content: Text(
+                          'Are you sure you want to remove the profile picture?'),
+                      actions: [
+                        TextButton(
+                          child: Text('Cancel'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        TextButton(
+                          child: Text('Remove'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            _deleteProfilePic(); // Delete the profile picture
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              }
             },
             child: Container(
               decoration: BoxDecoration(
@@ -756,7 +766,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     // Get the user's ID
@@ -764,7 +773,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: largeLabel('My Rank', context),
+        title: largeLabel('My Profile', context),
         actions: [_qrCodeButton(context), _settingButton(context)],
       ),
       body: StreamBuilder<DocumentSnapshot>(
@@ -796,7 +805,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ? avg = 0
                 : avg = data['rating'] / data['rater'];
 
-            _profilePicUrl = data['profile_pic']; // Update the profile picture URL
+            _profilePicUrl =
+                data['profile_pic']; // Update the profile picture URL
 
             return Scrollbar(
                 child: SingleChildScrollView(
@@ -848,12 +858,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       Stack(
                         children: [
-                          CircleAvatar(
-                            radius: 80,
-                            backgroundImage: _profilePicUrl != null
-                                ? NetworkImage(_profilePicUrl!)
-                                    as ImageProvider<Object>
-                                : AssetImage('assets/icons/profile_pic.png'),
+                          GestureDetector(
+                            onTap: () {
+                              showImageViewer(
+                                  context,
+                                  _profilePicUrl != null
+                                      ? CachedNetworkImageProvider(
+                                              _profilePicUrl.toString())
+                                          as ImageProvider<Object>
+                                      : AssetImage(
+                                          'assets/icons/profile_pic.png'),
+                                  swipeDismissible: true,
+                                  doubleTapZoomable: true);
+                            },
+                            child: CircleAvatar(
+                              radius: 80,
+                              backgroundImage: _profilePicUrl != null
+                                  ? CachedNetworkImage(
+                                      imageUrl: _profilePicUrl.toString(),
+                                      fit: BoxFit.cover,
+                                      progressIndicatorBuilder: (context, url,
+                                              progress) =>
+                                          LoadingAnimationWidget
+                                              .threeArchedCircle(
+                                                  color: Color.fromARGB(
+                                                      255, 48, 97, 104),
+                                                  size: 60),
+                                      errorWidget: (context, url, error) =>
+                                          const Icon(Icons.error),
+                                    ) as ImageProvider<Object>
+                                  : AssetImage('assets/icons/profile_pic.png'),
+                            ),
                           ),
                           _editButton(context),
                         ],
