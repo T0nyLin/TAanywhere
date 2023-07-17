@@ -93,7 +93,7 @@ class MentorFound extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: () {
-                    if (_profilePicUrl != null) {
+                    if (_profilePicUrl != null && data2['displayPic'] == true) {
                       showImageViewer(context,
                           CachedNetworkImageProvider(_profilePicUrl.toString()),
                           swipeDismissible: true, doubleTapZoomable: true);
@@ -101,7 +101,9 @@ class MentorFound extends StatelessWidget {
                   },
                   child: CircleAvatar(
                     radius: 80,
-                    backgroundImage: _profilePicUrl != null
+                    backgroundImage: AssetImage('assets/icons/profile_pic.png'),
+                    foregroundImage: _profilePicUrl != null &&
+                            data2['displayPic'] == true
                         ? CachedNetworkImageProvider(_profilePicUrl.toString())
                             as ImageProvider<Object>
                         : AssetImage('assets/icons/profile_pic.png'),

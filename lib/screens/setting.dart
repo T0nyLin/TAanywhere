@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:ta_anywhere/widget/widget_tree.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:ta_anywhere/components/auth.dart';
@@ -13,6 +14,10 @@ class SettingScreen extends StatelessWidget {
   SettingScreen({Key? key});
 
   final User? user = Auth().currentUser;
+
+  Future<void> signOut() async {
+    await Auth().signOut();
+  }
 
   Widget _userUid() {
     return Text(user?.email ?? 'User email');
@@ -36,10 +41,7 @@ class SettingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "Settings",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-        ),
+        title: largeLabel('Settings', context),
       ),
       body: ListView(
         padding: const EdgeInsets.all(8.0),
@@ -141,6 +143,47 @@ class SettingScreen extends StatelessWidget {
           ),
           ListTile(
             title: _userUid(),
+            subtitle: Text(
+              'Log Out',
+              style: TextStyle(
+                  fontSize: 13, color: const Color.fromARGB(255, 175, 52, 44)),
+            ),
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Log Out'),
+                    content: Text('Are you sure you want to log out?'),
+                    actions: [
+                      TextButton(
+                        child: Text('Cancel'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      TextButton(
+                        child: Text('Yes'),
+                        onPressed: () {
+                          signOut();
+                          ScaffoldMessenger.of(context)
+                            ..removeCurrentSnackBar()
+                            ..showSnackBar(SnackBar(
+                              content: Text('Logged out successfully'),
+                            ));
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                                builder: (context) => WidgetTree()),
+                            (route) => false,
+                          );
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            trailing: Icon(Icons.arrow_forward_ios),
           ),
         ],
       ),

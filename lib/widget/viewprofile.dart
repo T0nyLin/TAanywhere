@@ -317,25 +317,29 @@ class _ViewUserProfileScreenState extends State<ViewUserProfileScreen> {
                           ),
                         ),
                         GestureDetector(
-                            onTap: () {
-                              if (_profilePicUrl != null) {
-                                showImageViewer(
-                                    context,
-                                    CachedNetworkImageProvider(
-                                        _profilePicUrl.toString()),
-                                    swipeDismissible: true,
-                                    doubleTapZoomable: true);
-                              }
-                            },
-                            child: CircleAvatar(
-                              radius: 80,
-                              backgroundImage: _profilePicUrl != null
-                                  ? CachedNetworkImageProvider(
-                                          _profilePicUrl.toString())
-                                      as ImageProvider<Object>
-                                  : AssetImage('assets/icons/profile_pic.png'),
-                            ),
+                          onTap: () {
+                            if (_profilePicUrl != null &&
+                                data['displayPic'] == true) {
+                              showImageViewer(
+                                  context,
+                                  CachedNetworkImageProvider(
+                                      _profilePicUrl.toString()),
+                                  swipeDismissible: true,
+                                  doubleTapZoomable: true);
+                            }
+                          },
+                          child: CircleAvatar(
+                            radius: 80,
+                            backgroundImage:
+                                AssetImage('assets/icons/profile_pic.png'),
+                            foregroundImage: _profilePicUrl != null &&
+                                    data['displayPic'] == true
+                                ? CachedNetworkImageProvider(
+                                    _profilePicUrl.toString(),
+                                  ) as ImageProvider<Object>
+                                : AssetImage('assets/icons/profile_pic.png'),
                           ),
+                        ),
                       ],
                     ),
                     Padding(

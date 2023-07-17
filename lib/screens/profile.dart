@@ -14,7 +14,6 @@ import 'package:ta_anywhere/components/queryTile.dart';
 import 'package:ta_anywhere/components/textSize.dart';
 import 'package:ta_anywhere/screens/setting.dart';
 import 'package:ta_anywhere/widget/qr_code.dart';
-import 'package:ta_anywhere/widget/widget_tree.dart';
 import 'package:ta_anywhere/components/modulecode.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart' as path;
@@ -35,28 +34,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> signOut() async {
     await Auth().signOut();
-  }
-
-  Widget _userUid() {
-    return Text(user?.email ?? 'User email');
-  }
-
-  Widget _signOutButton(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {
-        signOut();
-        ScaffoldMessenger.of(context)
-          ..removeCurrentSnackBar()
-          ..showSnackBar(SnackBar(
-            content: Text('Logged out successfully'),
-          ));
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => WidgetTree()),
-          (route) => false,
-        );
-      },
-      child: const Text("Log Out"),
-    );
   }
 
   Widget _settingButton(BuildContext context) {
@@ -686,7 +663,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     // Update the user's document in Firestore to remove the profile picture URL
-    usersRef.doc(userId).update({'profile_pic': null});
+    usersRef.doc(userId).update({'profile_pic': null, 'displayPic': true});
 
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text('Changed Successfully'),
@@ -821,6 +798,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
+                            largeLabel(data['username'], context),
                             largeLabel('Rank:', context),
                             _mentorRank(data['rater']),
                             SizedBox(
@@ -870,11 +848,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             },
                             child: CircleAvatar(
                               radius: 80,
-                              backgroundImage: _profilePicUrl != null
-                                  ? CachedNetworkImageProvider(
-                                          _profilePicUrl.toString())
-                                      as ImageProvider<Object>
-                                  : AssetImage('assets/icons/profile_pic.png'),
+                              backgroundImage:
+                                  AssetImage('assets/icons/profile_pic.png'),
+                              foregroundImage: CachedNetworkImageProvider(
+                                  _profilePicUrl.toString()),
                             ),
                           ),
                           _editButton(context),
@@ -897,14 +874,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(height: 20),
                         getQuery(context),
                         const SizedBox(height: 20),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            _userUid(),
-                            _signOutButton(context),
-                          ],
-                        ),
                       ],
                     ),
                   ),
