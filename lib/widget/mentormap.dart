@@ -45,8 +45,8 @@ class _MentorMapScreenState extends State<MentorMapScreen> {
 
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
       'AIzaSyC7EFshsiUoJdt-lItecOX5Wpm4mGo2dCo', 
-      // PointLatLng(srclat, srclng),
-      PointLatLng(1.2971365,103.7775268), 
+      PointLatLng(srclat, srclng),
+      // PointLatLng(1.2971365,103.7775268), 
       PointLatLng(dstlat, dstlng), 
     );
 
@@ -77,8 +77,8 @@ class _MentorMapScreenState extends State<MentorMapScreen> {
     getUserCurrentLocation().then((userLocation) {
       final mentorMarker = Marker(
         markerId: MarkerId('2'),
-        // position: LatLng(userLocation.latitude, userLocation.longitude),
-        position: LatLng(1.2971365,103.7775268),
+        position: LatLng(userLocation.latitude, userLocation.longitude),
+        // position: LatLng(1.2971365,103.7775268),
         infoWindow: InfoWindow(
           title: "Me",
         ),

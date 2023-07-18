@@ -20,7 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   EmailOTP myauth = EmailOTP();
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
-  final TextEditingController _controllerUsername= TextEditingController();
+  final TextEditingController _controllerUsername = TextEditingController();
   final TextEditingController _controllerOTP = TextEditingController();
 
   Future<void> signInWithEmailAndPassword() async {
@@ -47,17 +47,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
       final User user = Auth().currentUser!;
 
-      await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .set({
-          'email': email,
-          'gender': selectedGender,
-          'username': _controllerUsername.text,
-          'rater': 0,
-          'rating': 0,
-          'displayPic': true,
-        });
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+        'email': email,
+        'gender': selectedGender,
+        'username': _controllerUsername.text,
+        'rater': 0,
+        'rating': 0,
+        'displayPic': true,
+      });
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
@@ -74,7 +71,14 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    if(!isFormValid) {
+    if (_controllerPassword.text.length < 6) {
+      setState(() {
+        errorMessage = "password should be at least 6 characters";
+      });
+      return;
+    }
+
+    if (!isFormValid) {
       setState(() {
         errorMessage = 'Please fill in all fields';
       });
@@ -119,44 +123,43 @@ class _LoginScreenState extends State<LoginScreen> {
     TextEditingController controller,
     IconData? iconData,
   ) {
-
     if ((title == 'OTP' || title == 'Username') && isLogin) {
       // Hide OTP field in login mode
       return Container();
     }
 
     if (title == 'Username') {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 40.0),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10.0),
-          border: Border.all(color: Colors.black),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black12,
-              spreadRadius: 2.0,
-              blurRadius: 4.0,
-              offset: Offset(0, 2),
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 40.0),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.0),
+            border: Border.all(color: Colors.black),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black12,
+                spreadRadius: 2.0,
+                blurRadius: 4.0,
+                offset: Offset(0, 2),
+              ),
+            ],
+            color: Colors.white,
+          ),
+          child: TextField(
+            keyboardType: TextInputType.text,
+            obscureText: false,
+            controller: controller,
+            decoration: InputDecoration(
+              labelText: title,
+              border: InputBorder.none,
+              hintText: title,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 10.0),
+              prefixIcon: Icon(iconData),
             ),
-          ],
-          color: Colors.white,
-        ),
-        child: TextField(
-          keyboardType: TextInputType.text,
-          obscureText: false,
-          controller: controller,
-          decoration: InputDecoration(
-            labelText: title,
-            border: InputBorder.none,
-            hintText: title,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 10.0),
-            prefixIcon: Icon(iconData),
           ),
         ),
-      ),
-    );
-  }
+      );
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 40.0),
@@ -199,12 +202,12 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _errorMessage() {
-  return Center(
-    child: Text(
-      errorMessage == '' ? '' : 'Humm ? $errorMessage',
-    ),
-  );
-}
+    return Center(
+      child: Text(
+        errorMessage == '' ? '' : 'Humm ? $errorMessage',
+      ),
+    );
+  }
 
   Widget _submitButton() {
     String buttonText = isLogin
@@ -244,10 +247,10 @@ class _LoginScreenState extends State<LoginScreen> {
           elevation: 0,
         ),
         onPressed: isLogin
-              ? () => signInWithEmailAndPassword()
-              : () => isOTPSent
-                  ? verifyOTP(_controllerEmail.text, _controllerOTP.text)
-                  : sendOTP(_controllerEmail.text),
+            ? () => signInWithEmailAndPassword()
+            : () => isOTPSent
+                ? verifyOTP(_controllerEmail.text, _controllerOTP.text)
+                : sendOTP(_controllerEmail.text),
         icon: const Icon(
           Icons.arrow_circle_right_outlined,
           color: Colors.white,
@@ -270,9 +273,11 @@ class _LoginScreenState extends State<LoginScreen> {
       },
       child: Text(
         isLogin ? 'Register Instead' : 'Login Instead',
-        style: const TextStyle(fontSize: 15,),
+        style: const TextStyle(
+          fontSize: 15,
         ),
-  );
+      ),
+    );
   }
 
   Widget _buildGenderDropdown() {
@@ -349,7 +354,6 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -410,11 +414,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 15),
                 _buildGenderDropdown(),
                 const SizedBox(height: 15),
-                  _entryField(
+                _entryField(
                   'Username',
                   _controllerUsername,
                   Icons.person,
-                ),                
+                ),
                 const SizedBox(height: 15),
                 _entryField(
                   'OTP',
