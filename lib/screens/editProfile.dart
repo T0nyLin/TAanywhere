@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ta_anywhere/components/auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:ta_anywhere/components/textSize.dart';
 
 class EditProfilePage extends StatefulWidget {
   EditProfilePage({Key? key}) : super(key: key);
@@ -18,6 +19,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   TextEditingController _genderController = TextEditingController();
   TextEditingController _usernameController = TextEditingController();
   String _gender = '';
+  bool display = true;
 
   @override
   void initState() {
@@ -47,8 +49,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
         setState(() {
           _emailController.text = data['email'] ?? '';
           //  _genderController.text = data['gender'] ?? '';
-           _gender = data['gender'] ?? '';
+          _gender = data['gender'] ?? '';
           _usernameController.text = data['username'] ?? '';
+          display = data['displayPic'];
         });
       }
     }
@@ -58,6 +61,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     // String gender =  _genderController.text;
     String gender = _gender;
     String username = _usernameController.text;
+    bool displayPic = display;
 
     // Update the user profile data in Firestore
     try {
@@ -67,6 +71,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           .update({
         'gender': gender,
         'username': username,
+        'displayPic': displayPic,
       });
 
       // Show a snackbar or navigate to another page to indicate the changes were saved
@@ -160,46 +165,57 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   Widget _buildGenderDropdown() {
     return Container(
-        child: DropdownButtonFormField<String>(
-          decoration: const InputDecoration(
-            border: InputBorder.none,
-            labelText: "Gender",
-            labelStyle: TextStyle(
-              color: Colors.black, // Set the label text color to black
-            ),
+      child: DropdownButtonFormField<String>(
+        decoration: const InputDecoration(
+          border: InputBorder.none,
+          labelText: "Gender",
+          labelStyle: TextStyle(
+            color: Colors.black, // Set the label text color to black
           ),
-          value: _gender,
-          onChanged: (value) {
-            setState(() {
-              _gender = value!;
-            });
-          },
-          items: const [
-            DropdownMenuItem(
-              value: 'Male',
-              child: Text('Male'),
-            ),
-            DropdownMenuItem(
-              value: 'Female',
-              child: Text('Female'),
-            ),
-            DropdownMenuItem(
-              value: 'Prefer not to tell',
-              child: Text('Prefer not to tell'),
-            ),
-          ],
         ),
+        value: _gender,
+        onChanged: (value) {
+          setState(() {
+            _gender = value!;
+          });
+        },
+        items: const [
+          DropdownMenuItem(
+            value: 'Male',
+            child: Text('Male'),
+          ),
+          DropdownMenuItem(
+            value: 'Female',
+            child: Text('Female'),
+          ),
+          DropdownMenuItem(
+            value: 'Prefer not to tell',
+            child: Text('Prefer not to tell'),
+          ),
+        ],
+      ),
     );
+  }
+
+  Widget displayPic() {
+    return SwitchListTile(
+        title: mediumLabel('Allow others to see my Profile Picture', context),
+        value: display,
+        activeColor: Color.fromARGB(255, 48, 97, 104),
+        inactiveThumbColor: Color.fromARGB(255, 48, 97, 104),
+        inactiveTrackColor: Color.fromARGB(255, 115, 195, 208),
+        onChanged: (bool value) {
+          setState(() {
+            display = value;
+          });
+        });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "Edit Profile",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-          ),
+        title: largeLabel('Edit Profile', context),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -216,7 +232,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     decoration: InputDecoration(
                       labelText: "Email",
                       labelStyle: TextStyle(
-                        color: Colors.black, // Set the label text color to black
+                        color:
+                            Colors.black, // Set the label text color to black
                       ),
                     ),
                   ),
@@ -248,6 +265,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
             //   ),
             // ),
             _buildGenderDropdown(),
+            SizedBox(height: 16.0),
+            displayPic(),
             SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: _saveChanges,

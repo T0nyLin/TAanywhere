@@ -56,6 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
           'username': _controllerUsername.text,
           'rater': 0,
           'rating': 0,
+          'displayPic': true,
         });
     } on FirebaseAuthException catch (e) {
       setState(() {
