@@ -24,7 +24,6 @@ class _BrowseScreenState extends State<BrowseScreen> {
   final storageRef = FirebaseStorage.instance.ref();
   TextEditingController searchController = TextEditingController();
   String code = '';
-  String filtercost = '';
 
   Future<void> _refreshBrowse() async {
     return await Future.delayed(const Duration(seconds: 1));
@@ -126,8 +125,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
                       if (data['module Code']
                               .toString()
                               .toLowerCase()
-                              .contains(code.toLowerCase()) ||
-                          data['cost'].toString().contains(filtercost)) {
+                              .contains(code.toLowerCase())) {
                         return itemTile(context, data, lifetime);
                       }
                     }
