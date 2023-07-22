@@ -296,7 +296,7 @@ class _TabsScreenState extends State<TabsScreen> {
                   }
                   deleteQuery(user!.uid);
                   CollectionReference query_ref =
-                      FirebaseFirestore.instance.collection('user_queries');
+                      FirebaseFirestore.instance.collection('user queries');
                   query_ref.doc(user!.uid).get().then((snapshot) {
                     Map<String, dynamic>? data =
                         snapshot.data() as Map<String, dynamic>?;
