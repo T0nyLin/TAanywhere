@@ -47,6 +47,11 @@ class MentorFound extends StatelessWidget {
                           data['mentorToken'],
                           'Sorry, $mentorName.',
                           '${data['mentee']} has chosen to cancel the meet. Apologies for the inconvenience.');
+                      ScaffoldMessenger.of(context)
+                        ..removeCurrentSnackBar()
+                        ..showSnackBar(SnackBar(
+                          content: Text('Meet cancelled'),
+                        ));
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(builder: (context) => TabsScreen()),
                         (route) => false,
@@ -165,11 +170,6 @@ class MentorFound extends StatelessWidget {
                 TextButton(
                   onPressed: () {
                     cancelAlert(data);
-                    ScaffoldMessenger.of(context)
-                      ..removeCurrentSnackBar()
-                      ..showSnackBar(SnackBar(
-                        content: Text('Meet cancelled'),
-                      ));
                   },
                   child: Text('Cancel Meet'),
                 ),
