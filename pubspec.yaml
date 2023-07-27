@@ -74,6 +74,8 @@ dependencies:
   geolocator: ^9.0.2
   location: ^4.4.0
   flutter_polyline_points: ^1.0.0
+  mocktail: ^0.3.0
+  dio: ^5.3.0
 
 
   

@@ -1,8 +1,8 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-Future<List<ModuleCode>> getModCodes(String query) async {
-  const String url = "https://api.nusmods.com/v2/2022-2023/moduleList.json";
+Future<List<ModuleCode>> getModCodes(String input) async {
+  const String url = "https://api.nusmods.com/v2/2023-2024/moduleList.json";
   final http.Response response = await http.get(Uri.parse(url));
 
   if (response.statusCode == 200) {
@@ -10,12 +10,12 @@ Future<List<ModuleCode>> getModCodes(String query) async {
 
     return code.map((json) => ModuleCode.fromJson(json)).where((code) {
       final codeUpper = code.modCode.toUpperCase();
-      final queryUpper = query.toUpperCase();
+      final inputUpper = input.toUpperCase();
 
-      return codeUpper.contains(queryUpper);
+      return codeUpper.contains(inputUpper);
     }).toList();
   } else {
-    throw Exception();
+    throw Exception('Please check your network connection.');
   }
 }
 

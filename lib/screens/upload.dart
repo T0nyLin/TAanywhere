@@ -185,6 +185,10 @@ class _UploadScreenState extends State<UploadScreen> {
                           );
                         },
                         noItemsFoundBuilder: (context) {
+                          setState(() {
+                            _modController.clear();
+                            _modController.text = '';
+                          });
                           return Center(
                             child: smallLabel(
                                 _modController.text = 'Module not found.',
@@ -210,6 +214,7 @@ class _UploadScreenState extends State<UploadScreen> {
                               value.isEmpty ||
                               value.trim().length <= 1 ||
                               value.trim().length > 10 ||
+                              value.startsWith(RegExp(r'\d')) ||
                               value.trim() == 'Module not found.') {
                             setState(() {
                               _modController.clear();
